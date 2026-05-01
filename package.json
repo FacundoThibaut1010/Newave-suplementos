@@ -1,0 +1,15 @@
+{
+  "name": "ecommerce-root",
+  "version": "1.0.0",
+  "description": "Full-stack Ecommerce Ecosystem",
+  "scripts": {
+    "start": "concurrently \"npm --prefix backend run dev\" \"npm --prefix frontend run dev\" \"npm --prefix admin run dev\"",
+    "store": "npm --prefix frontend run dev",
+    "admin": "npm --prefix admin run dev",
+    "server": "npm --prefix backend run dev",
+    "install-all": "npm install && npm install --prefix backend && npm install --prefix frontend && npm install --prefix admin"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
