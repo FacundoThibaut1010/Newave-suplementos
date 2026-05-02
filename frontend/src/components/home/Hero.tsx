@@ -1,7 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { ArrowRight, ShoppingCart } from 'lucide-react';
+import { ArrowRight } from 'lucide-react';
 import apiClient from '../../api/apiClient';
+import heroImage from '../../assets/hero-newave3.svg';
 
 const Hero = () => {
   const [config, setConfig] = useState<any>(null);
@@ -13,6 +14,12 @@ const Hero = () => {
         setConfig(data.hero);
       } catch (err) {
         console.error('Error fetching hero config');
+        // Fallback config if API fails
+        setConfig({
+          title: 'TU MEJOR VERSIÓN',
+          subtitle: 'ALCANZÁ TUS OBJETIVOS CON LA MEJOR SUPLEMENTACIÓN',
+          buttonText: 'Explorar Tienda'
+        });
       }
     };
     fetchConfig();
@@ -21,50 +28,48 @@ const Hero = () => {
   if (!config) return null;
 
   return (
-    <div className="pt-[120px]"> {/* Offset for TopBar (40px) + Navbar (80px) */}
-      <section className="relative h-[80vh] w-full overflow-hidden">
-        {/* Full Width Slider Mockup */}
-        <div className="absolute inset-0">
+    <div className="pt-[120px] bg-[#F8F5F0]"> {/* Match bakery cream background */}
+      <section className="relative h-[85vh] w-full overflow-hidden">
+        {/* Background Image Container */}
+        <div className="absolute inset-0 z-0">
           <img
-            src={config.image}
-            alt="Hero Visual"
-            className="w-full h-full object-cover"
+            src={heroImage}
+            alt="Newave Hero"
+            className="w-full h-full object-cover object-center md:object-right transition-transform duration-1000 hover:scale-105"
           />
-          <div className="absolute inset-0 bg-black/20" />
+          {/* Subtle gradient to help text readability on mobile */}
+          <div className="absolute inset-0 bg-gradient-to-r from-[#F8F5F0]/80 via-transparent to-transparent md:bg-none" />
         </div>
         
-        <div className="relative h-full max-w-7xl mx-auto px-8 lg:px-12 flex items-center pt-20">
+        <div className="relative z-10 h-full w-full px-8 md:px-16 lg:px-24 flex items-center">
           <motion.div
-            initial={{ opacity: 0, x: -50 }}
+            initial={{ opacity: 0, x: -60 }}
             animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.8 }}
+            transition={{ duration: 1, ease: "easeOut" }}
             className="max-w-2xl"
           >
-            <h1 className="text-7xl md:text-[10rem] font-black italic leading-[0.8] text-white tracking-tighter uppercase mb-8">
-              {config.title.split(' ')[0]} <br />
-              <span className="text-transparent" style={{ WebkitTextStroke: '2px white' }}>
-                {config.title.split(' ')[1] || ''}
-              </span>
+            <h1 className="text-5xl md:text-7xl font-bold leading-[1.05] text-[#3D1E14] tracking-tight mb-8">
+              Tu mejor versión.<br />
+              Entrená al límite.
             </h1>
-            <p className="text-xl text-white/90 mb-10 max-w-md font-medium uppercase tracking-widest italic">
-              {config.subtitle}
+            <p className="text-lg md:text-xl text-[#3D1E14]/70 mb-10 max-w-lg font-medium leading-relaxed">
+              Alcanzá tus objetivos con la suplementación de élite que tu cuerpo necesita para rendir al máximo en cada entrenamiento.
             </p>
-            <button className="btn-accent px-12 py-5 text-lg shadow-2xl shadow-gold/40">
-              {config.buttonText || 'Comprar ahora'}
-            </button>
+            <div className="flex flex-wrap gap-4">
+              <button className="bg-[#3D1E14] text-white px-8 py-4 rounded-xl text-lg font-semibold hover:bg-[#3D1E14]/90 transition-all duration-300 transform hover:-translate-y-1 shadow-lg">
+                Comprar suplementos
+              </button>
+            </div>
           </motion.div>
         </div>
 
-        {/* Navigation Arrows Mockup */}
-        <div className="absolute bottom-12 right-12 flex gap-4">
-          <button className="w-12 h-12 rounded-full border border-white/50 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
-            <ArrowRight size={20} className="rotate-180" />
-          </button>
-          <button className="w-12 h-12 rounded-full border border-white/50 flex items-center justify-center text-white hover:bg-white hover:text-black transition-all">
-            <ArrowRight size={20} />
-          </button>
+        {/* Subtle Decorative Element */}
+        <div className="absolute bottom-12 left-12 hidden md:flex items-center gap-4 text-[#3D1E14]/30">
+          <div className="w-12 h-[1px] bg-current" />
+          <span className="text-[10px] font-bold uppercase tracking-[0.3em]">Newave Bakery</span>
         </div>
       </section>
+
 
       {/* Section Title below Hero */}
       <div className="py-16 text-center">
