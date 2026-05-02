@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Barlow:wght@300;400;500;600;700;800;900&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -7,14 +7,30 @@
 :root {
   --primary-navy: #202A36;
   --accent-gold: #CAA959;
+  --bakery-brown: #3D1E14;
+  --bakery-cream: #F8F5F0;
+}
+
+html,
+body {
+  margin: 0;
+  padding: 0;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: hidden;
+  position: relative;
+}
+
+#root {
+  width: 100%;
+  overflow-x: hidden;
 }
 
 body {
-  font-family: 'Barlow', sans-serif;
-  color: var(--primary-navy);
-  background-color: #FFFFFF;
+  font-family: 'Outfit', sans-serif;
+  color: var(--bakery-brown);
+  background-color: var(--bakery-cream);
   -webkit-font-smoothing: antialiased;
-  letter-spacing: -0.01em;
 }
 
 @layer components {
@@ -44,17 +60,14 @@ body {
 .gap-8px { gap: 8px; }
 .gap-16px { gap: 16px; }
 
-/* Custom Scrollbar for High-End feel */
-::-webkit-scrollbar {
-  width: 6px;
+/* Global Scrollbar Removal */
+html,
+body {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE and Edge */
 }
-::-webkit-scrollbar-track {
-  background: transparent;
-}
-::-webkit-scrollbar-thumb {
-  background: #E5E5E5;
-  border-radius: 10px;
-}
-::-webkit-scrollbar-thumb:hover {
-  background: #D1D1D1;
+
+html::-webkit-scrollbar,
+body::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Opera */
 }

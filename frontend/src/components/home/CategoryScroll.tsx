@@ -17,7 +17,7 @@ const CategoryScroll = () => {
         <button className="text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-200 pb-1">Ver todas</button>
       </div>
       
-      <div className="flex gap-6 overflow-x-auto pb-8 px-6 lg:px-[calc((100vw-1280px)/2+24px)] no-scrollbar">
+      <div className="flex gap-6 overflow-x-auto pb-8 px-6 lg:px-[calc((100%-1280px)/2+24px)] no-scrollbar">
         {categories.map((cat, i) => (
           <motion.div
             key={i}
