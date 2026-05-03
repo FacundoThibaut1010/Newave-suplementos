@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight } from 'lucide-react';
 import apiClient from '../../api/apiClient';
@@ -70,13 +70,15 @@ const Hero = () => {
         </div>
       </section>
 
-
       {/* Section Title below Hero */}
-      <div className="py-16 text-center">
+      <div className="pt-16 pb-0 text-center">
         <h2 className="text-3xl md:text-5xl font-black text-[#202A36] uppercase italic tracking-tighter">
           Descubrí tu potencial
         </h2>
-        <div className="w-20 h-1 bg-[#CAA959] mx-auto mt-4" />
+        <div className="w-20 h-1 bg-[#CAA959] mx-auto mt-4 mb-4" />
+        <button className="text-sm font-black uppercase tracking-widest text-gray-500 hover:text-[#CAA959] transition-all">
+          Ver todas
+        </button>
       </div>
     </div>
   );

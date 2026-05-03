@@ -1,37 +1,96 @@
-import React from 'react';
+import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const categories = [
-  { name: 'Proteínas', image: 'https://images.unsplash.com/photo-1593079831268-3381b0ad4a7a?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Creatinas', image: 'https://images.unsplash.com/photo-1574680096145-d05b474e2155?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Pre-Entreno', image: 'https://images.unsplash.com/photo-1517836357463-d25dfeac3438?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Aminoácidos', image: 'https://images.unsplash.com/photo-1541534741688-6078c64b52d3?auto=format&fit=crop&q=80&w=800' },
-  { name: 'Accesorios', image: 'https://images.unsplash.com/photo-1583454110551-21f2fa2aac61?auto=format&fit=crop&q=80&w=800' },
+  { name: 'Proteínas', image: '/Proteinas.jpg' },
+  { name: 'Creatinas', image: '/Creatina.jpg' },
+  { name: 'Pre-Entreno', image: '/preentreno2.jpg' },
+  { name: 'Aminoácidos', image: '/Aminoacidos.jpg' },
+  { name: 'Colágenos', image: '/colageno.jpg' },
 ];
 
 const CategoryScroll = () => {
+  // Triplicamos para asegurar que haya suficiente contenido para el scroll infinito
+  const displayCategories = [...categories, ...categories, ...categories, ...categories];
+
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [isHovered, setIsHovered] = useState(false);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
+
+  // Scroll automático
+  useEffect(() => {
+    let animationId: number;
+    const scroll = () => {
+      if (scrollRef.current && !isHovered && !isDragging) {
+        scrollRef.current.scrollLeft += 1; // Velocidad de scroll
+
+        // Si llegamos a un cuarto del total (1 set completo), volvemos a 0 para un loop infinito invisible
+        if (scrollRef.current.scrollLeft >= scrollRef.current.scrollWidth / 4) {
+          scrollRef.current.scrollLeft -= scrollRef.current.scrollWidth / 4;
+        }
+      }
+      animationId = requestAnimationFrame(scroll);
+    };
+    animationId = requestAnimationFrame(scroll);
+    return () => cancelAnimationFrame(animationId);
+  }, [isHovered, isDragging]);
+
+  // Manejo de arrastre con el mouse
+  const onMouseDown = (e: React.MouseEvent) => {
+    setIsDragging(true);
+    setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0));
+    setScrollLeft(scrollRef.current?.scrollLeft || 0);
+  };
+
+  const onMouseUp = () => setIsDragging(false);
+
+  const onMouseLeave = () => {
+    setIsDragging(false);
+    setIsHovered(false);
+  };
+
+  const onMouseMove = (e: React.MouseEvent) => {
+    if (!isDragging) return;
+    e.preventDefault();
+    const x = e.pageX - (scrollRef.current?.offsetLeft || 0);
+    const walk = (x - startX) * 2; // Multiplicador de velocidad de arrastre
+    if (scrollRef.current) {
+      scrollRef.current.scrollLeft = scrollLeft - walk;
+    }
+  };
+
   return (
-    <section className="py-12 overflow-hidden">
-      <div className="max-w-7xl mx-auto px-6 mb-8 flex justify-between items-end">
-        <h3 className="text-xl font-black text-[#202A36] uppercase italic tracking-tighter">Categorías</h3>
-        <button className="text-[10px] font-black uppercase tracking-widest text-gray-400 border-b border-gray-200 pb-1">Ver todas</button>
-      </div>
-      
-      <div className="flex gap-6 overflow-x-auto pb-8 px-6 lg:px-[calc((100%-1280px)/2+24px)] no-scrollbar">
-        {categories.map((cat, i) => (
-          <motion.div
-            key={i}
-            whileHover={{ y: -10 }}
-            className="min-w-[280px] h-[380px] relative rounded-[2rem] overflow-hidden group cursor-pointer shrink-0"
-          >
-            <img src={cat.image} className="w-full h-full object-cover grayscale group-hover:grayscale-0 transition-all duration-700" alt={cat.name} />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent" />
-            <div className="absolute bottom-8 left-8">
-              <h4 className="text-2xl font-black text-white uppercase italic tracking-tighter">{cat.name}</h4>
-              <div className="w-0 group-hover:w-full h-1 bg-[#CAA959] transition-all duration-500 mt-2" />
-            </div>
-          </motion.div>
-        ))}
+    <section className="pt-6 pb-12 overflow-hidden bg-[#F8F5F0]">
+      <div className="w-full relative">
+        <div
+          ref={scrollRef}
+          className="flex gap-6 overflow-x-auto pl-6 py-8 cursor-grab active:cursor-grabbing [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] select-none"
+          onMouseEnter={() => setIsHovered(true)}
+          onMouseLeave={onMouseLeave}
+          onMouseDown={onMouseDown}
+          onMouseUp={onMouseUp}
+          onMouseMove={onMouseMove}
+        >
+          {displayCategories.map((cat, i) => (
+            <motion.div
+              key={i}
+              whileHover={{ y: -10 }}
+              className="relative rounded-3xl overflow-hidden group shrink-0 bg-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 min-w-[280px] h-[380px]"
+            >
+              <img src={cat.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none" alt={cat.name} />
+
+              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+
+              <div className="absolute top-6 left-0 right-0 text-center pointer-events-none">
+                <h4 className="font-bold text-white tracking-tight drop-shadow-md text-[28px]">
+                  {cat.name}
+                </h4>
+              </div>
+            </motion.div>
+          ))}
+        </div>
       </div>
     </section>
   );
