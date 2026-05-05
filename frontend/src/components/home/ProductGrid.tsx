@@ -14,8 +14,11 @@ const ProductGrid = () => {
       setLoading(true);
       try {
         const { data } = await apiClient.get('/products');
-        console.log('--- API: Éxito! Recibimos:', data.products.length, 'productos ✨ ---');
-        setProducts(data.products);
+        // Filtrar solo los productos marcados como 'Combo'
+        const combos = data.products.filter((p: any) => p.displaySection === 'Combo');
+        
+        console.log('--- API: Éxito! Recibimos:', data.products.length, 'productos en total, de los cuales', combos.length, 'son Combos ✨ ---');
+        setProducts(combos);
       } catch (err: any) {
         console.error('--- API: ¡Ups! Error al cargar productos:', err.message, '---');
         setError(err.response?.data?.friendlyMessage || 'No pudimos encontrar los productos. 🤔');
@@ -50,26 +53,20 @@ const ProductGrid = () => {
   }
 
   if (products.length === 0) {
-    return (
-      <div className="max-w-7xl mx-auto px-4 py-32 text-center">
-        <div className="text-5xl mb-6">📦</div>
-        <h3 className="text-2xl font-bold text-gray-900 mb-2">¡Uy! Nuestra estantería está vacía por ahora</h3>
-        <p className="text-gray-500">Estamos trabajando para traer cosas hermosas pronto. ¡Vuelve en un ratito! ☀️</p>
-      </div>
-    );
+    return null; // Ocultar la sección si no hay Combos
   }
 
   return (
-    <section className="py-16">
+    <section id="combos" className="py-16 bg-[#0A0A0B] scroll-mt-[120px]">
       <div className="max-w-7xl mx-auto px-6 mb-12">
         <div className="flex flex-col md:flex-row justify-between items-end gap-6 mb-8">
           <div>
-            <h3 className="text-3xl font-black text-[#202A36] uppercase italic tracking-tighter">Los más elegidos</h3>
-            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Nuestros productos destacados</p>
+            <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">Combos</h3>
+            <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Nuestros combos especiales</p>
           </div>
           <div className="flex gap-4">
-            <button className="px-6 py-2 border border-gray-200 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#202A36] hover:text-white transition-all">Filtrar</button>
-            <button className="px-6 py-2 border border-gray-200 rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-[#202A36] hover:text-white transition-all">Ordenar por</button>
+            <button className="px-6 py-2 border border-white/20 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Filtrar</button>
+            <button className="px-6 py-2 border border-white/20 text-white rounded-full text-[10px] font-black uppercase tracking-widest hover:bg-white hover:text-black transition-all">Ordenar por</button>
           </div>
         </div>
 
@@ -81,6 +78,7 @@ const ProductGrid = () => {
               {...product} 
               category={product.category?.name || 'General'}
               image={product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
+              darkTheme
             />
           ))}
         </div>

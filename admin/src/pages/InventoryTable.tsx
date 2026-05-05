@@ -114,17 +114,22 @@ const InventoryTable = () => {
                       </div>
                     </td>
                     <td className="px-8 py-6">
-                      {p.countInStock <= 5 ? (
-                        <div className="flex items-center gap-2 text-red-500 font-bold text-sm">
-                          <AlertCircle size={16} />
-                          {p.countInStock === 0 ? 'Agotado' : `${p.countInStock} unidades`}
-                        </div>
-                      ) : (
-                        <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
-                          <PackageCheck size={16} />
-                          {p.countInStock} unidades
-                        </div>
-                      )}
+                      <div className="flex flex-col gap-1">
+                        {p.countInStock <= 5 ? (
+                          <div className="flex items-center gap-2 text-red-500 font-bold text-sm">
+                            <AlertCircle size={16} />
+                            {p.countInStock === 0 ? 'Agotado' : `${p.countInStock} unidades`}
+                          </div>
+                        ) : (
+                          <div className="flex items-center gap-2 text-green-600 font-bold text-sm">
+                            <PackageCheck size={16} />
+                            {p.countInStock} unidades
+                          </div>
+                        )}
+                        <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">
+                          {p.displaySection}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-8 py-6 text-right">
                       <div className="flex justify-end gap-2">

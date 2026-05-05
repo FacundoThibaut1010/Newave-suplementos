@@ -35,7 +35,7 @@ const Hero = () => {
   if (!config) return null;
 
   return (
-    <div className="relative pt-[220px] lg:pt-[120px] min-h-[100vh] lg:min-h-[90vh] flex flex-col justify-between overflow-hidden bg-[#0A0A0B]">
+    <div className="relative pt-[220px] lg:pt-[120px] min-h-[85vh] lg:min-h-[75vh] flex flex-col justify-between overflow-hidden bg-[#0A0A0B]">
       {/* Dynamic Background Elements */}
       <div className="absolute inset-0 z-0">
         <motion.div
@@ -116,17 +116,6 @@ const Hero = () => {
           {/* Decorative Glow */}
           <div className="absolute inset-0 bg-radial-gradient from-[#CAA959]/5 via-transparent to-transparent blur-3xl opacity-50" />
         </motion.div>
-      </div>
-
-      {/* Section Title below Hero - Integrated into same dark flow */}
-      <div className="relative z-10 py-12 lg:py-16 text-center bg-gradient-to-t from-[#0A0A0B] to-transparent">
-        <h2 className="text-2xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
-          Descubrí tu potencial
-        </h2>
-        <div className="w-16 lg:w-20 h-1 bg-[#CAA959] mx-auto mt-4 mb-4" />
-        <button className="text-[10px] lg:text-sm font-black uppercase tracking-widest text-zinc-500 hover:text-[#CAA959] transition-all">
-          Ver todas
-        </button>
       </div>
 
       {/* Side Label */}

@@ -10,32 +10,14 @@ const categories = [
 ];
 
 const CategoryScroll = () => {
-  // Triplicamos para asegurar que haya suficiente contenido para el scroll infinito
-  const displayCategories = [...categories, ...categories, ...categories, ...categories];
+  // Solo mostramos las 5 categorías originales
+  const displayCategories = categories;
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);
   const [isDragging, setIsDragging] = useState(false);
   const [startX, setStartX] = useState(0);
   const [scrollLeft, setScrollLeft] = useState(0);
-
-  // Scroll automático
-  useEffect(() => {
-    let animationId: number;
-    const scroll = () => {
-      if (scrollRef.current && !isHovered && !isDragging) {
-        scrollRef.current.scrollLeft += 1; // Velocidad de scroll
-
-        // Si llegamos a un cuarto del total (1 set completo), volvemos a 0 para un loop infinito invisible
-        if (scrollRef.current.scrollLeft >= scrollRef.current.scrollWidth / 4) {
-          scrollRef.current.scrollLeft -= scrollRef.current.scrollWidth / 4;
-        }
-      }
-      animationId = requestAnimationFrame(scroll);
-    };
-    animationId = requestAnimationFrame(scroll);
-    return () => cancelAnimationFrame(animationId);
-  }, [isHovered, isDragging]);
 
   // Manejo de arrastre con el mouse
   const onMouseDown = (e: React.MouseEvent) => {
@@ -62,11 +44,23 @@ const CategoryScroll = () => {
   };
 
   return (
-    <section className="pt-6 pb-12 overflow-hidden bg-[#F8F5F0]">
-      <div className="w-full relative">
+    <section id="categorias" className="overflow-hidden bg-white scroll-mt-[160px]">
+      {/* Integrated Title Block */}
+      <div className="relative z-10 pt-16 pb-8 text-center">
+        <h2 className="text-2xl md:text-5xl font-black text-[#202A36] uppercase italic tracking-tighter">
+          Descubrí tu potencial
+        </h2>
+        <div className="w-16 lg:w-20 h-1 bg-[#CAA959] mx-auto mt-4 mb-4" />
+        <button className="text-[10px] lg:text-sm font-black uppercase tracking-widest text-zinc-500 hover:text-[#CAA959] transition-all">
+          Ver todas
+        </button>
+      </div>
+
+      {/* Categories slider */}
+      <div className="w-full relative bg-white pt-0 pb-12">
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto pl-6 py-8 cursor-grab active:cursor-grabbing [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] select-none"
+          className="flex gap-6 overflow-x-auto px-6 pt-6 pb-8 cursor-grab active:cursor-grabbing [&::-webkit-scrollbar]:hidden [-ms-overflow-style:none] [scrollbar-width:none] select-none"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={onMouseLeave}
           onMouseDown={onMouseDown}
@@ -81,15 +75,21 @@ const CategoryScroll = () => {
             >
               <img src={cat.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none" alt={cat.name} />
 
-              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/40 to-transparent pointer-events-none" />
+              {/* Top gradient for default legibility */}
+              <div className="absolute inset-x-0 top-0 h-32 bg-gradient-to-b from-black/40 to-transparent pointer-events-none z-10" />
 
-              <div className="absolute top-6 left-0 right-0 text-center pointer-events-none">
-                <h4 className="font-bold text-white tracking-tight drop-shadow-md text-[28px]">
+              {/* Hover Overlay for enhanced text pop */}
+              <div className="absolute inset-0 bg-black/0 group-hover:bg-black/50 transition-colors duration-500 pointer-events-none z-20" />
+
+              <div className="absolute top-6 left-0 right-0 text-center pointer-events-none z-30">
+                <h4 className="font-bold text-white group-hover:text-[#CAA959] transition-colors duration-300 tracking-tight drop-shadow-lg text-[28px]">
                   {cat.name}
                 </h4>
               </div>
             </motion.div>
           ))}
+          {/* Espaciador invisible para garantizar el margen derecho al scrollear */}
+          <div className="shrink-0 w-[1px]"></div>
         </div>
       </div>
     </section>

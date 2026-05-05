@@ -17,7 +17,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
     countInStock: initialData?.countInStock || '',
     description: initialData?.description || '',
     image: initialData?.images?.[0] || '',
-    category: initialData?.category?._id || '' // Assuming we have category IDs
+    category: initialData?.category?._id || '', // Assuming we have category IDs
+    displaySection: initialData?.displaySection || 'Producto'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -40,7 +41,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
       description: formData.description || 'Nueva pieza de la colección.',
       images: [formData.image], // El modelo espera un array
       brand: 'Genérica',
-      category: formData.category || 'General'
+      category: formData.category || 'General',
+      displaySection: formData.displaySection
     };
 
     if (initialData) {
@@ -132,6 +134,18 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 className="input-admin w-full text-xs"
                 placeholder="Pega la URL aquí..."
               />
+            </div>
+
+            <div>
+              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Sección de Exhibición</label>
+              <select
+                value={formData.displaySection}
+                onChange={(e) => setFormData({...formData, displaySection: e.target.value})}
+                className="input-admin w-full"
+              >
+                <option value="Producto">Producto</option>
+                <option value="Combo">Combo</option>
+              </select>
             </div>
           </div>
 

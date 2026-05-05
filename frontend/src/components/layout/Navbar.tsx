@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ShoppingBag, Search, User, Menu, ChevronDown, ChevronUp, Home, Package, MessageSquare, X, ChevronRight } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, ChevronDown, ChevronUp, Home, Package, MessageSquare, X, ChevronRight, Gift } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '../../store/useCartStore';
 import { useUIStore } from '../../store/useUIStore';
@@ -72,7 +72,12 @@ const Navbar = () => {
 
                       <nav className="flex flex-col gap-2 relative z-10">
                         <Link 
-                          onClick={() => setIsMenuOpen(false)} 
+                          onClick={(e) => {
+                            setIsMenuOpen(false);
+                            if (window.location.pathname === '/') {
+                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                            }
+                          }}
                           to="/" 
                           className="flex items-center justify-between p-4 rounded-2xl group transition-all"
                         >
@@ -126,6 +131,18 @@ const Navbar = () => {
                             )}
                           </AnimatePresence>
                         </div>
+
+                        <a 
+                          onClick={() => setIsMenuOpen(false)} 
+                          href="/#combos" 
+                          className="flex items-center justify-between p-4 rounded-2xl group transition-all"
+                        >
+                          <div className="flex items-center gap-4">
+                            <Gift size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
+                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Combos</span>
+                          </div>
+                          <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                        </a>
 
                         <a 
                           onClick={() => setIsMenuOpen(false)} 

@@ -39,6 +39,11 @@ const productSchema = new mongoose.Schema(
       default: 0,
     },
     // ... (campos de rating y reviews se mantienen igual)
+    displaySection: {
+      type: String,
+      enum: ['Producto', 'Combo'],
+      default: 'Producto',
+    },
   },
   { timestamps: true }
 );

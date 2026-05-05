@@ -9,9 +9,10 @@ interface ProductCardProps {
   price: number;
   category: string;
   image: string;
+  darkTheme?: boolean;
 }
 
-const ProductCard = ({ id, name, price, category, image }: ProductCardProps) => {
+const ProductCard = ({ id, name, price, category, image, darkTheme }: ProductCardProps) => {
   const addItem = useCartStore((state) => state.addItem);
 
   return (
@@ -58,7 +59,7 @@ const ProductCard = ({ id, name, price, category, image }: ProductCardProps) => 
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
           {category}
         </p>
-        <h3 className="text-xl font-black text-[#202A36] italic uppercase leading-tight mb-2 group-hover:text-[#CAA959] transition-colors">
+        <h3 className={`text-xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#CAA959] transition-colors ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
           {name}
         </h3>
         <div className="flex items-center justify-center md:justify-start gap-2">
