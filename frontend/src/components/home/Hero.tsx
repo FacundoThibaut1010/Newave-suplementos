@@ -71,8 +71,8 @@ const Hero = () => {
       </section>
 
       {/* Section Title below Hero */}
-      <div className="pt-16 pb-0 text-center">
-        <h2 className="text-3xl md:text-5xl font-black text-[#202A36] uppercase italic tracking-tighter">
+      <div id="categorias" className="pt-16 pb-0 text-center scroll-mt-[140px]">
+        <h2 className="text-3xl md:text-4xl lg:text-5xl font-black text-[#202A36] uppercase italic tracking-tighter">
           Descubrí tu potencial
         </h2>
         <div className="w-20 h-1 bg-[#CAA959] mx-auto mt-4 mb-4" />

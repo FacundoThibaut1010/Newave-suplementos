@@ -2,10 +2,10 @@ import React, { useRef, useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 const categories = [
-  { name: 'Proteínas', image: '/Proteinas.jpg' },
-  { name: 'Creatinas', image: '/Creatina.jpg' },
-  { name: 'Pre-Entreno', image: '/preentreno2.jpg' },
-  { name: 'Aminoácidos', image: '/Aminoacidos.jpg' },
+  { name: 'Proteínas', image: '/proteina.jpg' },
+  { name: 'Pre-Entreno', image: '/pre entreno.jpg.png' },
+  { name: 'Creatinas', image: '/creatina (1).jpg' },
+  { name: 'Minerales', image: '/minerales.png' },
   { name: 'Colágenos', image: '/colageno.jpg' },
 ];
 
