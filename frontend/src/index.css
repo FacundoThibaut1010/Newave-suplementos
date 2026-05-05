@@ -5,10 +5,11 @@
 @tailwind utilities;
 
 :root {
-  --primary-navy: #202A36;
+  --primary-navy: #0A0A0B;
   --accent-gold: #CAA959;
-  --bakery-brown: #3D1E14;
-  --bakery-cream: #F8F5F0;
+  --text-primary: #FFFFFF;
+  --text-secondary: #A1A1AA;
+  --bg-dark: #0A0A0B;
 }
 
 html,
@@ -28,8 +29,8 @@ body {
 
 body {
   font-family: 'Outfit', sans-serif;
-  color: var(--bakery-brown);
-  background-color: var(--bakery-cream);
+  color: var(--text-primary);
+  background-color: var(--bg-dark);
   -webkit-font-smoothing: antialiased;
 }
 
