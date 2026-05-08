@@ -1,12 +1,13 @@
-import React, { useRef, useEffect, useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
+import { Link } from 'react-router-dom';
 
 const categories = [
-  { name: 'Proteínas', image: '/proteina.jpg' },
-  { name: 'Pre-Entreno', image: '/pre entreno.jpg.png' },
-  { name: 'Creatinas', image: '/creatina (1).jpg' },
-  { name: 'Minerales', image: '/minerales.png' },
-  { name: 'Colágenos', image: '/colageno.jpg' },
+  { name: 'Proteínas', slug: 'Proteína', image: '/proteina.jpg' },
+  { name: 'Pre-Entreno', slug: 'Pre-Entreno', image: '/pre entreno.jpg.png' },
+  { name: 'Creatinas', slug: 'Creatina', image: '/creatina (1).jpg' },
+  { name: 'Minerales', slug: 'Minerales', image: '/minerales.png' },
+  { name: 'Colágenos', slug: 'Colágeno', image: '/colageno.jpg' },
 ];
 
 const CategoryScroll = () => {
@@ -51,9 +52,9 @@ const CategoryScroll = () => {
           Descubrí tu potencial
         </h2>
         <div className="w-16 lg:w-20 h-1 bg-[#CAA959] mx-auto mt-4 mb-4" />
-        <button className="text-[10px] lg:text-sm font-black uppercase tracking-widest text-zinc-500 hover:text-[#CAA959] transition-all">
-          Ver todas
-        </button>
+        <Link to="/productos" className="text-[10px] lg:text-sm font-black uppercase tracking-widest text-zinc-500 hover:text-[#CAA959] transition-all">
+          Ver todos
+        </Link>
       </div>
 
       {/* Categories slider */}
@@ -86,6 +87,14 @@ const CategoryScroll = () => {
                   {cat.name}
                 </h4>
               </div>
+
+              <Link
+                to={`/productos/${cat.slug}`}
+                onClick={(e) => {
+                  if (isDragging) e.preventDefault();
+                }}
+                className="absolute inset-0 z-40 cursor-pointer"
+              />
             </motion.div>
           ))}
           {/* Espaciador invisible para garantizar el margen derecho al scrollear */}

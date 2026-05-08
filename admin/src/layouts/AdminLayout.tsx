@@ -23,7 +23,6 @@ const AdminLayout = () => {
 
   return (
     <div className="flex min-h-screen bg-[#F8F9FA]">
-      <Toaster position="top-right" richColors closeButton />
       
       {/* Sidebar */}
       <aside className="w-72 bg-[#202A36] text-white flex flex-col p-8 fixed h-full z-10 shadow-2xl">
@@ -62,7 +61,13 @@ const AdminLayout = () => {
             <ExternalLink size={20} />
             <span className="text-xs font-black uppercase tracking-widest">Ver Tienda</span>
           </a>
-          <button className="w-full flex items-center gap-4 px-5 py-4 text-gray-400 hover:text-red-400 transition-colors">
+          <button 
+            onClick={() => {
+              localStorage.removeItem('isAdminAuth');
+              window.location.href = '/#/login';
+            }}
+            className="w-full flex items-center gap-4 px-5 py-4 text-gray-400 hover:text-red-400 transition-colors"
+          >
             <LogOut size={20} />
             <span className="text-xs font-black uppercase tracking-widest">Salir</span>
           </button>

@@ -101,7 +101,7 @@ const InventoryTable = () => {
                         {p.category?.name || 'General'}
                       </span>
                     </td>
-                    <td className="px-8 py-6 font-bold text-sm text-black">${p.price}</td>
+                    <td className="px-8 py-6 font-bold text-sm text-black">${Number(p.price).toLocaleString('es-AR')}</td>
                     <td className="px-8 py-6">
                       {p.countInStock <= 5 ? (
                         <div className="flex items-center gap-2 text-red-500">

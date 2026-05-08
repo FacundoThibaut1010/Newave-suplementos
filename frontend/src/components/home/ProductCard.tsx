@@ -63,8 +63,8 @@ const ProductCard = ({ id, name, price, category, image, darkTheme }: ProductCar
           {name}
         </h3>
         <div className="flex items-center justify-center md:justify-start gap-2">
-          <span className="font-black text-xl text-[#CAA959] italic">${price}</span>
-          <span className="text-xs text-gray-400 line-through font-bold">${Math.round(price * 1.2)}</span>
+          <span className="font-black text-xl text-[#CAA959] italic">${Number(price).toLocaleString('es-AR')}</span>
+          <span className="text-xs text-gray-400 line-through font-bold">${Math.round(price * 1.2).toLocaleString('es-AR')}</span>
         </div>
       </div>
     </motion.div>

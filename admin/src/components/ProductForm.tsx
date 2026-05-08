@@ -13,11 +13,11 @@ interface ProductFormProps {
 const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
-    price: initialData?.price || '',
+    price: initialData?.price ? Number(initialData.price).toLocaleString('es-AR') : '',
     countInStock: initialData?.countInStock || '',
     description: initialData?.description || '',
     image: initialData?.images?.[0] || '',
-    category: initialData?.category?._id || '', // Assuming we have category IDs
+    category: initialData?.category || '',
     displaySection: initialData?.displaySection || 'Producto'
   });
 
@@ -31,17 +31,22 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
     return;
   }
 
+  if (formData.displaySection === 'Producto' && !formData.category) {
+    toast.error('Por favor selecciona una categoría para este producto 🏷️');
+    return;
+  }
+
   setIsSubmitting(true);
   try {
     // Construimos el payload exacto para el Backend
     const payload = {
       name: formData.name,
-      price: Number(formData.price),
+      price: Number(String(formData.price).replace(/\./g, '')),
       countInStock: Number(formData.countInStock) || 0,
       description: formData.description || 'Nueva pieza de la colección.',
       images: [formData.image], // El modelo espera un array
       brand: 'Genérica',
-      category: formData.category || 'General',
+      category: formData.displaySection === 'Combo' ? 'General' : formData.category,
       displaySection: formData.displaySection
     };
 
@@ -108,9 +113,13 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio ($)</label>
                 <input 
-                  type="number" 
+                  type="text" 
                   value={formData.price}
-                  onChange={(e) => setFormData({...formData, price: e.target.value})}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/\D/g, '');
+                    const formatted = rawValue ? Number(rawValue).toLocaleString('es-AR') : '';
+                    setFormData({...formData, price: formatted});
+                  }}
                   className="input-admin w-full"
                 />
               </div>
@@ -136,16 +145,40 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               />
             </div>
 
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Sección de Exhibición</label>
-              <select
-                value={formData.displaySection}
-                onChange={(e) => setFormData({...formData, displaySection: e.target.value})}
-                className="input-admin w-full"
-              >
-                <option value="Producto">Producto</option>
-                <option value="Combo">Combo</option>
-              </select>
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Categoría</label>
+                <select
+                  value={formData.category}
+                  onChange={(e) => setFormData({...formData, category: e.target.value})}
+                  className="input-admin w-full"
+                  disabled={formData.displaySection !== 'Producto'}
+                >
+                  <option value="" disabled>Selecciona...</option>
+                  <option value="Proteína">Proteína</option>
+                  <option value="Creatina">Creatina</option>
+                  <option value="Minerales">Minerales</option>
+                  <option value="Colágeno">Colágeno</option>
+                  <option value="Pre-Entreno">Pre-Entreno</option>
+                </select>
+                {formData.displaySection !== 'Producto' && (
+                  <p className="text-[9px] text-gray-400 mt-1 ml-1">No aplica a combos.</p>
+                )}
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Sección de Exhibición</label>
+                <select
+                  value={formData.displaySection}
+                  onChange={(e) => {
+                    const val = e.target.value;
+                    setFormData({...formData, displaySection: val, category: val === 'Combo' ? 'General' : formData.category});
+                  }}
+                  className="input-admin w-full"
+                >
+                  <option value="Producto">Producto</option>
+                  <option value="Combo">Combo</option>
+                </select>
+              </div>
             </div>
           </div>
 

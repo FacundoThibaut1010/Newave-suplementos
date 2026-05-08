@@ -77,7 +77,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               <div className="p-8 border-t border-gray-50 bg-[#F9F9F9]/50">
                 <div className="flex justify-between items-end mb-8">
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Subtotal</span>
-                  <span className="text-2xl font-black text-black">${totalPrice().toFixed(2)}</span>
+                  <span className="text-2xl font-black text-black">${totalPrice().toLocaleString('es-AR')}</span>
                 </div>
                 
                 <Link 

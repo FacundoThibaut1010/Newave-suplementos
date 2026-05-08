@@ -20,6 +20,7 @@ body {
   max-width: 100%;
   overflow-x: hidden;
   position: relative;
+  scroll-behavior: smooth;
 }
 
 #root {
@@ -42,7 +43,7 @@ body {
   .btn-accent {
     @apply px-10 py-4 bg-[#CAA959] text-white rounded-full hover:bg-[#CAA959]/90 transition-all duration-300 font-bold text-sm tracking-widest uppercase active:scale-95 disabled:opacity-30;
   }
-  
+
   .card-premium {
     @apply bg-white rounded-2xl overflow-hidden shadow-sm border border-gray-100 hover:shadow-md transition-all duration-500;
   }
@@ -57,25 +58,41 @@ body {
 }
 
 /* Custom Spacing Scale - 4px based */
-.gap-4px { gap: 4px; }
-.gap-8px { gap: 8px; }
-.gap-16px { gap: 16px; }
+.gap-4px {
+  gap: 4px;
+}
+
+.gap-8px {
+  gap: 8px;
+}
+
+.gap-16px {
+  gap: 16px;
+}
 
 /* Global Scrollbar Removal */
 html,
 body {
-  scrollbar-width: none; /* Firefox */
-  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none;
+  /* Firefox */
+  -ms-overflow-style: none;
+  /* IE and Edge */
 }
 
 html::-webkit-scrollbar,
 body::-webkit-scrollbar {
-  display: none; /* Chrome, Safari, Opera */
+  display: none;
+  /* Chrome, Safari, Opera */
 }
 
 @keyframes marquee {
-  0% { transform: translateX(0); }
-  100% { transform: translateX(calc(-50% - 12px)); }
+  0% {
+    transform: translateX(0);
+  }
+
+  100% {
+    transform: translateX(calc(-50% - 12px));
+  }
 }
 
 .animate-marquee {

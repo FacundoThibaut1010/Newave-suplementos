@@ -1,5 +1,9 @@
 import mongoose from 'mongoose';
 import colors from 'colors';
+import dns from 'dns';
+
+// Solución para problemas de DNS locales (ECONNREFUSED en _mongodb._tcp)
+dns.setServers(['8.8.8.8', '8.8.4.4']);
 
 const connectDB = async () => {
   try {

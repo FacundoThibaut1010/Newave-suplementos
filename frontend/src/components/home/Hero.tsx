@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 import { ArrowRight, Zap } from 'lucide-react';
+import { Link } from 'react-router-dom';
 import apiClient from '../../api/apiClient';
 import heroProducts from '../../assets/productos-hero.svg';
 
@@ -72,16 +73,12 @@ const Hero = () => {
           </p>
 
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-4 lg:gap-6">
-            <button className="w-full sm:w-auto group relative bg-[#CAA959] text-black px-10 lg:px-12 py-4 lg:py-5 rounded-sm text-base lg:text-lg font-black uppercase italic tracking-tighter hover:bg-white transition-all duration-300 shadow-[0_0_40px_rgba(202,169,89,0.4)]">
+            <Link to="/productos" className="w-full sm:w-auto group relative bg-[#CAA959] text-black px-10 lg:px-12 py-4 lg:py-5 rounded-sm text-base lg:text-lg font-black uppercase italic tracking-tighter hover:bg-white transition-all duration-300 shadow-[0_0_40px_rgba(202,169,89,0.4)]">
               <span className="flex items-center justify-center gap-3">
-                {config.buttonText || 'Comprar ahora'}
+                Ver Catálogo
                 <ArrowRight size={18} className="group-hover:translate-x-2 transition-transform" />
               </span>
-            </button>
-
-            <button className="w-full sm:w-auto group px-10 lg:px-12 py-4 lg:py-5 border-2 border-white text-white rounded-sm text-base lg:text-lg font-black uppercase italic tracking-tighter hover:bg-white hover:text-black transition-all duration-300">
-              Ver Catálogo
-            </button>
+            </Link>
           </div>
 
           <div className="mt-10 lg:mt-16 flex items-center justify-center lg:justify-start gap-8 border-t border-white/10 pt-8">

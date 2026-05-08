@@ -1,4 +1,3 @@
-import React from 'react';
 import Hero from '../components/home/Hero';
 import ProductGrid from '../components/home/ProductGrid';
 import CategoryScroll from '../components/home/CategoryScroll';

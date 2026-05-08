@@ -21,10 +21,10 @@ const CartItem = ({ item }: { item: CartItemType }) => {
       <div className="flex-grow">
         <div className="flex justify-between items-start mb-1">
           <h4 className="font-bold text-[#1A1A1A] text-sm tracking-tight">{item.name}</h4>
-          <span className="font-bold text-sm text-black">${(item.price * item.quantity).toFixed(0)}</span>
+          <span className="font-bold text-sm text-black">${Number(item.price * item.quantity).toLocaleString('es-AR')}</span>
         </div>
         
-        <p className="text-xs text-gray-400 mb-4">${item.price}</p>
+        <p className="text-xs text-gray-400 mb-4">${Number(item.price).toLocaleString('es-AR')}</p>
         
         <div className="flex items-center justify-between">
           <div className="flex items-center bg-[#F9F9F9] rounded-xl px-2 py-1 border border-gray-100">

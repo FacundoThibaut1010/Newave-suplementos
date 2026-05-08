@@ -1,6 +1,4 @@
-import React from 'react';
 import Navbar from './Navbar';
-import { FloatingMenu } from './FloatingMenu';
 import Footer from './Footer';
 import TopBar from './TopBar';
 import CartDrawer from '../cart/CartDrawer';

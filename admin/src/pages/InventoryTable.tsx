@@ -110,7 +110,10 @@ const InventoryTable = () => {
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
                         <img src={p.images?.[0]} className="w-12 h-12 rounded-xl object-cover border border-gray-100" />
-                        <span className="font-bold text-sm text-black">{p.name}</span>
+                        <div className="flex flex-col">
+                          <span className="font-bold text-sm text-black">{p.name}</span>
+                          <span className="text-xs font-bold text-gray-500 mt-0.5">${p.price}</span>
+                        </div>
                       </div>
                     </td>
                     <td className="px-8 py-6">
@@ -127,7 +130,7 @@ const InventoryTable = () => {
                           </div>
                         )}
                         <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">
-                          {p.displaySection}
+                          {p.displaySection === 'Producto' && p.category ? `Producto • ${p.category}` : p.displaySection}
                         </span>
                       </div>
                     </td>

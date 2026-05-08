@@ -1,4 +1,3 @@
-import React from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -6,6 +5,7 @@ import { motion } from 'framer-motion';
 import { CreditCard, Truck, User, ArrowLeft, CheckCircle2 } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
+import { useState } from 'react';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(3, { message: '¡Opa! Cuéntanos quién eres (mínimo 3 letras)' }),
@@ -22,8 +22,8 @@ type CheckoutFormData = z.infer<typeof checkoutSchema>;
 const CheckoutPage = () => {
   const { items, totalPrice, clearCart } = useCartStore();
   const navigate = useNavigate();
-  const [isSubmitting, setIsSubmitting] = React.useState(false);
-  const [isSuccess, setIsSuccess] = React.useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSuccess, setIsSuccess] = useState(false);
 
   const {
     register,
@@ -34,7 +34,7 @@ const CheckoutPage = () => {
     mode: 'onChange',
   });
 
-  const onSubmit = async (data: CheckoutFormData) => {
+  const onSubmit = async (_data: CheckoutFormData) => {
     setIsSubmitting(true);
     // Simulating API call
     setTimeout(() => {
@@ -190,7 +190,7 @@ const CheckoutPage = () => {
                   Procesando...
                 </span>
               ) : (
-                <>Pagar ${totalPrice().toFixed(2)}</>
+                <>Pagar ${totalPrice().toLocaleString('es-AR')}</>
               )}
             </button>
           </form>
@@ -213,7 +213,7 @@ const CheckoutPage = () => {
                   <p className="font-black text-[#202A36] text-sm uppercase italic">{item.name}</p>
                   <p className="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-1">Cantidad: {item.quantity}</p>
                 </div>
-                <p className="font-black text-[#202A36] text-base">${(item.price * item.quantity).toFixed(2)}</p>
+                <p className="font-black text-[#202A36] text-base">${Number(item.price * item.quantity).toLocaleString('es-AR')}</p>
               </div>
             ))}
           </div>
@@ -221,7 +221,7 @@ const CheckoutPage = () => {
           <div className="space-y-4 pt-8 border-t border-gray-200">
             <div className="flex justify-between text-gray-400 font-bold uppercase text-[10px] tracking-widest">
               <span>Subtotal</span>
-              <span className="text-[#202A36] text-sm">${totalPrice().toFixed(2)}</span>
+              <span className="text-[#202A36] text-sm">${totalPrice().toLocaleString('es-AR')}</span>
             </div>
             <div className="flex justify-between text-[#CAA959] font-black uppercase text-[10px] tracking-widest">
               <span>Envío</span>
@@ -229,7 +229,7 @@ const CheckoutPage = () => {
             </div>
             <div className="flex justify-between text-4xl font-black text-[#202A36] pt-6 italic tracking-tighter">
               <span>TOTAL</span>
-              <span>${totalPrice().toFixed(2)}</span>
+              <span>${totalPrice().toLocaleString('es-AR')}</span>
             </div>
           </div>
         </motion.div>
