@@ -19,7 +19,8 @@ const app = express();
 const allowedOrigins = [
   'http://localhost:5173', // Tu Tienda
   'http://localhost:5174', // Tu Admin Dashboard
-  process.env.FRONTEND_URL  // URL de producción (cuando lo subas a Vercel/Render)
+  process.env.FRONTEND_URL, // URL de producción de la Tienda
+  process.env.ADMIN_URL     // URL de producción del Admin
 ];
 
 app.use(cors({
