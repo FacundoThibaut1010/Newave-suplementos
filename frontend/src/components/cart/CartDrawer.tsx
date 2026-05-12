@@ -25,7 +25,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             onClick={onClose}
             className="fixed inset-0 bg-black/20 backdrop-blur-md z-[100]"
           />
-          
+
           {/* Drawer Panel */}
           <motion.div
             initial={{ x: '100%' }}
@@ -37,9 +37,9 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             <div className="p-8 border-b border-gray-50 flex justify-between items-center">
               <div className="flex items-center gap-3">
                 <ShoppingBag size={20} className="text-black" />
-                <h2 className="text-lg font-bold text-black tracking-tight uppercase">Tu Bolsa</h2>
+                <h2 className="text-lg font-bold text-black tracking-tight uppercase">Tu Carrito</h2>
               </div>
-              <button 
+              <button
                 onClick={onClose}
                 className="p-2 hover:bg-gray-100 rounded-full transition-colors"
               >
@@ -51,16 +51,16 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               {items.length === 0 ? (
                 <div className="h-full flex flex-col items-center justify-center text-center">
                   <div className="w-16 h-16 bg-[#F9F9F9] rounded-full flex items-center justify-center mb-6">
-                    <ShoppingBag size={24} className="text-gray-300" />
+                    <ShoppingBag size={24} className="text-black" />
                   </div>
-                  <h3 className="text-lg font-bold text-black mb-2">Tu selección está esperando ser completada</h3>
-                  <p className="text-gray-400 text-sm mb-8 leading-relaxed">¿Buscamos algo especial para tu espacio?</p>
-                  <button 
-                    onClick={onClose}
+                  <h3 className="text-lg font-bold text-black mb-2">Tu carrito está vacío</h3>
+
+                  <Link to="/productos"
                     className="btn-primary"
+                    onClick={onClose}
                   >
-                    Ver Colecciones
-                  </button>
+                    Ver todos los Productos
+                  </Link>
                 </div>
               ) : (
                 <div className="space-y-2">
@@ -79,8 +79,8 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                   <span className="text-xs font-bold text-gray-400 uppercase tracking-widest">Subtotal</span>
                   <span className="text-2xl font-black text-black">${totalPrice().toLocaleString('es-AR')}</span>
                 </div>
-                
-                <Link 
+
+                <Link
                   to="/checkout"
                   onClick={onClose}
                   className="w-full btn-primary py-5 flex items-center justify-center gap-3 group shadow-xl shadow-black/10"
@@ -88,7 +88,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                   Continuar al pago
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
-                
+
                 <p className="text-center text-[11px] font-medium text-gray-400 mt-6 uppercase tracking-wider">
                   Envío premium gratuito incluido
                 </p>

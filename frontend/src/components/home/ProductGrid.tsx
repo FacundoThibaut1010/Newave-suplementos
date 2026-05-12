@@ -2,6 +2,15 @@ import React, { useEffect, useState, useMemo } from 'react';
 import { motion } from 'framer-motion';
 import ProductCard from './ProductCard';
 import apiClient from '../../api/apiClient';
+import CustomSelect from '../ui/CustomSelect';
+
+const sortOptions = [
+  { value: 'featured', label: 'Filtrar' },
+  { value: 'price_asc', label: 'Menor a mayor ($)' },
+  { value: 'price_desc', label: 'Mayor a menor ($)' },
+  { value: 'name_asc', label: 'A - Z' },
+  { value: 'name_desc', label: 'Z - A' },
+];
 
 const ProductGrid = () => {
   const [products, setProducts] = useState<any[]>([]);
@@ -86,19 +95,13 @@ const ProductGrid = () => {
             <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">Combos</h3>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Nuestros combos especiales</p>
           </div>
-          <div className="flex gap-4 items-center">
-            <select
+          <div className="flex gap-4 items-center relative z-40">
+            <CustomSelect
               value={sortBy}
-              onChange={(e) => setSortBy(e.target.value)}
-              className="bg-transparent border border-white/20 text-white text-[10px] font-bold uppercase tracking-widest px-4 py-2 rounded-full outline-none focus:border-[#CAA959] transition-colors appearance-none pr-8 cursor-pointer relative"
-              style={{ backgroundImage: 'url("data:image/svg+xml;charset=UTF-8,%3csvg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 24 24\' fill=\'none\' stroke=\'%23ffffff\' stroke-width=\'2\' stroke-linecap=\'round\' stroke-linejoin=\'round\'%3e%3cpolyline points=\'6 9 12 15 18 9\'/%3e%3c/svg%3e")', backgroundRepeat: 'no-repeat', backgroundPosition: 'right 0.5rem center', backgroundSize: '1em' }}
-            >
-              <option className="text-black" value="featured">Filtrar</option>
-              <option className="text-black" value="price_asc">Menor a mayor ($)</option>
-              <option className="text-black" value="price_desc">Mayor a menor ($)</option>
-              <option className="text-black" value="name_asc">A - Z</option>
-              <option className="text-black" value="name_desc">Z - A</option>
-            </select>
+              onChange={setSortBy}
+              options={sortOptions}
+              darkTheme
+            />
           </div>
         </div>
 

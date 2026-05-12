@@ -3,6 +3,20 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { X, Save, Image as ImageIcon } from 'lucide-react';
 import { toast } from 'sonner';
 import apiClient from '../api/apiClient';
+import AdminSelect from './AdminSelect';
+
+const categoryOptions = [
+  { value: 'Proteína', label: 'Proteína' },
+  { value: 'Creatina', label: 'Creatina' },
+  { value: 'Minerales', label: 'Minerales' },
+  { value: 'Colágeno', label: 'Colágeno' },
+  { value: 'Pre-Entreno', label: 'Pre-Entreno' }
+];
+
+const displaySectionOptions = [
+  { value: 'Producto', label: 'Producto' },
+  { value: 'Combo', label: 'Combo' }
+];
 
 interface ProductFormProps {
   onClose: () => void;
@@ -24,49 +38,49 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const handleSubmit = async (e: React.FormEvent) => {
-  e.preventDefault();
-  
-  if (!formData.name || !formData.price || !formData.image) {
-    toast.error('Por favor completa los campos principales ✨');
-    return;
-  }
+    e.preventDefault();
 
-  if (formData.displaySection === 'Producto' && !formData.category) {
-    toast.error('Por favor selecciona una categoría para este producto 🏷️');
-    return;
-  }
-
-  setIsSubmitting(true);
-  try {
-    // Construimos el payload exacto para el Backend
-    const payload = {
-      name: formData.name,
-      price: Number(String(formData.price).replace(/\./g, '')),
-      countInStock: Number(formData.countInStock) || 0,
-      description: formData.description || 'Nueva pieza de la colección.',
-      images: [formData.image], // El modelo espera un array
-      brand: 'Genérica',
-      category: formData.displaySection === 'Combo' ? 'General' : formData.category,
-      displaySection: formData.displaySection
-    };
-
-    if (initialData) {
-      await apiClient.put(`/admin/products/${initialData._id}`, payload);
-      toast.success('¡Excelente! Cambios guardados.');
-    } else {
-      await apiClient.post('/admin/products', payload);
-      toast.success('¡Hecho! El producto ya está en línea.');
+    if (!formData.name || !formData.price || !formData.image) {
+      toast.error('Por favor completa los campos principales ✨');
+      return;
     }
-    
-    onSuccess();
-    onClose();
-  } catch (err: any) {
-    const errorMsg = err.response?.data?.message || 'Error al conectar 🔄';
-    toast.error(errorMsg);
-  } finally {
-    setIsSubmitting(false);
-  }
-};
+
+    if (formData.displaySection === 'Producto' && !formData.category) {
+      toast.error('Por favor selecciona una categoría para este producto 🏷️');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      // Construimos el payload exacto para el Backend
+      const payload = {
+        name: formData.name,
+        price: Number(String(formData.price).replace(/\./g, '')),
+        countInStock: Number(formData.countInStock) || 0,
+        description: formData.description || 'Nueva pieza de la colección.',
+        images: [formData.image], // El modelo espera un array
+        brand: 'Genérica',
+        category: formData.displaySection === 'Combo' ? 'General' : formData.category,
+        displaySection: formData.displaySection
+      };
+
+      if (initialData) {
+        await apiClient.put(`/admin/products/${initialData._id}`, payload);
+        toast.success('¡Excelente! Cambios guardados.');
+      } else {
+        await apiClient.post('/admin/products', payload);
+        toast.success('¡Hecho! El producto ya está en línea.');
+      }
+
+      onSuccess();
+      onClose();
+    } catch (err: any) {
+      const errorMsg = err.response?.data?.message || 'Error al conectar 🔄';
+      toast.error(errorMsg);
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
 
   return (
     <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
@@ -77,12 +91,12 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         onClick={onClose}
         className="absolute inset-0 bg-black/20 backdrop-blur-md"
       />
-      
+
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-10 overflow-hidden"
+        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-10"
       >
         <div className="flex justify-between items-center mb-10">
           <div>
@@ -100,35 +114,35 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
           <div className="space-y-6">
             <div>
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Nombre</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={formData.name}
-                onChange={(e) => setFormData({...formData, name: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, name: e.target.value })}
                 className="input-admin w-full"
                 placeholder="Ej: Silla Gravity"
               />
             </div>
-            
+
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio ($)</label>
-                <input 
-                  type="text" 
+                <input
+                  type="text"
                   value={formData.price}
                   onChange={(e) => {
                     const rawValue = e.target.value.replace(/\D/g, '');
                     const formatted = rawValue ? Number(rawValue).toLocaleString('es-AR') : '';
-                    setFormData({...formData, price: formatted});
+                    setFormData({ ...formData, price: formatted });
                   }}
                   className="input-admin w-full"
                 />
               </div>
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Stock</label>
-                <input 
-                  type="number" 
+                <input
+                  type="number"
                   value={formData.countInStock}
-                  onChange={(e) => setFormData({...formData, countInStock: e.target.value})}
+                  onChange={(e) => setFormData({ ...formData, countInStock: e.target.value })}
                   className="input-admin w-full"
                 />
               </div>
@@ -136,48 +150,37 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
             <div>
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Imagen (URL)</label>
-              <input 
-                type="text" 
+              <input
+                type="text"
                 value={formData.image}
-                onChange={(e) => setFormData({...formData, image: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
                 className="input-admin w-full text-xs"
                 placeholder="Pega la URL aquí..."
               />
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
+              <div className="relative z-[60]">
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Categoría</label>
-                <select
+                <AdminSelect
                   value={formData.category}
-                  onChange={(e) => setFormData({...formData, category: e.target.value})}
-                  className="input-admin w-full"
+                  onChange={(val) => setFormData({ ...formData, category: val })}
+                  options={categoryOptions}
                   disabled={formData.displaySection !== 'Producto'}
-                >
-                  <option value="" disabled>Selecciona...</option>
-                  <option value="Proteína">Proteína</option>
-                  <option value="Creatina">Creatina</option>
-                  <option value="Minerales">Minerales</option>
-                  <option value="Colágeno">Colágeno</option>
-                  <option value="Pre-Entreno">Pre-Entreno</option>
-                </select>
+                />
                 {formData.displaySection !== 'Producto' && (
                   <p className="text-[9px] text-gray-400 mt-1 ml-1">No aplica a combos.</p>
                 )}
               </div>
-              <div>
+              <div className="relative z-[60]">
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Sección de Exhibición</label>
-                <select
+                <AdminSelect
                   value={formData.displaySection}
-                  onChange={(e) => {
-                    const val = e.target.value;
-                    setFormData({...formData, displaySection: val, category: val === 'Combo' ? 'General' : formData.category});
+                  onChange={(val) => {
+                    setFormData({ ...formData, displaySection: val, category: val === 'Combo' ? 'General' : formData.category });
                   }}
-                  className="input-admin w-full"
-                >
-                  <option value="Producto">Producto</option>
-                  <option value="Combo">Combo</option>
-                </select>
+                  options={displaySectionOptions}
+                />
               </div>
             </div>
           </div>
@@ -185,14 +188,14 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
           <div className="space-y-6">
             <div>
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Descripción</label>
-              <textarea 
+              <textarea
                 value={formData.description}
-                onChange={(e) => setFormData({...formData, description: e.target.value})}
+                onChange={(e) => setFormData({ ...formData, description: e.target.value })}
                 className="input-admin w-full h-[154px] resize-none py-4 leading-relaxed"
                 placeholder="Describe los materiales, dimensiones y el alma de esta pieza..."
               />
             </div>
-            
+
             <div className="pt-2">
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Vista Previa</label>
               <div className="aspect-[16/9] bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 flex items-center justify-center relative">
@@ -209,7 +212,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
           </div>
 
           <div className="col-span-2 pt-4">
-            <button 
+            <button
               type="submit"
               disabled={isSubmitting}
               className="w-full btn-admin-primary justify-center shadow-black/10 py-5 text-lg"
