@@ -3,6 +3,7 @@ import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-route
 import AdminLayout from './layouts/AdminLayout';
 import InventoryTable from './pages/InventoryTable';
 import StoreSettings from './pages/StoreSettings';
+import OrdersTable from './pages/OrdersTable';
 import Login from './pages/Login';
 import { Toaster } from 'sonner';
 
@@ -33,7 +34,7 @@ function App() {
         <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
           <Route index element={<Placeholder title="Resumen" />} />
           <Route path="inventory" element={<InventoryTable />} />
-          <Route path="analytics" element={<Placeholder title="Ventas" />} />
+          <Route path="analytics" element={<OrdersTable />} />
           <Route path="settings" element={<StoreSettings />} />
         </Route>
         

@@ -4,6 +4,7 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import CheckoutPage from './pages/CheckoutPage';
 import ProductsPage from './pages/ProductsPage';
+import SuccessPage from './pages/SuccessPage';
 
 function App() {
   return (
@@ -14,6 +15,7 @@ function App() {
           <Route path="/productos" element={<ProductsPage />} />
           <Route path="/productos/:category" element={<ProductsPage />} />
           <Route path="/checkout" element={<CheckoutPage />} />
+          <Route path="/checkout/success" element={<SuccessPage />} />
         </Routes>
       </Layout>
     </Router>

@@ -5,7 +5,12 @@ const orderSchema = new mongoose.Schema(
     user: {
       type: mongoose.Schema.ObjectId,
       ref: 'User',
-      required: true,
+      required: false, // Ahora es opcional para permitir compras de invitados
+    },
+    guestInfo: {
+      fullName: { type: String },
+      email: { type: String },
+      phone: { type: String }
     },
     orderItems: [
       {
@@ -24,7 +29,8 @@ const orderSchema = new mongoose.Schema(
       address: { type: String, required: true },
       city: { type: String, required: true },
       postalCode: { type: String, required: true },
-      country: { type: String, required: true },
+      state: { type: String },
+      addressLine2: { type: String },
     },
     paymentMethod: {
       type: String,
@@ -35,6 +41,8 @@ const orderSchema = new mongoose.Schema(
       status: { type: String },
       update_time: { type: String },
       email_address: { type: String },
+      mercadoPagoPaymentId: { type: String }, // ID real de Mercado Pago una vez aprobado
+      mercadoPagoPreferenceId: { type: String } // ID de la preferencia generada
     },
     taxPrice: {
       type: Number,

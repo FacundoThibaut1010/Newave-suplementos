@@ -6,6 +6,7 @@ import { CreditCard, Truck, User, ArrowLeft, CheckCircle2, ShieldCheck, Phone, W
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useState } from 'react';
+import apiClient from '../api/apiClient';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(3, { message: 'Nombre requerido' }),
@@ -107,14 +108,56 @@ const CheckoutPage = () => {
     mode: 'onChange',
   });
 
-  const onSubmit = async (_data: CheckoutFormData) => {
+  const onSubmit = async (data: CheckoutFormData) => {
     setIsSubmitting(true);
-    setTimeout(() => {
+
+    try {
+      if (paymentMethod === 'mercado_pago') {
+        const payload = {
+          orderItems: items.map(item => ({
+            product: item.id,
+            name: item.name,
+            qty: item.quantity,
+            price: item.price,
+            image: item.image
+          })),
+          guestInfo: {
+            fullName: data.fullName,
+            email: data.email,
+            phone: data.phone
+          },
+          shippingAddress: {
+            address: data.address,
+            city: data.city,
+            postalCode: data.postalCode,
+            state: data.state,
+            addressLine2: data.addressLine2
+          },
+          totalPrice: totalPrice(),
+          paymentMethod: 'Mercado Pago'
+        };
+
+        const res = await apiClient.post('/orders/create_preference', payload);
+
+        if (res.data.init_point) {
+          window.location.href = res.data.init_point;
+        } else {
+          console.error("No init_point received", res.data);
+          setIsSubmitting(false);
+        }
+      } else {
+        // Simulating card payment
+        setTimeout(() => {
+          setIsSubmitting(false);
+          setIsSuccess(true);
+          clearCart();
+          setTimeout(() => navigate('/'), 3000);
+        }, 2000);
+      }
+    } catch (error) {
+      console.error("Error procesando pago:", error);
       setIsSubmitting(false);
-      setIsSuccess(true);
-      clearCart();
-      setTimeout(() => navigate('/'), 3000);
-    }, 2000);
+    }
   };
 
   if (isSuccess) {

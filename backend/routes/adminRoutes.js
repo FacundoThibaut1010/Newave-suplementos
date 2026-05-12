@@ -1,6 +1,7 @@
 import express from 'express';
 import Product from '../models/Product.js';
 import StoreConfig from '../models/StoreConfig.js';
+import Order from '../models/Order.js';
 
 const router = express.Router();
 
@@ -92,6 +93,35 @@ router.put('/config', async (req, res) => {
   } catch (error) {
     console.error('❌ Error en PUT /config:', error.message);
     res.status(400).json({ message: 'No pudimos actualizar la configuración', error: error.message });
+  }
+});
+
+// --- ORDERS (VENTAS) ---
+router.get('/orders', async (req, res) => {
+  try {
+    const orders = await Order.find({ isPaid: true }).sort({ createdAt: -1 });
+    res.json(orders);
+  } catch (error) {
+    console.error('❌ Error en GET /orders:', error.message);
+    res.status(500).json({ message: 'Error al obtener órdenes' });
+  }
+});
+
+// Marcar orden como enviada
+router.put('/orders/:id/deliver', async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      order.isDelivered = true;
+      order.deliveredAt = Date.now();
+      const updatedOrder = await order.save();
+      res.json(updatedOrder);
+    } else {
+      res.status(404).json({ message: 'Orden no encontrada' });
+    }
+  } catch (error) {
+    console.error('❌ Error en PUT /orders/:id/deliver:', error.message);
+    res.status(500).json({ message: 'Error al actualizar orden' });
   }
 });
 
