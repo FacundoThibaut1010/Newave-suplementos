@@ -254,7 +254,7 @@ const OrdersTable = () => {
 
                                   {!order.isDispatched && !order.isDelivered ? (
                                     <button 
-                                      onClick={() => handleMarkAsDispatched(order._id)}
+                                      onClick={(e) => { e.stopPropagation(); handleMarkAsDispatched(order._id); }}
                                       className="mt-6 w-full py-4 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                                     >
                                       <Send size={18} />
@@ -262,7 +262,7 @@ const OrdersTable = () => {
                                     </button>
                                   ) : order.isDispatched && !order.isDelivered ? (
                                     <button 
-                                      onClick={() => handleMarkAsDelivered(order._id)}
+                                      onClick={(e) => { e.stopPropagation(); handleMarkAsDelivered(order._id); }}
                                       className="mt-6 w-full py-4 bg-emerald-600 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                                     >
                                       <CheckCircle2 size={18} />
@@ -270,7 +270,7 @@ const OrdersTable = () => {
                                     </button>
                                   ) : (
                                     <button 
-                                      onClick={() => handleUndeliver(order._id)}
+                                      onClick={(e) => { e.stopPropagation(); handleUndeliver(order._id); }}
                                       className="mt-6 w-full py-3 border-2 border-red-100 text-red-500 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
                                     >
                                       <RotateCcw size={16} />
