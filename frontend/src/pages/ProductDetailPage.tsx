@@ -19,7 +19,7 @@ const ProductDetailPage = () => {
     const fetchProduct = async () => {
       try {
         const { data } = await apiClient.get(`/products/${id}`);
-        setProduct(data);
+        setProduct(data.product);
       } catch (error) {
         toast.error('Producto no encontrado');
       } finally {
