@@ -148,17 +148,17 @@ const ProductDetailPage = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center bg-[#F8F9FA] rounded-2xl border border-gray-100 p-2 shrink-0">
+                <div className="flex items-center justify-between bg-[#F8F9FA] rounded-2xl border border-gray-100 p-2 shrink-0 min-w-[140px]">
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
-                    className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all"
+                    className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all text-2xl leading-none pb-1"
                   >
                     -
                   </button>
-                  <span className="w-12 text-center font-black text-lg">{quantity}</span>
+                  <span className="w-12 text-center font-black text-lg text-black">{quantity}</span>
                   <button 
                     onClick={() => setQuantity(Math.min(product.countInStock || 10, quantity + 1))}
-                    className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all"
+                    className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all text-2xl leading-none pb-1"
                   >
                     +
                   </button>
