@@ -35,7 +35,7 @@ const CartItem = ({ item }: { item: CartItemType }) => {
             >
               <Minus size={14} strokeWidth={2.5} />
             </motion.button>
-            <span className="w-8 text-center text-xs font-bold">{item.quantity}</span>
+            <span className="w-8 text-center text-xs font-bold text-black">{item.quantity}</span>
             <motion.button 
               whileTap={{ scale: 0.8 }}
               onClick={() => updateQuantity(item.id, item.quantity + 1)}

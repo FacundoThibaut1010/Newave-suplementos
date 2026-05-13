@@ -69,7 +69,7 @@ const ProductDetailPage = () => {
         id: product._id,
         name: product.name,
         price: product.price,
-        image: product.images[0]
+        image: product.images?.[0] || product.image || ''
       });
     }
     toast.success(`${quantity} ${quantity === 1 ? 'unidad añadida' : 'unidades añadidas'} al carrito`);
@@ -92,7 +92,7 @@ const ProductDetailPage = () => {
               className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[2.5rem] p-8 flex items-center justify-center overflow-hidden"
             >
               <img 
-                src={product.images[0]} 
+                src={product.images?.[0] || product.image || ''} 
                 alt={product.name} 
                 className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
               />

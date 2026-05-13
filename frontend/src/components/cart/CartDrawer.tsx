@@ -32,7 +32,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
             animate={{ x: 0 }}
             exit={{ x: '100%' }}
             transition={{ type: 'spring', damping: 30, stiffness: 300 }}
-            className="fixed right-0 top-0 h-full w-full max-w-md bg-black shadow-2xl z-[110] flex flex-col"
+            className="fixed right-0 top-0 h-full w-full max-w-md bg-white shadow-2xl z-[110] flex flex-col"
           >
             <div className="p-8 border-b border-gray-50 flex justify-between items-center">
               <div className="flex items-center gap-3">
