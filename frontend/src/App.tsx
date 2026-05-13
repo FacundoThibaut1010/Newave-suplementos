@@ -9,15 +9,20 @@ import SuccessPage from './pages/SuccessPage';
 function App() {
   return (
     <Router>
-      <Layout>
-        <Routes>
-          <Route path="/" element={<HomePage />} />
-          <Route path="/productos" element={<ProductsPage />} />
-          <Route path="/productos/:category" element={<ProductsPage />} />
-          <Route path="/checkout" element={<CheckoutPage />} />
-          <Route path="/checkout/success" element={<SuccessPage />} />
-        </Routes>
-      </Layout>
+      <Routes>
+        <Route path="/checkout/success" element={<SuccessPage />} />
+        
+        <Route path="/*" element={
+          <Layout>
+            <Routes>
+              <Route path="/" element={<HomePage />} />
+              <Route path="/productos" element={<ProductsPage />} />
+              <Route path="/productos/:category" element={<ProductsPage />} />
+              <Route path="/checkout" element={<CheckoutPage />} />
+            </Routes>
+          </Layout>
+        } />
+      </Routes>
     </Router>
   );
 }
