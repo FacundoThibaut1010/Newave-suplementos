@@ -34,6 +34,12 @@ const userSchema = new mongoose.Schema(
       zipCode: String,
       country: String,
     },
+    favorites: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Product',
+      },
+    ],
   },
   {
     timestamps: true,

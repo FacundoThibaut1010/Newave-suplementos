@@ -56,10 +56,10 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
             className="fixed inset-0 bg-black/60 backdrop-blur-sm z-[100]"
           />
           <motion.div
-            initial={{ opacity: 0, scale: 0.95, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.95, y: 20 }}
-            className="fixed top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[90%] max-w-md bg-white rounded-[2rem] shadow-2xl z-[101] overflow-hidden"
+            initial={{ opacity: 0, scale: 0.95, y: "-40%", x: "-50%" }}
+            animate={{ opacity: 1, scale: 1, y: "-50%", x: "-50%" }}
+            exit={{ opacity: 0, scale: 0.95, y: "-40%", x: "-50%" }}
+            className="fixed top-1/2 left-1/2 w-[90%] max-w-md bg-white rounded-[2rem] shadow-2xl z-[101] overflow-hidden"
           >
             <div className="p-10 text-center">
               <div className="flex justify-end mb-4">

@@ -49,18 +49,62 @@ router.post('/google-login', async (req, res) => {
       });
     }
 
+    user = await User.findById(user._id).populate('favorites');
+
     // Generar nuestro propio JWT para la sesión en nuestra app
     res.json({
       _id: user._id,
       name: user.name,
       email: user.email,
       role: user.role,
+      favorites: user.favorites,
       token: generateToken(user._id),
     });
 
   } catch (error) {
     console.error('Error en Google Login:', error);
     res.status(401).json({ message: 'Token de Google inválido o expirado' });
+  }
+});
+
+// @route   GET /api/users/favorites
+// @desc    Get user's favorite products
+router.get('/favorites', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id).populate('favorites');
+    res.json(user.favorites);
+  } catch (error) {
+    res.status(500).json({ message: 'Error al obtener favoritos' });
+  }
+});
+
+// @route   POST /api/users/favorites/:id
+// @desc    Toggle product in user's favorites
+router.post('/favorites/:id', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+    const productId = req.params.id;
+
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    const isFavorited = user.favorites.includes(productId);
+
+    if (isFavorited) {
+      user.favorites = user.favorites.filter((id) => id.toString() !== productId);
+    } else {
+      user.favorites.push(productId);
+    }
+
+    await user.save();
+    
+    // Devolvemos la lista actualizada (poblada)
+    const updatedUser = await User.findById(req.user._id).populate('favorites');
+    res.json(updatedUser.favorites);
+  } catch (error) {
+    console.error('Error toggling favorite:', error);
+    res.status(500).json({ message: 'Error al actualizar favoritos' });
   }
 });
 
