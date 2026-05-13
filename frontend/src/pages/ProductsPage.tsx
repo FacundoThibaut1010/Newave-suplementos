@@ -1,6 +1,7 @@
-import { useEffect, useState, useMemo } from 'react';
+import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
+import { ChevronRight } from 'lucide-react';
 import ProductCard from '../components/home/ProductCard';
 import apiClient from '../api/apiClient';
 import CustomSelect from '../components/ui/CustomSelect';
@@ -30,6 +31,20 @@ const ProductsPage = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>(category || 'Todas');
   const [sortBy, setSortBy] = useState<string>('featured');
+  const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const checkScroll = () => {
+      if (scrollRef.current) {
+        const { scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+        setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+      }
+    };
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [products, selectedCategory, sortBy]);
 
   useEffect(() => {
     if (category) {
@@ -146,8 +161,16 @@ const ProductsPage = () => {
             <p className="text-gray-500 text-lg">Aún no hay productos disponibles en esta categoría.</p>
           </div>
         ) : (
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:overflow-x-visible md:pb-0 scrollbar-hide">
-            {filteredAndSortedProducts.map((product) => (
+          <div className="relative">
+            <div 
+              ref={scrollRef}
+              onScroll={(e) => {
+                const target = e.currentTarget;
+                setCanScrollRight(target.scrollLeft + target.clientWidth < target.scrollWidth - 5);
+              }}
+              className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:overflow-x-visible md:pb-0 scrollbar-hide"
+            >
+              {filteredAndSortedProducts.map((product) => (
               <div key={product._id} className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0 h-full">
                 <ProductCard
                   id={product._id}
@@ -157,7 +180,19 @@ const ProductsPage = () => {
                   darkTheme
                 />
               </div>
-            ))}
+              ))}
+            </div>
+            {canScrollRight && (
+              <div className="absolute right-0 top-[35%] -translate-y-1/2 pointer-events-none md:hidden flex justify-end items-center pr-1 z-10">
+                <motion.div
+                  animate={{ x: [0, 5, 0] }}
+                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
+                  className="text-[#CAA959]"
+                >
+                  <ChevronRight size={36} strokeWidth={2.5} />
+                </motion.div>
+              </div>
+            )}
           </div>
         )}
       </div>
