@@ -6,6 +6,7 @@ import connectDB from './config/db.js';
 import productRoutes from './routes/productRoutes.js';
 import orderRoutes from './routes/orderRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
+import userRoutes from './routes/userRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 
 dotenv.config();
@@ -47,6 +48,7 @@ app.get('/', (req, res) => {
 app.use('/api/products', productRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/users', userRoutes);
 
 // Custom Error Handler
 app.use(errorHandler);

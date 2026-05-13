@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PackageOpen, Calendar, CreditCard, ShoppingBag, Truck, MapPin, ChevronDown, CheckCircle2, RotateCcw, User } from 'lucide-react';
+import { PackageOpen, Calendar, CreditCard, ShoppingBag, Truck, MapPin, ChevronDown, CheckCircle2, RotateCcw, User, Send } from 'lucide-react';
 import apiClient from '../api/apiClient';
 import { toast } from 'sonner';
 
@@ -8,7 +8,7 @@ const OrdersTable = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
-  const [activeTab, setActiveTab] = useState<'activas' | 'historial'>('activas');
+  const [activeTab, setActiveTab] = useState<'activas' | 'despachadas' | 'entregadas'>('activas');
 
   useEffect(() => {
     fetchOrders();
@@ -25,10 +25,21 @@ const OrdersTable = () => {
     }
   };
 
+  const handleMarkAsDispatched = async (orderId: string) => {
+    try {
+      await apiClient.put(`/admin/orders/${orderId}/dispatch`);
+      toast.success('¡Paquete marcado como despachado! Se ha enviado un correo al cliente.');
+      fetchOrders();
+      setExpandedRow(null);
+    } catch (error) {
+      toast.error('Error al despachar la orden');
+    }
+  };
+
   const handleMarkAsDelivered = async (orderId: string) => {
     try {
       await apiClient.put(`/admin/orders/${orderId}/deliver`);
-      toast.success('¡Orden marcada como enviada exitosamente!');
+      toast.success('¡Orden marcada como entregada exitosamente!');
       fetchOrders();
       setExpandedRow(null);
     } catch (error) {
@@ -39,7 +50,7 @@ const OrdersTable = () => {
   const handleUndeliver = async (orderId: string) => {
     try {
       await apiClient.put(`/admin/orders/${orderId}/undeliver`);
-      toast.success('¡Envío deshecho! Orden devuelta a activas.');
+      toast.success('¡Entrega deshecha! Orden devuelta a despachadas.');
       fetchOrders();
       setExpandedRow(null);
     } catch (error) {
@@ -56,9 +67,12 @@ const OrdersTable = () => {
   };
 
   // Filtrar órdenes según la pestaña activa
-  const filteredOrders = orders.filter((order: any) => 
-    activeTab === 'activas' ? !order.isDelivered : order.isDelivered
-  );
+  const filteredOrders = orders.filter((order: any) => {
+    if (activeTab === 'activas') return !order.isDispatched && !order.isDelivered;
+    if (activeTab === 'despachadas') return order.isDispatched && !order.isDelivered;
+    if (activeTab === 'entregadas') return order.isDelivered;
+    return false;
+  });
 
   const formatPaymentMethod = (methodId: string, typeId: string) => {
     if (!methodId) return 'Mercado Pago';
@@ -73,26 +87,35 @@ const OrdersTable = () => {
     <div className="space-y-8">
       <div>
         <h1 className="text-4xl font-black text-[#202A36] uppercase italic tracking-tighter">Ventas y Envíos</h1>
-        <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mt-2">Gestión de logística y despachos</p>
+        <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mt-2">Gestión de logística de 3 estados</p>
       </div>
 
       {/* TABS */}
-      <div className="flex items-center gap-4 border-b border-gray-200 pb-px">
+      <div className="flex flex-wrap items-center gap-4 border-b border-gray-200 pb-px">
         <button
           onClick={() => { setActiveTab('activas'); setExpandedRow(null); }}
           className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${activeTab === 'activas' ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'}`}
         >
-          Órdenes Activas
+          1. Activas (Armar)
           {activeTab === 'activas' && (
             <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CAA959]" />
           )}
         </button>
         <button
-          onClick={() => { setActiveTab('historial'); setExpandedRow(null); }}
-          className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${activeTab === 'historial' ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'}`}
+          onClick={() => { setActiveTab('despachadas'); setExpandedRow(null); }}
+          className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${activeTab === 'despachadas' ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'}`}
         >
-          Historial Entregados
-          {activeTab === 'historial' && (
+          2. Despachadas (En camino)
+          {activeTab === 'despachadas' && (
+            <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CAA959]" />
+          )}
+        </button>
+        <button
+          onClick={() => { setActiveTab('entregadas'); setExpandedRow(null); }}
+          className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${activeTab === 'entregadas' ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          3. Entregadas (Historial)
+          {activeTab === 'entregadas' && (
             <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CAA959]" />
           )}
         </button>
@@ -110,10 +133,10 @@ const OrdersTable = () => {
               <PackageOpen size={32} className="text-gray-300" />
             </div>
             <h3 className="text-xl font-black text-[#202A36] uppercase tracking-tight mb-2">
-              {activeTab === 'activas' ? 'No hay órdenes pendientes' : 'No hay historial aún'}
+              {activeTab === 'activas' ? 'No hay órdenes por armar' : activeTab === 'despachadas' ? 'No hay paquetes en camino' : 'No hay historial aún'}
             </h3>
             <p className="text-sm text-gray-400">
-              {activeTab === 'activas' ? '¡Todo está despachado o no hay ventas nuevas!' : 'Cuando marques una orden como enviada aparecerá aquí.'}
+              {activeTab === 'activas' ? '¡Todo está despachado o no hay ventas nuevas!' : activeTab === 'despachadas' ? 'Aquí verás los paquetes que le entregaste al correo.' : 'Cuando marques una orden como entregada aparecerá aquí.'}
             </p>
           </div>
         ) : (
@@ -182,8 +205,13 @@ const OrdersTable = () => {
                       <td className="p-6">
                         {order.isDelivered ? (
                           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
+                            <CheckCircle2 size={14} />
+                            <span className="text-[10px] font-black uppercase tracking-widest">Entregado</span>
+                          </div>
+                        ) : order.isDispatched ? (
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600">
                             <Truck size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Enviado</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">En Camino</span>
                           </div>
                         ) : (
                           <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-100 text-amber-600 animate-pulse">
@@ -224,13 +252,21 @@ const OrdersTable = () => {
                                     </div>
                                   </div>
 
-                                  {!order.isDelivered ? (
+                                  {!order.isDispatched && !order.isDelivered ? (
                                     <button 
-                                      onClick={() => handleMarkAsDelivered(order._id)}
+                                      onClick={() => handleMarkAsDispatched(order._id)}
                                       className="mt-6 w-full py-4 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                                     >
+                                      <Send size={18} />
+                                      Marcar paquete como despachado (Avisar cliente)
+                                    </button>
+                                  ) : order.isDispatched && !order.isDelivered ? (
+                                    <button 
+                                      onClick={() => handleMarkAsDelivered(order._id)}
+                                      className="mt-6 w-full py-4 bg-emerald-600 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-emerald-500 transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                                    >
                                       <CheckCircle2 size={18} />
-                                      Marcar paquete como enviado
+                                      Marcar como Entregado al Cliente
                                     </button>
                                   ) : (
                                     <button 
@@ -238,7 +274,7 @@ const OrdersTable = () => {
                                       className="mt-6 w-full py-3 border-2 border-red-100 text-red-500 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
                                     >
                                       <RotateCcw size={16} />
-                                      Deshacer Envío (Volver a Activas)
+                                      Deshacer Entrega (Volver a Despachadas)
                                     </button>
                                   )}
                                 </div>

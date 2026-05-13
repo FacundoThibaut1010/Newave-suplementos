@@ -7,6 +7,23 @@ const apiClient = axios.create({
   },
 });
 
+apiClient.interceptors.request.use(
+  (config) => {
+    // Buscar el token en Zustand persist storage
+    const storage = localStorage.getItem('newave-auth');
+    if (storage) {
+      const { state } = JSON.parse(storage);
+      if (state && state.user && state.user.token) {
+        config.headers.Authorization = `Bearer ${state.user.token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 // Interceptor para manejar errores de forma global con el tono cálido
 apiClient.interceptors.response.use(
   (response) => response,

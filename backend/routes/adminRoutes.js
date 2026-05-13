@@ -2,6 +2,7 @@ import express from 'express';
 import Product from '../models/Product.js';
 import StoreConfig from '../models/StoreConfig.js';
 import Order from '../models/Order.js';
+import { sendOrderDispatchedEmail } from '../utils/emailService.js';
 
 const router = express.Router();
 
@@ -107,7 +108,31 @@ router.get('/orders', async (req, res) => {
   }
 });
 
-// Marcar orden como enviada
+// Marcar orden como despachada (Entregada al correo)
+router.put('/orders/:id/dispatch', async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      order.isDispatched = true;
+      order.dispatchedAt = Date.now();
+      const updatedOrder = await order.save();
+
+      // Enviar email al cliente avisando que fue despachado
+      if (order.guestInfo && order.guestInfo.email) {
+        await sendOrderDispatchedEmail(order);
+      }
+
+      res.json(updatedOrder);
+    } else {
+      res.status(404).json({ message: 'Orden no encontrada' });
+    }
+  } catch (error) {
+    console.error('❌ Error en PUT /orders/:id/dispatch:', error.message);
+    res.status(500).json({ message: 'Error al actualizar orden' });
+  }
+});
+
+// Marcar orden como entregada (El cliente la recibió)
 router.put('/orders/:id/deliver', async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -125,7 +150,7 @@ router.put('/orders/:id/deliver', async (req, res) => {
   }
 });
 
-// Deshacer envío (Regresar al historial)
+// Deshacer entrega (Regresar al historial de despachados)
 router.put('/orders/:id/undeliver', async (req, res) => {
   try {
     const order = await Order.findById(req.params.id);
@@ -140,6 +165,76 @@ router.put('/orders/:id/undeliver', async (req, res) => {
   } catch (error) {
     console.error('❌ Error en PUT /orders/:id/undeliver:', error.message);
     res.status(500).json({ message: 'Error al actualizar orden' });
+  }
+});
+
+// --- DASHBOARD STATS ---
+
+router.get('/dashboard', async (req, res) => {
+  try {
+    // 1. Alertas de Stock (Productos con menos de 5 unidades)
+    const lowStockProducts = await Product.find({ countInStock: { $lt: 5 } }).select('name countInStock image').sort({ countInStock: 1 });
+
+    // 2. Alertas de Órdenes Sin Despachar (Pagadas, pero isDispatched es false)
+    const pendingOrdersCount = await Order.countDocuments({ isPaid: true, isDispatched: false });
+
+    // 3. Finanzas: Ganancias de los últimos 6 meses
+    const sixMonthsAgo = new Date();
+    sixMonthsAgo.setMonth(sixMonthsAgo.getMonth() - 5);
+    sixMonthsAgo.setDate(1); // Primer día de hace 6 meses
+
+    const orders = await Order.find({
+      isPaid: true,
+      paidAt: { $gte: sixMonthsAgo }
+    }).select('totalPrice paidAt');
+
+    const monthlyData = {};
+    const monthNames = ['Ene', 'Feb', 'Mar', 'Abr', 'May', 'Jun', 'Jul', 'Ago', 'Sep', 'Oct', 'Nov', 'Dic'];
+
+    // Inicializar los últimos 6 meses con 0
+    for (let i = 5; i >= 0; i--) {
+      const d = new Date();
+      d.setMonth(d.getMonth() - i);
+      const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+      monthlyData[key] = 0;
+    }
+
+    // Sumar ganancias
+    orders.forEach(order => {
+      if (order.paidAt) {
+        const d = new Date(order.paidAt);
+        const key = `${monthNames[d.getMonth()]} ${d.getFullYear()}`;
+        if (monthlyData[key] !== undefined) {
+          monthlyData[key] += order.totalPrice;
+        }
+      }
+    });
+
+    // Formatear para recharts: [{ name: 'Ene', total: 50000 }]
+    const financialChart = Object.keys(monthlyData).map(key => ({
+      name: key.split(' ')[0], // Solo el mes
+      total: monthlyData[key]
+    }));
+
+    // Calcular ganancia total y ventas totales de este mes
+    const startOfThisMonth = new Date();
+    startOfThisMonth.setDate(1);
+    startOfThisMonth.setHours(0, 0, 0, 0);
+
+    const thisMonthOrders = await Order.find({ isPaid: true, paidAt: { $gte: startOfThisMonth } });
+    const thisMonthRevenue = thisMonthOrders.reduce((acc, order) => acc + order.totalPrice, 0);
+
+    res.json({
+      lowStockProducts,
+      pendingOrdersCount,
+      financialChart,
+      thisMonthRevenue,
+      thisMonthSales: thisMonthOrders.length
+    });
+
+  } catch (error) {
+    console.error('❌ Error en GET /dashboard:', error.message);
+    res.status(500).json({ message: 'Error al obtener estadísticas del dashboard' });
   }
 });
 

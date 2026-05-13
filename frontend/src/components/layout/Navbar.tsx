@@ -3,15 +3,21 @@ import { ShoppingBag, Search, User, Menu, ChevronDown, Home, Package, MessageSqu
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '../../store/useCartStore';
 import { useUIStore } from '../../store/useUIStore';
-import { Link } from 'react-router-dom';
+import { useAuthStore } from '../../store/useAuthStore';
+import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../../api/apiClient';
+import AuthModal from '../auth/AuthModal';
 
 const Navbar = () => {
   const totalItems = useCartStore((state) => state.totalItems());
   const openCart = useUIStore((state) => state.openCart);
+  const { user, logout } = useAuthStore();
+  const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [hasCombos, setHasCombos] = useState(true);
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
     const checkCombos = async () => {
@@ -39,6 +45,8 @@ const Navbar = () => {
 
   return (
     <>
+      <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -207,13 +215,53 @@ const Navbar = () => {
 
             {/* Right: Actions */}
             <div className="flex-1 flex items-center justify-end gap-2 lg:gap-4">
-              <button className="flex items-center gap-2 group p-3 rounded-full transition-all focus:outline-none">
+              <button className="flex items-center gap-2 group p-3 rounded-full transition-all focus:outline-none hidden md:flex">
                 <Search size={20} strokeWidth={2.5} className="group-hover:text-[#CAA959] transition-all duration-300" />
               </button>
 
-              <button className="p-3 rounded-full transition-all group focus:outline-none">
-                <User size={20} strokeWidth={2.5} className="group-hover:text-[#CAA959] transition-all duration-300" />
-              </button>
+              <div className="relative">
+                <button 
+                  onClick={() => {
+                    if (user) {
+                      setIsUserMenuOpen(!isUserMenuOpen);
+                    } else {
+                      setIsAuthModalOpen(true);
+                    }
+                  }}
+                  className="p-3 rounded-full transition-all group focus:outline-none flex items-center gap-2"
+                >
+                  <User size={20} strokeWidth={2.5} className={`${user ? 'text-[#CAA959]' : ''} group-hover:text-[#CAA959] transition-all duration-300`} />
+                  {user && <span className="hidden md:block text-[11px] font-bold uppercase tracking-widest text-white/80">{user.name.split(' ')[0]}</span>}
+                </button>
+
+                <AnimatePresence>
+                  {isUserMenuOpen && user && (
+                    <motion.div
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: 10 }}
+                      className="absolute top-full right-0 mt-2 w-48 bg-black/90 backdrop-blur-xl border border-white/10 rounded-2xl shadow-2xl py-2 z-50"
+                    >
+                      <div className="px-4 py-2 border-b border-white/5 mb-2">
+                        <p className="text-sm font-bold text-white">{user.name}</p>
+                        <p className="text-[10px] text-gray-400 truncate">{user.email}</p>
+                      </div>
+                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/compras" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Mis Compras</Link>
+                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/favoritos" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Favoritos</Link>
+                      <button 
+                        onClick={() => {
+                          logout();
+                          setIsUserMenuOpen(false);
+                          navigate('/');
+                        }}
+                        className="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-white/5 mt-2 transition-colors border-t border-white/5"
+                      >
+                        Cerrar Sesión
+                      </button>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
 
               <button
                 onClick={openCart}

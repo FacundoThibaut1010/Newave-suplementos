@@ -4,6 +4,7 @@ import AdminLayout from './layouts/AdminLayout';
 import InventoryTable from './pages/InventoryTable';
 import StoreSettings from './pages/StoreSettings';
 import OrdersTable from './pages/OrdersTable';
+import Dashboard from './pages/Dashboard';
 import Login from './pages/Login';
 import { Toaster } from 'sonner';
 
@@ -32,7 +33,7 @@ function App() {
         <Route path="/login" element={<Login />} />
         
         <Route path="/admin" element={<ProtectedRoute><AdminLayout /></ProtectedRoute>}>
-          <Route index element={<Placeholder title="Resumen" />} />
+          <Route index element={<Dashboard />} />
           <Route path="inventory" element={<InventoryTable />} />
           <Route path="analytics" element={<OrdersTable />} />
           <Route path="settings" element={<StoreSettings />} />

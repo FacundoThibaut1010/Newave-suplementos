@@ -5,8 +5,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import { CreditCard, Truck, User, ArrowLeft, CheckCircle2, ShieldCheck, Phone, Wallet, MapPin } from 'lucide-react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
+import { useAuthStore } from '../store/useAuthStore';
 import { useState } from 'react';
 import apiClient from '../api/apiClient';
+import AuthModal from '../components/auth/AuthModal';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(3, { message: 'Nombre requerido' }),
@@ -98,10 +100,12 @@ const CardHoverStackTarjeta = ({ visibleCardsCount = 5, totalCards = 5 }) => {
 
 const CheckoutPage = () => {
   const { items, totalPrice, clearCart } = useCartStore();
+  const { user } = useAuthStore();
   const navigate = useNavigate();
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'mercado_pago' | 'card'>('mercado_pago');
+  const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
   const { register, handleSubmit, formState: { errors, isValid } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
@@ -134,7 +138,8 @@ const CheckoutPage = () => {
             addressLine2: data.addressLine2
           },
           totalPrice: totalPrice(),
-          paymentMethod: 'Mercado Pago'
+          paymentMethod: 'Mercado Pago',
+          user: user?._id
         };
 
         const res = await apiClient.post('/orders/create_preference', payload);
@@ -180,7 +185,25 @@ const CheckoutPage = () => {
           <ArrowLeft size={14} /> Volver a la tienda
         </Link>
 
-        <div className="grid lg:grid-cols-12 gap-8 items-start">
+        {!user ? (
+          <div className="bg-white rounded-[3.5rem] p-16 shadow-sm border border-gray-100 text-center max-w-2xl mx-auto">
+            <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
+              <User size={40} className="text-gray-300" />
+            </div>
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4 text-[#202A36]">Inicia Sesión para Comprar</h2>
+            <p className="text-gray-500 font-medium mb-8">
+              Para garantizar la seguridad de tu compra y poder hacerle seguimiento a tu paquete, necesitas una cuenta en Newave.
+            </p>
+            <button 
+              onClick={() => setIsAuthModalOpen(true)}
+              className="py-4 px-12 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors inline-block shadow-xl hover:-translate-y-1"
+            >
+              Iniciar Sesión / Registrarse
+            </button>
+            <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+          </div>
+        ) : (
+          <div className="grid lg:grid-cols-12 gap-8 items-start">
 
           <div className="lg:col-span-7 bg-white rounded-[3.5rem] p-10 shadow-sm border border-gray-100">
             <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-14">Finalizar compra</h1>
@@ -383,6 +406,7 @@ const CheckoutPage = () => {
             </div>
           </div>
         </div>
+        )}
       </div>
 
       <style>{`

@@ -15,7 +15,7 @@ const client = new MercadoPagoConfig({
 // @access  Public (Guest) o Private
 export const createPreference = async (req, res) => {
   try {
-    const { orderItems, guestInfo, shippingAddress, totalPrice } = req.body;
+    const { orderItems, guestInfo, shippingAddress, totalPrice, user } = req.body;
 
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: 'El carrito está vacío' });
@@ -23,6 +23,7 @@ export const createPreference = async (req, res) => {
 
     // 1. Guardar la orden en la BD con estado "isPaid: false"
     const order = new Order({
+      user,
       orderItems,
       guestInfo,
       shippingAddress,
