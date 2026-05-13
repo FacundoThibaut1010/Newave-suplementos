@@ -58,8 +58,9 @@ const SuccessPage = () => {
         <div className="text-sm font-bold text-gray-400 mb-6 flex items-center justify-center gap-2">
           Serás redirigido a la tienda en {countdown} segundos <ArrowRight size={14} className="animate-pulse" />
         </div>
-        <Link to="/" className="btn-primary inline-block w-full">
-          Volver Ahora
+        <Link to="/" className="inline-flex items-center gap-2 px-6 py-2.5 rounded-full bg-gray-100 text-gray-600 font-bold text-sm hover:bg-gray-200 transition-colors">
+          <ArrowRight size={16} />
+          Volver manualmente
         </Link>
       </motion.div>
     </div>
