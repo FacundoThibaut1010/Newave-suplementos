@@ -35,7 +35,7 @@ const AdminSelect = ({ value, onChange, options, placeholder = 'Selecciona...', 
         className={`flex items-center justify-between w-full gap-3 px-4 py-3 rounded-2xl border transition-all text-sm outline-none 
           ${disabled
             ? 'bg-gray-50 border-gray-100 text-gray-400 cursor-not-allowed'
-            : 'bg-gray-50 border-transparent hover:border-gray-200 text-black focus:border-black focus:bg-white focus:ring-4 focus:ring-black/5 cursor-pointer'
+            : 'bg-gray-50 border-transparent hover:border-gray-200 !text-black focus:border-black focus:bg-white focus:ring-4 focus:ring-black/5 cursor-pointer'
           }
         `}
       >
@@ -66,7 +66,7 @@ const AdminSelect = ({ value, onChange, options, placeholder = 'Selecciona...', 
                     onChange(option.value);
                     setIsOpen(false);
                   }}
-                  className={`w-full text-left px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-gray-50 ${value === option.value ? 'text-black bg-gray-50' : 'text-gray-500'
+                  className={`w-full text-left px-4 py-2.5 text-[13px] font-bold transition-colors hover:bg-gray-50 ${value === option.value ? '!text-black bg-gray-50' : 'text-gray-500'
                     }`}
                 >
                   <div className="flex items-center justify-between">

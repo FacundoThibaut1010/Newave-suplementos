@@ -110,7 +110,7 @@ const ProductsPage = () => {
   }
 
   return (
-    <div className="pt-32 pb-24 bg-[#0A0A0B] min-h-screen">
+    <div className="pt-40 md:pt-32 pb-24 bg-[#0A0A0B] min-h-screen">
       <div className="max-w-7xl mx-auto px-6 mb-16">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-center text-center md:text-left gap-6 border-b border-white/10 pb-8">
           <div className="flex flex-col items-center md:items-start w-full md:w-auto">
@@ -121,19 +121,23 @@ const ProductsPage = () => {
               {filteredAndSortedProducts.length} Resultados
             </p>
           </div>
-          <div className="flex justify-center w-full md:w-auto gap-4 items-center relative z-40">
-            <CustomSelect
-              value={selectedCategory}
-              onChange={setSelectedCategory}
-              options={categoryOptions}
-              darkTheme
-            />
-            <CustomSelect
-              value={sortBy}
-              onChange={setSortBy}
-              options={sortOptions}
-              darkTheme
-            />
+          <div className="flex flex-col sm:flex-row w-full md:w-auto gap-4 items-center relative z-40">
+            <div className="w-full sm:w-auto">
+              <CustomSelect
+                value={selectedCategory}
+                onChange={setSelectedCategory}
+                options={categoryOptions}
+                darkTheme
+              />
+            </div>
+            <div className="w-full sm:w-auto">
+              <CustomSelect
+                value={sortBy}
+                onChange={setSortBy}
+                options={sortOptions}
+                darkTheme
+              />
+            </div>
           </div>
         </div>
 
@@ -142,9 +146,9 @@ const ProductsPage = () => {
             <p className="text-gray-500 text-lg">Aún no hay productos disponibles en esta categoría.</p>
           </div>
         ) : (
-          <div className="grid grid-cols-2 gap-4 pb-8 md:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:pb-0">
+          <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:overflow-x-visible md:pb-0 scrollbar-hide">
             {filteredAndSortedProducts.map((product) => (
-              <div key={product._id} className="w-full">
+              <div key={product._id} className="min-w-[45vw] sm:min-w-[40vw] md:min-w-0 snap-center shrink-0">
                 <ProductCard
                   id={product._id}
                   {...product}

@@ -83,20 +83,20 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   };
 
   return (
-    <div className="fixed inset-0 z-[150] flex items-center justify-center p-6">
+    <div className="fixed inset-0 z-[150] flex items-start md:items-center justify-center p-4 md:p-6 overflow-y-auto">
       <motion.div
         initial={{ opacity: 0 }}
         animate={{ opacity: 1 }}
         exit={{ opacity: 0 }}
         onClick={onClose}
-        className="absolute inset-0 bg-black/20 backdrop-blur-md"
+        className="fixed inset-0 bg-black/20 backdrop-blur-md"
       />
 
       <motion.div
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 max-h-[90vh] overflow-y-auto"
+        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 my-10 md:my-auto"
       >
         <div className="flex justify-between items-center mb-10">
           <div>
@@ -118,7 +118,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 placeholder="Ej: Silla Gravity"
               />
             </div>
@@ -134,7 +134,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                     const formatted = rawValue ? Number(rawValue).toLocaleString('es-AR') : '';
                     setFormData({ ...formData, price: formatted });
                   }}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
               <div>
@@ -143,7 +143,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   type="number"
                   value={formData.countInStock}
                   onChange={(e) => setFormData({ ...formData, countInStock: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 type="text"
                 value={formData.image}
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 placeholder="Pega la URL aquí..."
               />
             </div>
@@ -191,7 +191,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="w-full h-[154px] bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 resize-none leading-relaxed"
+                className="w-full h-[154px] bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 resize-none leading-relaxed"
                 placeholder="Describe los materiales, dimensiones y el alma de esta pieza..."
               />
             </div>
