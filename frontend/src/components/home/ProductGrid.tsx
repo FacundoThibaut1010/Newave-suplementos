@@ -121,7 +121,7 @@ const ProductGrid = () => {
         </div>
 
         <div className="relative">
-          <div 
+          <div
             ref={scrollRef}
             onScroll={(e) => {
               const target = e.currentTarget;
@@ -129,20 +129,20 @@ const ProductGrid = () => {
             }}
             className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 md:overflow-x-visible md:pb-0 scrollbar-hide"
           >
-              {sortedProducts.map((product) => (
+            {sortedProducts.map((product) => (
               <div key={product._id} className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0 h-full">
                 <ProductCard
-                id={product._id}
-                {...product}
-                category={product.category?.name || 'General'}
-                image={product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
-                darkTheme
-              />
-            </div>
+                  id={product._id}
+                  {...product}
+                  category={product.category?.name || 'General'}
+                  image={product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
+                  darkTheme
+                />
+              </div>
             ))}
           </div>
           {canScrollRight && (
-            <div className="absolute right-0 top-[35%] -translate-y-1/2 pointer-events-none md:hidden flex justify-end items-center pr-1 z-10">
+            <div className="absolute -right-6 top-[35%] -translate-y-1/2 pointer-events-none md:hidden flex justify-end items-center z-10">
               <motion.div
                 animate={{ x: [0, 5, 0] }}
                 transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
