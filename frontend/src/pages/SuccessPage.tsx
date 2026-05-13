@@ -1,7 +1,7 @@
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
-import { CheckCircle2 } from 'lucide-react';
-import { Link, useSearchParams } from 'react-router-dom';
+import { CheckCircle2, ArrowRight } from 'lucide-react';
+import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 
 const SuccessPage = () => {
@@ -10,6 +10,8 @@ const SuccessPage = () => {
   const status = searchParams.get('status');
   const payment_id = searchParams.get('payment_id');
   const external_reference = searchParams.get('external_reference');
+  const navigate = useNavigate();
+  const [countdown, setCountdown] = useState(5);
 
   useEffect(() => {
     // Si el pago fue aprobado, intentamos verificarlo en el backend (Fallback local)
@@ -17,7 +19,7 @@ const SuccessPage = () => {
       clearCart();
       
       // Llamada de verificación al backend
-      fetch('http://localhost:5000/api/orders/verify', {
+      fetch(`${import.meta.env.VITE_API_URL || 'http://localhost:5000/api'}/orders/verify`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ payment_id, external_reference })
@@ -25,7 +27,21 @@ const SuccessPage = () => {
     } else if (status === 'pending' || status === 'in_process') {
       clearCart();
     }
-  }, [status, payment_id, external_reference, clearCart]);
+
+    // Auto redirección después de 5 segundos
+    const timer = setInterval(() => {
+      setCountdown((prev) => {
+        if (prev <= 1) {
+          clearInterval(timer);
+          navigate('/');
+          return 0;
+        }
+        return prev - 1;
+      });
+    }, 1000);
+
+    return () => clearInterval(timer);
+  }, [status, payment_id, external_reference, clearCart, navigate]);
 
   return (
     <div className="min-h-screen bg-[#F8F9FA] flex items-center justify-center p-6">
@@ -39,8 +55,11 @@ const SuccessPage = () => {
         <p className="text-gray-500 font-medium mb-8">
           Tu pago ha sido procesado correctamente. En breve recibirás un correo con el comprobante y los detalles de envío.
         </p>
-        <Link to="/" className="btn-primary inline-block">
-          Volver a la Tienda
+        <div className="text-sm font-bold text-gray-400 mb-6 flex items-center justify-center gap-2">
+          Serás redirigido a la tienda en {countdown} segundos <ArrowRight size={14} className="animate-pulse" />
+        </div>
+        <Link to="/" className="btn-primary inline-block w-full">
+          Volver Ahora
         </Link>
       </motion.div>
     </div>

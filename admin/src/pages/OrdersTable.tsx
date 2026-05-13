@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PackageOpen, ExternalLink, Calendar, CreditCard, ShoppingBag, Truck, MapPin, ChevronDown, CheckCircle2 } from 'lucide-react';
+import { PackageOpen, Calendar, CreditCard, ShoppingBag, Truck, MapPin, ChevronDown, CheckCircle2, RotateCcw, User } from 'lucide-react';
 import apiClient from '../api/apiClient';
 import { toast } from 'sonner';
 
@@ -8,6 +8,7 @@ const OrdersTable = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
+  const [activeTab, setActiveTab] = useState<'activas' | 'historial'>('activas');
 
   useEffect(() => {
     fetchOrders();
@@ -28,7 +29,19 @@ const OrdersTable = () => {
     try {
       await apiClient.put(`/admin/orders/${orderId}/deliver`);
       toast.success('¡Orden marcada como enviada exitosamente!');
-      fetchOrders(); // Recargar para mostrar el cambio
+      fetchOrders();
+      setExpandedRow(null);
+    } catch (error) {
+      toast.error('Error al actualizar la orden');
+    }
+  };
+
+  const handleUndeliver = async (orderId: string) => {
+    try {
+      await apiClient.put(`/admin/orders/${orderId}/undeliver`);
+      toast.success('¡Envío deshecho! Orden devuelta a activas.');
+      fetchOrders();
+      setExpandedRow(null);
     } catch (error) {
       toast.error('Error al actualizar la orden');
     }
@@ -42,11 +55,47 @@ const OrdersTable = () => {
     }
   };
 
+  // Filtrar órdenes según la pestaña activa
+  const filteredOrders = orders.filter((order: any) => 
+    activeTab === 'activas' ? !order.isDelivered : order.isDelivered
+  );
+
+  const formatPaymentMethod = (methodId: string, typeId: string) => {
+    if (!methodId) return 'Mercado Pago';
+    if (methodId === 'account_money') return 'Dinero en Cuenta';
+    if (typeId === 'credit_card') return `Tarjeta Crédito (${methodId.toUpperCase()})`;
+    if (typeId === 'debit_card') return `Tarjeta Débito (${methodId.toUpperCase()})`;
+    if (typeId === 'ticket') return `Efectivo / Transferencia`;
+    return methodId.toUpperCase();
+  };
+
   return (
     <div className="space-y-8">
       <div>
-        <h1 className="text-4xl font-black text-[#202A36] uppercase italic tracking-tighter">Ventas y Órdenes</h1>
-        <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mt-2">Monitoreo de transacciones y envíos</p>
+        <h1 className="text-4xl font-black text-[#202A36] uppercase italic tracking-tighter">Ventas y Envíos</h1>
+        <p className="text-sm text-gray-400 font-bold uppercase tracking-widest mt-2">Gestión de logística y despachos</p>
+      </div>
+
+      {/* TABS */}
+      <div className="flex items-center gap-4 border-b border-gray-200 pb-px">
+        <button
+          onClick={() => { setActiveTab('activas'); setExpandedRow(null); }}
+          className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${activeTab === 'activas' ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          Órdenes Activas
+          {activeTab === 'activas' && (
+            <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CAA959]" />
+          )}
+        </button>
+        <button
+          onClick={() => { setActiveTab('historial'); setExpandedRow(null); }}
+          className={`pb-4 px-2 font-black uppercase tracking-widest text-xs transition-colors relative ${activeTab === 'historial' ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'}`}
+        >
+          Historial Entregados
+          {activeTab === 'historial' && (
+            <motion.div layoutId="tab-indicator" className="absolute bottom-0 left-0 right-0 h-0.5 bg-[#CAA959]" />
+          )}
+        </button>
       </div>
 
       <div className="bg-white rounded-[3rem] shadow-sm border border-gray-100 overflow-hidden">
@@ -55,29 +104,33 @@ const OrdersTable = () => {
             <motion.div animate={{ rotate: 360 }} transition={{ repeat: Infinity, duration: 1, ease: 'linear' }} className="w-8 h-8 border-2 border-gray-200 border-t-[#CAA959] rounded-full mx-auto mb-4" />
             <p className="text-xs font-bold text-gray-400 uppercase tracking-widest">Cargando datos...</p>
           </div>
-        ) : orders.length === 0 ? (
+        ) : filteredOrders.length === 0 ? (
           <div className="p-20 text-center flex flex-col items-center">
             <div className="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-6">
               <PackageOpen size={32} className="text-gray-300" />
             </div>
-            <h3 className="text-xl font-black text-[#202A36] uppercase tracking-tight mb-2">Aún no hay ventas</h3>
-            <p className="text-sm text-gray-400">Cuando recibas un pago aparecerá aquí.</p>
+            <h3 className="text-xl font-black text-[#202A36] uppercase tracking-tight mb-2">
+              {activeTab === 'activas' ? 'No hay órdenes pendientes' : 'No hay historial aún'}
+            </h3>
+            <p className="text-sm text-gray-400">
+              {activeTab === 'activas' ? '¡Todo está despachado o no hay ventas nuevas!' : 'Cuando marques una orden como enviada aparecerá aquí.'}
+            </p>
           </div>
         ) : (
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ID Orden / Fecha</th>
+                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ID / Fecha</th>
                   <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Cliente</th>
                   <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Productos</th>
                   <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total / Pago</th>
-                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Estado de Envío</th>
+                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Estado</th>
                   <th className="p-6"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
-                {orders.map((order: any) => (
+                {filteredOrders.map((order: any) => (
                   <React.Fragment key={order._id}>
                     <tr 
                       className={`hover:bg-gray-50/30 transition-colors group cursor-pointer ${expandedRow === order._id ? 'bg-gray-50/50' : ''}`}
@@ -94,8 +147,15 @@ const OrdersTable = () => {
                       </td>
                       <td className="p-6">
                         <div className="flex flex-col gap-1">
-                          <span className="text-sm font-bold text-[#202A36] capitalize">{order.guestInfo?.fullName || 'Invitado'}</span>
-                          <a href={`mailto:${order.guestInfo?.email}`} className="text-[10px] text-blue-500 hover:underline">{order.guestInfo?.email}</a>
+                          <div className="flex items-center gap-2">
+                            <div className="w-8 h-8 rounded-full bg-[#CAA959]/10 flex items-center justify-center text-[#CAA959]">
+                              <User size={16} />
+                            </div>
+                            <div>
+                              <span className="text-lg font-black text-[#202A36] capitalize block leading-tight">{order.guestInfo?.fullName || 'Invitado'}</span>
+                              <a href={`mailto:${order.guestInfo?.email}`} className="text-xs text-blue-500 hover:underline font-medium">{order.guestInfo?.email}</a>
+                            </div>
+                          </div>
                         </div>
                       </td>
                       <td className="p-6">
@@ -113,9 +173,9 @@ const OrdersTable = () => {
                       <td className="p-6">
                         <div className="flex flex-col gap-1">
                           <span className="text-sm font-black text-[#202A36]">${order.totalPrice.toLocaleString('es-AR')}</span>
-                          <div className="flex items-center gap-1 text-[10px] font-bold text-gray-400 uppercase tracking-wider">
+                          <div className="flex items-center gap-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded-md w-fit">
                             <CreditCard size={12} />
-                            Pagado
+                            {formatPaymentMethod(order.paymentResult?.payment_method_id, order.paymentResult?.payment_type_id)}
                           </div>
                         </div>
                       </td>
@@ -126,9 +186,9 @@ const OrdersTable = () => {
                             <span className="text-[10px] font-black uppercase tracking-widest">Enviado</span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-100 text-amber-600">
+                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-100 text-amber-600 animate-pulse">
                             <PackageOpen size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Preparando</span>
+                            <span className="text-[10px] font-black uppercase tracking-widest">A Despachar</span>
                           </div>
                         )}
                       </td>
@@ -151,25 +211,34 @@ const OrdersTable = () => {
                               <div className="p-8 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-8">
                                 
                                 {/* Detalles de Envío */}
-                                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
-                                  <div className="flex items-center gap-2 mb-4 text-[#CAA959]">
-                                    <MapPin size={20} />
-                                    <h3 className="font-black uppercase tracking-widest text-sm text-[#202A36]">Detalles de Envío</h3>
-                                  </div>
-                                  <div className="space-y-3">
-                                    <p className="text-sm"><span className="font-bold text-gray-400 uppercase tracking-wider text-[10px] block mb-0.5">Destinatario</span> <span className="font-medium text-gray-800">{order.guestInfo?.fullName}</span></p>
-                                    <p className="text-sm"><span className="font-bold text-gray-400 uppercase tracking-wider text-[10px] block mb-0.5">Teléfono</span> <span className="font-medium text-gray-800">{order.guestInfo?.phone}</span></p>
-                                    <p className="text-sm"><span className="font-bold text-gray-400 uppercase tracking-wider text-[10px] block mb-0.5">Dirección</span> <span className="font-medium text-gray-800">{order.shippingAddress?.address} {order.shippingAddress?.addressLine2 && `(${order.shippingAddress.addressLine2})`}</span></p>
-                                    <p className="text-sm"><span className="font-bold text-gray-400 uppercase tracking-wider text-[10px] block mb-0.5">Ubicación</span> <span className="font-medium text-gray-800">{order.shippingAddress?.city}, {order.shippingAddress?.state} - CP: {order.shippingAddress?.postalCode}</span></p>
+                                <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">
+                                  <div>
+                                    <div className="flex items-center gap-2 mb-4 text-[#CAA959]">
+                                      <MapPin size={20} />
+                                      <h3 className="font-black uppercase tracking-widest text-sm text-[#202A36]">Datos para el Envío</h3>
+                                    </div>
+                                    <div className="space-y-3">
+                                      <p className="text-sm"><span className="font-bold text-gray-400 uppercase tracking-wider text-[10px] block mb-0.5">Teléfono</span> <span className="font-medium text-gray-800 text-lg">{order.guestInfo?.phone}</span></p>
+                                      <p className="text-sm"><span className="font-bold text-gray-400 uppercase tracking-wider text-[10px] block mb-0.5">Dirección Exacta</span> <span className="font-medium text-gray-800 text-lg">{order.shippingAddress?.address} {order.shippingAddress?.addressLine2 && `(${order.shippingAddress.addressLine2})`}</span></p>
+                                      <p className="text-sm"><span className="font-bold text-gray-400 uppercase tracking-wider text-[10px] block mb-0.5">Ubicación</span> <span className="font-medium text-gray-800">{order.shippingAddress?.city}, {order.shippingAddress?.state} - CP: {order.shippingAddress?.postalCode}</span></p>
+                                    </div>
                                   </div>
 
-                                  {!order.isDelivered && (
+                                  {!order.isDelivered ? (
                                     <button 
                                       onClick={() => handleMarkAsDelivered(order._id)}
-                                      className="mt-6 w-full py-3 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors flex items-center justify-center gap-2"
+                                      className="mt-6 w-full py-4 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors flex items-center justify-center gap-2 shadow-lg hover:shadow-xl hover:-translate-y-0.5"
                                     >
-                                      <CheckCircle2 size={16} />
+                                      <CheckCircle2 size={18} />
                                       Marcar paquete como enviado
+                                    </button>
+                                  ) : (
+                                    <button 
+                                      onClick={() => handleUndeliver(order._id)}
+                                      className="mt-6 w-full py-3 border-2 border-red-100 text-red-500 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
+                                    >
+                                      <RotateCcw size={16} />
+                                      Deshacer Envío (Volver a Activas)
                                     </button>
                                   )}
                                 </div>
@@ -178,15 +247,15 @@ const OrdersTable = () => {
                                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
                                   <div className="flex items-center gap-2 mb-4 text-[#CAA959]">
                                     <ShoppingBag size={20} />
-                                    <h3 className="font-black uppercase tracking-widest text-sm text-[#202A36]">Productos a despachar</h3>
+                                    <h3 className="font-black uppercase tracking-widest text-sm text-[#202A36]">Productos a Empacar</h3>
                                   </div>
-                                  <div className="space-y-4 max-h-[250px] overflow-y-auto pr-2 custom-scrollbar">
+                                  <div className="space-y-4 max-h-[300px] overflow-y-auto pr-2 custom-scrollbar">
                                     {order.orderItems.map((item: any, i: number) => (
-                                      <div key={i} className="flex items-center gap-4 p-3 bg-gray-50 rounded-xl">
-                                        <img src={item.image} alt={item.name} className="w-12 h-12 rounded-lg object-cover bg-white" />
+                                      <div key={i} className="flex items-center gap-4 p-4 bg-gray-50 rounded-xl border border-gray-100">
+                                        <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover bg-white shadow-sm" />
                                         <div className="flex-1">
-                                          <p className="text-sm font-bold text-gray-800">{item.name}</p>
-                                          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Cantidad: {item.qty}</p>
+                                          <p className="text-base font-black text-gray-800 leading-tight">{item.name}</p>
+                                          <p className="text-xs font-black uppercase tracking-widest text-[#CAA959] mt-1">Cantidad: {item.qty}</p>
                                         </div>
                                       </div>
                                     ))}

@@ -125,4 +125,22 @@ router.put('/orders/:id/deliver', async (req, res) => {
   }
 });
 
+// Deshacer envío (Regresar al historial)
+router.put('/orders/:id/undeliver', async (req, res) => {
+  try {
+    const order = await Order.findById(req.params.id);
+    if (order) {
+      order.isDelivered = false;
+      order.deliveredAt = null;
+      const updatedOrder = await order.save();
+      res.json(updatedOrder);
+    } else {
+      res.status(404).json({ message: 'Orden no encontrada' });
+    }
+  } catch (error) {
+    console.error('❌ Error en PUT /orders/:id/undeliver:', error.message);
+    res.status(500).json({ message: 'Error al actualizar orden' });
+  }
+});
+
 export default router;

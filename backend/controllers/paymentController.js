@@ -1,5 +1,6 @@
 import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 import Order from '../models/Order.js';
+import Product from '../models/Product.js';
 import { sendOrderConfirmationEmail } from '../utils/emailService.js';
 import dotenv from 'dotenv';
 dotenv.config(); // Cargar variables de entorno AHORA para asegurar que el token exista
@@ -87,6 +88,40 @@ export const createPreference = async (req, res) => {
   }
 };
 
+// Helper function to process an approved order
+const processApprovedOrder = async (orderId, paymentInfo) => {
+  const order = await Order.findById(orderId);
+          
+  if (order && !order.isPaid) {
+    order.isPaid = true;
+    order.paidAt = Date.now();
+    order.paymentResult = {
+      mercadoPagoPaymentId: paymentInfo.id,
+      status: paymentInfo.status,
+      email_address: paymentInfo.payer?.email,
+      payment_method_id: paymentInfo.payment_method_id,
+      payment_type_id: paymentInfo.payment_type_id
+    };
+    
+    await order.save();
+    console.log(`✅ Orden ${orderId} pagada correctamente.`);
+
+    // 🌟 Descontar stock 🌟
+    for (const item of order.orderItems) {
+      const product = await Product.findById(item.product);
+      if (product) {
+        product.countInStock = Math.max(0, product.countInStock - item.qty);
+        await product.save();
+      }
+    }
+    
+    // 🌟 Enviar email al cliente 🌟
+    if (order.guestInfo && order.guestInfo.email) {
+      await sendOrderConfirmationEmail(order);
+    }
+  }
+};
+
 // @desc    Recibir notificaciones de MP (Webhook)
 // @route   POST /api/orders/webhook
 // @access  Public
@@ -104,27 +139,8 @@ export const mercadoPagoWebhook = async (req, res) => {
       
       if (paymentInfo.status === 'approved') {
         const orderId = paymentInfo.external_reference;
-        
         if (orderId) {
-          const order = await Order.findById(orderId);
-          
-          if (order && !order.isPaid) {
-            order.isPaid = true;
-            order.paidAt = Date.now();
-            order.paymentResult = {
-              mercadoPagoPaymentId: paymentId,
-              status: paymentInfo.status,
-              email_address: paymentInfo.payer?.email
-            };
-            
-            await order.save();
-            console.log(`✅ Orden ${orderId} pagada correctamente.`);
-            
-            // 🌟 Enviar email al cliente 🌟
-            if (order.guestInfo && order.guestInfo.email) {
-              await sendOrderConfirmationEmail(order);
-            }
-          }
+          await processApprovedOrder(orderId, paymentInfo);
         }
       }
     }
@@ -151,24 +167,7 @@ export const verifyPaymentFallback = async (req, res) => {
     const paymentInfo = await paymentClient.get({ id: payment_id });
     
     if (paymentInfo.status === 'approved') {
-      const order = await Order.findById(external_reference);
-      
-      if (order && !order.isPaid) {
-        order.isPaid = true;
-        order.paidAt = Date.now();
-        order.paymentResult = {
-          mercadoPagoPaymentId: payment_id,
-          status: paymentInfo.status,
-          email_address: paymentInfo.payer?.email
-        };
-        
-        await order.save();
-        console.log(`✅ Orden ${external_reference} pagada (verificada por Fallback de Frontend).`);
-        
-        if (order.guestInfo && order.guestInfo.email) {
-          await sendOrderConfirmationEmail(order);
-        }
-      }
+      await processApprovedOrder(external_reference, paymentInfo);
       return res.json({ message: 'Pago verificado exitosamente' });
     } else {
       return res.status(400).json({ message: 'El pago no está aprobado' });

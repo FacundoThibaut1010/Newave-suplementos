@@ -42,7 +42,9 @@ const orderSchema = new mongoose.Schema(
       update_time: { type: String },
       email_address: { type: String },
       mercadoPagoPaymentId: { type: String }, // ID real de Mercado Pago una vez aprobado
-      mercadoPagoPreferenceId: { type: String } // ID de la preferencia generada
+      mercadoPagoPreferenceId: { type: String }, // ID de la preferencia generada
+      payment_method_id: { type: String }, // ej: visa, master, account_money
+      payment_type_id: { type: String } // ej: credit_card, ticket, account_money
     },
     taxPrice: {
       type: Number,
