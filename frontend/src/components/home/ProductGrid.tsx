@@ -105,16 +105,17 @@ const ProductGrid = () => {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-16">
+        <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 md:overflow-x-visible md:pb-0 scrollbar-hide">
           {sortedProducts.map((product) => (
-            <ProductCard
-              key={product._id}
-              id={product._id}
-              {...product}
-              category={product.category?.name || 'General'}
-              image={product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
-              darkTheme
-            />
+            <div key={product._id} className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0">
+              <ProductCard
+                id={product._id}
+                {...product}
+                category={product.category?.name || 'General'}
+                image={product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
+                darkTheme
+              />
+            </div>
           ))}
         </div>
       </div>

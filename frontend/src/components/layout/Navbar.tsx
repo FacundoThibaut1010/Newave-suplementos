@@ -60,8 +60,8 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <nav className="fixed top-10 left-0 w-full bg-black/40 backdrop-blur-2xl text-white z-[50] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] border-b border-white/10">
-        <div className="mx-auto px-6 lg:px-10">
+      <nav className="fixed top-0 md:top-10 left-0 w-full bg-black/40 backdrop-blur-2xl text-white z-[50] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] border-b border-white/10">
+        <div className="mx-auto px-4 lg:px-10">
           <div className="flex justify-between items-center h-20">
 
             {/* Left: Menu */}
@@ -88,7 +88,7 @@ const Navbar = () => {
                       exit={{ opacity: 0, y: 15, scale: 0.95 }}
                       transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                       className="
-                        absolute top-full left-0 mt-6 w-80
+                        absolute top-full left-0 mt-6 w-[90vw] max-w-[20rem]
                         bg-black/90 backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.8)] 
                         rounded-[2.5rem] border border-white/10 overflow-hidden 
                         flex flex-col z-50 p-6

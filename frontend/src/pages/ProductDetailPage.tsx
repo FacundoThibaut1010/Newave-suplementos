@@ -89,7 +89,7 @@ const ProductDetailPage = () => {
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[2.5rem] p-8 flex items-center justify-center overflow-hidden"
+              className="relative aspect-square md:aspect-[4/5] max-w-md mx-auto w-full bg-[#F8F9FA] rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden"
             >
               <img 
                 src={product.images?.[0] || product.image || ''} 
