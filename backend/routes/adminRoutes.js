@@ -2,7 +2,7 @@ import express from 'express';
 import Product from '../models/Product.js';
 import StoreConfig from '../models/StoreConfig.js';
 import Order from '../models/Order.js';
-import { sendOrderDispatchedEmail } from '../utils/emailService.js';
+import { sendOrderDispatchedEmail, sendOrderDeliveredEmail } from '../utils/emailService.js';
 
 const router = express.Router();
 
@@ -140,6 +140,12 @@ router.put('/orders/:id/deliver', async (req, res) => {
       order.isDelivered = true;
       order.deliveredAt = Date.now();
       const updatedOrder = await order.save();
+
+      // Enviar email de paquete entregado al cliente
+      if (order.guestInfo && order.guestInfo.email) {
+        await sendOrderDeliveredEmail(order);
+      }
+
       res.json(updatedOrder);
     } else {
       res.status(404).json({ message: 'Orden no encontrada' });

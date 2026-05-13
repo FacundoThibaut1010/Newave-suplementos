@@ -145,3 +145,62 @@ export const sendOrderDispatchedEmail = async (order) => {
     console.error('❌ Error enviando email de despacho:', error.message);
   }
 };
+
+export const sendOrderDeliveredEmail = async (order) => {
+  try {
+    if (!process.env.BREVO_API_KEY) {
+      console.warn('⚠️ BREVO_API_KEY no configurada. Simulando envío de ENTREGA a:', order.guestInfo.email);
+      return;
+    }
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="background: #10B981; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; color: #fff; font-weight: 900; font-size: 20px; font-style: italic; margin: 0 auto 10px;">✓</div>
+          <h1 style="color: #202A36; font-style: italic; text-transform: uppercase; margin: 0; font-weight: 900; font-size: 24px;">¡Paquete Entregado!</h1>
+          <p style="color: #666; margin-top: 10px; font-size: 16px;">Tu pedido ha sido entregado exitosamente. ¡Esperamos que lo disfrutes!</p>
+        </div>
+        
+        <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Datos de Entrega</h3>
+        <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; color: #555; line-height: 1.6;">
+          <strong>${order.guestInfo.fullName}</strong><br>
+          ${order.shippingAddress.address} ${order.shippingAddress.addressLine2 ? `(${order.shippingAddress.addressLine2})` : ''}<br>
+          ${order.shippingAddress.city}, ${order.shippingAddress.state} CP: ${order.shippingAddress.postalCode}
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #aaa; font-size: 12px;">
+          <p>Gracias por tu compra. ¡Te esperamos pronto en Newave!</p>
+          <p>&copy; ${new Date().getFullYear()} Newave Store. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    `;
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'Newave Store',
+          email: 'newavesuplementos2026@gmail.com'
+        },
+        to: [{ email: order.guestInfo.email, name: order.guestInfo.fullName }],
+        subject: '¡Tu paquete de Newave ha sido entregado! 🎉',
+        htmlContent: htmlContent
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(JSON.stringify(errorData));
+    }
+
+    console.log(`✉️ Email de ENTREGA enviado a ${order.guestInfo.email} vía Brevo`);
+
+  } catch (error) {
+    console.error('❌ Error enviando email de entrega:', error.message);
+  }
+};

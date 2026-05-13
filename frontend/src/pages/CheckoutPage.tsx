@@ -110,6 +110,10 @@ const CheckoutPage = () => {
   const { register, handleSubmit, formState: { errors, isValid } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     mode: 'onChange',
+    defaultValues: {
+      email: user?.email || '',
+      fullName: user?.name || ''
+    }
   });
 
   const onSubmit = async (data: CheckoutFormData) => {
@@ -218,8 +222,13 @@ const CheckoutPage = () => {
                 </div>
                 <div className="grid md:grid-cols-2 gap-5">
                   <input {...register('fullName')} placeholder="Nombre completo" className="input-field" />
-                  <input {...register('email')} placeholder="Email" className="input-field" />
-
+                  <input 
+                    {...register('email')} 
+                    placeholder="Email" 
+                    className="input-field bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200" 
+                    readOnly 
+                    title="Email asociado a tu cuenta de Google"
+                  />
                   <div className="md:col-span-2 relative">
                     <input
                       {...register('phone')}
