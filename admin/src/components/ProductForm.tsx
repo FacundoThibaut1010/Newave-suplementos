@@ -134,7 +134,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                     const formatted = rawValue ? Number(rawValue).toLocaleString('es-AR') : '';
                     setFormData({ ...formData, price: formatted });
                   }}
-                  className="input-admin w-full"
+                  className="input-admin w-full text-black placeholder:text-gray-400"
                 />
               </div>
               <div>
@@ -143,7 +143,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   type="number"
                   value={formData.countInStock}
                   onChange={(e) => setFormData({ ...formData, countInStock: e.target.value })}
-                  className="input-admin w-full"
+                  className="input-admin w-full text-black placeholder:text-gray-400"
                 />
               </div>
             </div>
@@ -191,7 +191,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="input-admin w-full h-[154px] resize-none py-4 leading-relaxed"
+                className="input-admin w-full h-[154px] resize-none py-4 leading-relaxed text-black placeholder:text-gray-400"
                 placeholder="Describe los materiales, dimensiones y el alma de esta pieza..."
               />
             </div>

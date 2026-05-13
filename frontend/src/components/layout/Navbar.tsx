@@ -60,7 +60,7 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <nav className="fixed top-0 md:top-10 left-0 w-full bg-black/40 backdrop-blur-2xl text-white z-[50] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] border-b border-white/10">
+      <nav className="fixed top-12 md:top-10 left-0 w-full bg-black/40 backdrop-blur-2xl text-white z-[50] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] border-b border-white/10">
         <div className="mx-auto px-4 lg:px-10">
           <div className="flex justify-between items-center h-20">
 

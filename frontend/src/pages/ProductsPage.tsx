@@ -112,8 +112,8 @@ const ProductsPage = () => {
   return (
     <div className="pt-32 pb-24 bg-[#0A0A0B] min-h-screen">
       <div className="max-w-7xl mx-auto px-6 mb-16">
-        <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 border-b border-white/10 pb-8">
-          <div>
+        <div className="flex flex-col md:flex-row justify-between items-center md:items-center text-center md:text-left gap-6 border-b border-white/10 pb-8">
+          <div className="flex flex-col items-center md:items-start w-full md:w-auto">
             <h1 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
               {selectedCategory === 'Todas' ? 'Catálogo' : selectedCategory}
             </h1>
@@ -121,7 +121,7 @@ const ProductsPage = () => {
               {filteredAndSortedProducts.length} Resultados
             </p>
           </div>
-          <div className="flex gap-4 items-center relative z-40">
+          <div className="flex justify-center w-full md:w-auto gap-4 items-center relative z-40">
             <CustomSelect
               value={selectedCategory}
               onChange={setSelectedCategory}
@@ -144,7 +144,7 @@ const ProductsPage = () => {
         ) : (
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:overflow-x-visible md:pb-0 scrollbar-hide">
             {filteredAndSortedProducts.map((product) => (
-              <div key={product._id} className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0">
+              <div key={product._id} className="min-w-[65vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0">
                 <ProductCard
                   id={product._id}
                   {...product}

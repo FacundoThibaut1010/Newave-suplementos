@@ -19,7 +19,7 @@ const TopBar = () => {
   }, []);
 
   return (
-    <div className="bg-black text-white h-10 flex items-center justify-center overflow-hidden fixed top-0 w-full z-[60]">
+    <div className="bg-black text-white min-h-[3rem] h-12 md:h-10 flex items-center justify-center overflow-hidden fixed top-0 w-full z-[60] px-4 text-center">
       <AnimatePresence mode="wait">
         <motion.p
           key={index}

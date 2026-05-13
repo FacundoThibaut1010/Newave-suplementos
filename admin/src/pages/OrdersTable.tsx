@@ -144,12 +144,12 @@ const OrdersTable = () => {
             <table className="w-full text-left border-collapse">
               <thead>
                 <tr className="bg-gray-50/50 border-b border-gray-100">
-                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ID / Fecha</th>
-                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Cliente</th>
-                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Productos</th>
-                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total / Pago</th>
-                  <th className="p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Estado</th>
-                  <th className="p-6"></th>
+                  <th className="p-3 md:p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">ID / Fecha</th>
+                  <th className="hidden md:table-cell p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Cliente</th>
+                  <th className="hidden md:table-cell p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Productos</th>
+                  <th className="p-3 md:p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Total / Pago</th>
+                  <th className="p-3 md:p-6 text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">Estado</th>
+                  <th className="p-3 md:p-6"></th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-50">
@@ -159,16 +159,20 @@ const OrdersTable = () => {
                       className={`hover:bg-gray-50/30 transition-colors group cursor-pointer ${expandedRow === order._id ? 'bg-gray-50/50' : ''}`}
                       onClick={() => toggleRow(order._id)}
                     >
-                      <td className="p-6">
+                      <td className="p-3 md:p-6">
                         <div className="flex flex-col gap-1">
-                          <span className="font-mono text-xs text-gray-900 font-bold">#{order._id.slice(-6).toUpperCase()}</span>
-                          <div className="flex items-center gap-1 text-[10px] text-gray-400 font-bold uppercase">
+                          <span className="font-mono text-xs md:text-xs text-gray-900 font-bold">#{order._id.slice(-6).toUpperCase()}</span>
+                          <div className="flex items-center gap-1 text-[9px] md:text-[10px] text-gray-400 font-bold uppercase">
                             <Calendar size={12} />
                             {new Date(order.createdAt).toLocaleDateString('es-AR')}
                           </div>
+                          {/* Cliente en mobile */}
+                          <div className="md:hidden mt-1 flex flex-col">
+                            <span className="text-[10px] font-black text-[#202A36] capitalize leading-tight">{order.guestInfo?.fullName || 'Invitado'}</span>
+                          </div>
                         </div>
                       </td>
-                      <td className="p-6">
+                      <td className="hidden md:table-cell p-6">
                         <div className="flex flex-col gap-1">
                           <div className="flex items-center gap-2">
                             <div className="w-8 h-8 rounded-full bg-[#CAA959]/10 flex items-center justify-center text-[#CAA959]">
@@ -181,7 +185,7 @@ const OrdersTable = () => {
                           </div>
                         </div>
                       </td>
-                      <td className="p-6">
+                      <td className="hidden md:table-cell p-6">
                         <div className="flex items-center gap-3">
                           <div className="flex -space-x-2">
                             {order.orderItems.slice(0, 3).map((item: any, i: number) => (
@@ -193,34 +197,34 @@ const OrdersTable = () => {
                           )}
                         </div>
                       </td>
-                      <td className="p-6">
+                      <td className="p-3 md:p-6">
                         <div className="flex flex-col gap-1">
-                          <span className="text-sm font-black text-[#202A36]">${order.totalPrice.toLocaleString('es-AR')}</span>
-                          <div className="flex items-center gap-1 text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-2 py-1 rounded-md w-fit">
+                          <span className="text-xs md:text-sm font-black text-[#202A36]">${order.totalPrice.toLocaleString('es-AR')}</span>
+                          <div className="flex items-center gap-1 text-[9px] md:text-[10px] font-bold text-gray-500 uppercase tracking-wider bg-gray-100 px-1.5 md:px-2 py-0.5 md:py-1 rounded-md w-fit">
                             <CreditCard size={12} />
                             {formatPaymentMethod(order.paymentResult?.payment_method_id, order.paymentResult?.payment_type_id)}
                           </div>
                         </div>
                       </td>
-                      <td className="p-6">
+                      <td className="p-3 md:p-6">
                         {order.isDelivered ? (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
-                            <CheckCircle2 size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">Entregado</span>
+                          <div className="inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-emerald-50 border border-emerald-100 text-emerald-600">
+                            <CheckCircle2 size={12} className="md:w-[14px] md:h-[14px]" />
+                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest">Entregado</span>
                           </div>
                         ) : order.isDispatched ? (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600">
-                            <Truck size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">En Camino</span>
+                          <div className="inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-blue-50 border border-blue-100 text-blue-600">
+                            <Truck size={12} className="md:w-[14px] md:h-[14px]" />
+                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest">En Camino</span>
                           </div>
                         ) : (
-                          <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-amber-50 border border-amber-100 text-amber-600 animate-pulse">
-                            <PackageOpen size={14} />
-                            <span className="text-[10px] font-black uppercase tracking-widest">A Despachar</span>
+                          <div className="inline-flex items-center gap-1 md:gap-1.5 px-2 md:px-3 py-1 md:py-1.5 rounded-full bg-amber-50 border border-amber-100 text-amber-600 animate-pulse">
+                            <PackageOpen size={12} className="md:w-[14px] md:h-[14px]" />
+                            <span className="text-[9px] md:text-[10px] font-black uppercase tracking-widest">Armar</span>
                           </div>
                         )}
                       </td>
-                      <td className="p-6 text-right">
+                      <td className="p-3 md:p-6 text-right">
                         <ChevronDown size={20} className={`text-gray-400 transition-transform ${expandedRow === order._id ? 'rotate-180' : ''}`} />
                       </td>
                     </tr>
@@ -236,7 +240,7 @@ const OrdersTable = () => {
                               exit={{ height: 0, opacity: 0 }}
                               className="overflow-hidden"
                             >
-                              <div className="p-8 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-8">
+                              <div className="p-4 md:p-8 border-t border-gray-100 grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-8">
                                 
                                 {/* Detalles de Envío */}
                                 <div className="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col justify-between">

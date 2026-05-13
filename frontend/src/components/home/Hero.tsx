@@ -57,7 +57,7 @@ const Hero = () => {
           transition={{ duration: 1, ease: "easeOut" }}
           className="max-w-3xl text-center lg:text-left relative py-8 lg:py-0 z-20 lg:z-0"
         >
-          <div className="flex items-center justify-center lg:justify-start gap-2 mb-6">
+          <div className="hidden lg:flex items-center justify-center lg:justify-start gap-2 mb-6">
             <div className="h-[2px] w-8 lg:w-12 bg-[#CAA959]" />
             <span className="text-[#CAA959] text-[10px] lg:text-xs font-black uppercase tracking-[0.4em] drop-shadow-md">Strength & Performance</span>
           </div>
@@ -65,7 +65,7 @@ const Hero = () => {
           <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.9] text-white tracking-tighter uppercase mb-6 lg:mb-8 drop-shadow-2xl">
             Energía.<br />
             Fuerza.<br />
-            <span className="text-transparent tracking-normal font-bold" style={{ WebkitTextStroke: isMobile ? '1.5px #CAA959' : '1.5px #CAA959', paintOrder: 'stroke fill', fontFamily: 'Inter, sans-serif' }}>Resultados.</span>
+            <span className="text-transparent tracking-normal font-bold" style={{ WebkitTextStroke: isMobile ? '1px #CAA959' : '2px #CAA959', paintOrder: 'stroke fill', fontFamily: 'Inter, sans-serif' }}>Resultados.</span>
           </h1>
 
           <p className="text-base md:text-xl text-white lg:text-zinc-400 mb-8 lg:mb-12 max-w-xl mx-auto lg:mx-0 font-semibold lg:font-medium leading-relaxed drop-shadow-lg">

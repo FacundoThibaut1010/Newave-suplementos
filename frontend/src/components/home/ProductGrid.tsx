@@ -90,12 +90,12 @@ const ProductGrid = () => {
   return (
     <section id="combos" className="py-16 bg-[#0A0A0B] scroll-mt-[120px]">
       <div className="max-w-7xl mx-auto px-6 mb-12">
-        <div className="flex flex-col md:flex-row justify-between items-end md:items-center gap-6 mb-8">
-          <div>
+        <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 mb-8">
+          <div className="w-full flex flex-col items-center md:items-start">
             <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">Combos</h3>
             <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Nuestros combos especiales</p>
           </div>
-          <div className="flex gap-4 items-center relative z-40">
+          <div className="flex gap-4 items-center justify-center relative z-40 w-full md:w-auto">
             <CustomSelect
               value={sortBy}
               onChange={setSortBy}
@@ -107,7 +107,7 @@ const ProductGrid = () => {
 
         <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 md:overflow-x-visible md:pb-0 scrollbar-hide">
           {sortedProducts.map((product) => (
-            <div key={product._id} className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0">
+            <div key={product._id} className="min-w-[65vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0">
               <ProductCard
                 id={product._id}
                 {...product}

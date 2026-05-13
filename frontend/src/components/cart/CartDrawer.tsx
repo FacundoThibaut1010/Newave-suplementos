@@ -41,9 +41,9 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
               </div>
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-gray-100 rounded-full transition-colors"
+                className="p-4 md:p-3 bg-gray-50 border border-gray-200 shadow-sm hover:bg-gray-100 rounded-full transition-colors"
               >
-                <X size={20} />
+                <X size={32} className="text-black" />
               </button>
             </div>
 

@@ -91,9 +91,9 @@ const InventoryTable = () => {
           <table className="w-full text-left">
             <thead>
               <tr className="border-b border-gray-50 uppercase text-[10px] font-black tracking-widest text-gray-400">
-                <th className="px-8 py-6">Producto</th>
-                <th className="px-8 py-6">Stock</th>
-                <th className="px-8 py-6 text-right">Acciones</th>
+                <th className="px-4 md:px-8 py-4 md:py-6">Producto</th>
+                <th className="hidden md:table-cell px-8 py-6">Stock</th>
+                <th className="px-4 md:px-8 py-4 md:py-6 text-right">Acciones</th>
               </tr>
             </thead>
             <tbody className="divide-y divide-gray-50">
@@ -107,16 +107,24 @@ const InventoryTable = () => {
                     exit={{ opacity: 0, scale: 0.98 }}
                     className="hover:bg-[#F9F9F9] transition-colors"
                   >
-                    <td className="px-8 py-6">
-                      <div className="flex items-center gap-4">
-                        <img src={p.images?.[0]} className="w-12 h-12 rounded-xl object-cover border border-gray-100" />
+                    <td className="px-4 md:px-8 py-4 md:py-6">
+                      <div className="flex items-center gap-2 md:gap-4">
+                        <img src={p.images?.[0]} className="w-10 h-10 md:w-12 md:h-12 rounded-xl object-cover border border-gray-100" />
                         <div className="flex flex-col">
-                          <span className="font-bold text-sm text-black">{p.name}</span>
-                          <span className="text-xs font-bold text-gray-500 mt-0.5">${p.price}</span>
+                          <span className="font-bold text-xs md:text-sm text-black line-clamp-1">{p.name}</span>
+                          <span className="text-[10px] md:text-xs font-bold text-gray-500 mt-0.5">${p.price}</span>
+                          {/* Stock in mobile */}
+                          <div className="md:hidden mt-1">
+                            {p.countInStock <= 5 ? (
+                              <span className="text-[10px] text-red-500 font-bold">{p.countInStock === 0 ? 'Agotado' : `${p.countInStock} unids`}</span>
+                            ) : (
+                              <span className="text-[10px] text-green-600 font-bold">{p.countInStock} unids</span>
+                            )}
+                          </div>
                         </div>
                       </div>
                     </td>
-                    <td className="px-8 py-6">
+                    <td className="hidden md:table-cell px-8 py-6">
                       <div className="flex flex-col gap-1">
                         {p.countInStock <= 5 ? (
                           <div className="flex items-center gap-2 text-red-500 font-bold text-sm">
@@ -134,8 +142,8 @@ const InventoryTable = () => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-8 py-6 text-right">
-                      <div className="flex justify-end gap-2">
+                    <td className="px-4 md:px-8 py-4 md:py-6 text-right">
+                      <div className="flex justify-end gap-1 md:gap-2">
                         <button 
                           onClick={() => openEdit(p)}
                           className="p-2 text-gray-400 hover:text-black hover:bg-white hover:shadow-sm rounded-xl transition-all"
