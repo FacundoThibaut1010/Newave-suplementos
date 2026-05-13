@@ -54,11 +54,11 @@ export const createPreference = async (req, res) => {
           email: guestInfo.email,
         },
         back_urls: {
-          success: `${process.env.CLIENT_URL || 'http://localhost:5173'}/checkout/success`,
-          failure: `${process.env.CLIENT_URL || 'http://localhost:5173'}/checkout`,
-          pending: `${process.env.CLIENT_URL || 'http://localhost:5173'}/checkout`,
+          success: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/checkout/success`,
+          failure: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/checkout`,
+          pending: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/checkout`,
         },
-        ...((process.env.CLIENT_URL && !process.env.CLIENT_URL.includes('localhost')) && { auto_return: 'approved' }),
+        ...((process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('localhost')) && { auto_return: 'approved' }),
         external_reference: String(createdOrder._id), // Para asociarlo en el webhook
         ...(process.env.WEBHOOK_URL && { notification_url: `${process.env.WEBHOOK_URL}/api/orders/webhook` })
       }
