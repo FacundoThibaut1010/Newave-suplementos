@@ -142,9 +142,9 @@ const ProductsPage = () => {
             <p className="text-gray-500 text-lg">Aún no hay productos disponibles en esta categoría.</p>
           </div>
         ) : (
-          <div className="flex overflow-x-auto snap-x snap-mandatory gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:overflow-x-visible md:pb-0 scrollbar-hide">
+          <div className="grid grid-cols-2 gap-4 pb-8 md:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:pb-0">
             {filteredAndSortedProducts.map((product) => (
-              <div key={product._id} className="min-w-[65vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0">
+              <div key={product._id} className="w-full">
                 <ProductCard
                   id={product._id}
                   {...product}

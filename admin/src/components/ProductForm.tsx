@@ -96,7 +96,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-10"
+        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 max-h-[90vh] overflow-y-auto"
       >
         <div className="flex justify-between items-center mb-10">
           <div>
@@ -118,7 +118,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 type="text"
                 value={formData.name}
                 onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                className="input-admin w-full"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 placeholder="Ej: Silla Gravity"
               />
             </div>
@@ -134,7 +134,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                     const formatted = rawValue ? Number(rawValue).toLocaleString('es-AR') : '';
                     setFormData({ ...formData, price: formatted });
                   }}
-                  className="input-admin w-full text-black placeholder:text-gray-400"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
               <div>
@@ -143,7 +143,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   type="number"
                   value={formData.countInStock}
                   onChange={(e) => setFormData({ ...formData, countInStock: e.target.value })}
-                  className="input-admin w-full text-black placeholder:text-gray-400"
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
             </div>
@@ -154,7 +154,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 type="text"
                 value={formData.image}
                 onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="input-admin w-full text-xs"
+                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 placeholder="Pega la URL aquí..."
               />
             </div>
@@ -191,7 +191,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               <textarea
                 value={formData.description}
                 onChange={(e) => setFormData({ ...formData, description: e.target.value })}
-                className="input-admin w-full h-[154px] resize-none py-4 leading-relaxed text-black placeholder:text-gray-400"
+                className="w-full h-[154px] bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5 resize-none leading-relaxed"
                 placeholder="Describe los materiales, dimensiones y el alma de esta pieza..."
               />
             </div>

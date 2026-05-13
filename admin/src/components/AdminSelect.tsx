@@ -39,7 +39,7 @@ const AdminSelect = ({ value, onChange, options, placeholder = 'Selecciona...', 
           }
         `}
       >
-        <span className="font-bold truncate">
+        <span className="font-bold text-left break-words pr-2">
           {selectedOption ? selectedOption.label : placeholder}
         </span>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
