@@ -58,7 +58,7 @@ const ProductCard = ({ id, name, price, category, image, darkTheme }: ProductCar
       initial={{ opacity: 0, y: 20 }}
       whileInView={{ opacity: 1, y: 0 }}
       viewport={{ once: true }}
-      className="group cursor-pointer"
+      className="group cursor-pointer h-full flex flex-col"
     >
       <div className="relative aspect-square md:aspect-[4/5] rounded-3xl overflow-hidden bg-[#F8F9FA] mb-6 border border-gray-100">
         <Link to={`/producto/${id}`}>
@@ -98,16 +98,16 @@ const ProductCard = ({ id, name, price, category, image, darkTheme }: ProductCar
         </div>
       </div>
 
-      <div className="px-1 text-center md:text-left">
+      <div className="px-1 text-center md:text-left flex flex-col flex-grow">
         <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-2">
           {category}
         </p>
-        <Link to={`/producto/${id}`}>
-          <h3 className={`text-xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#CAA959] transition-colors ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
+        <Link to={`/producto/${id}`} className="flex-grow">
+          <h3 className={`text-xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#CAA959] transition-colors line-clamp-2 ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
             {name}
           </h3>
         </Link>
-        <div className="flex items-center justify-center md:justify-start gap-2">
+        <div className="flex items-center justify-center md:justify-start gap-2 mt-auto pt-2">
           <span className="font-black text-xl text-[#CAA959] italic">${Number(price).toLocaleString('es-AR')}</span>
           <span className="text-xs text-gray-400 line-through font-bold">${Math.round(price * 1.2).toLocaleString('es-AR')}</span>
         </div>

@@ -148,7 +148,7 @@ const ProductsPage = () => {
         ) : (
           <div className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:overflow-x-visible md:pb-0 scrollbar-hide">
             {filteredAndSortedProducts.map((product) => (
-              <div key={product._id} className="min-w-[45vw] sm:min-w-[40vw] md:min-w-0 snap-center shrink-0">
+              <div key={product._id} className="min-w-[45vw] sm:min-w-[40vw] md:min-w-0 snap-center shrink-0 h-full">
                 <ProductCard
                   id={product._id}
                   {...product}
