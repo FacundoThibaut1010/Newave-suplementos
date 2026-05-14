@@ -76,7 +76,7 @@ const ProductDetailPage = () => {
   };
 
   return (
-    <div className="min-h-screen bg-[#F4F4F4] pt-32 pb-20">
+    <div className="min-h-screen bg-[#F4F4F4] pt-40 md:pt-48 pb-20">
       <div className="max-w-7xl mx-auto px-6">
         <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
           <ArrowLeft size={14} /> Volver a la tienda

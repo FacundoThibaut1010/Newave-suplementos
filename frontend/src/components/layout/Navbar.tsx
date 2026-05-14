@@ -7,6 +7,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { Link, useNavigate } from 'react-router-dom';
 import apiClient from '../../api/apiClient';
 import AuthModal from '../auth/AuthModal';
+import SearchModal from './SearchModal';
 
 const Navbar = () => {
   const totalItems = useCartStore((state) => state.totalItems());
@@ -17,6 +18,7 @@ const Navbar = () => {
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [hasCombos, setHasCombos] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+  const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
 
   useEffect(() => {
@@ -46,6 +48,7 @@ const Navbar = () => {
   return (
     <>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
+      <SearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
       
       <AnimatePresence>
         {isMenuOpen && (
@@ -215,7 +218,10 @@ const Navbar = () => {
 
             {/* Right: Actions */}
             <div className="flex-1 flex items-center justify-end gap-2 lg:gap-4">
-              <button className="flex items-center gap-2 group p-3 rounded-full transition-all focus:outline-none hidden md:flex">
+              <button 
+                onClick={() => setIsSearchModalOpen(true)}
+                className="flex items-center gap-2 group p-2 md:p-3 rounded-full transition-all focus:outline-none"
+              >
                 <Search size={20} strokeWidth={2.5} className="group-hover:text-[#CAA959] transition-all duration-300" />
               </button>
 

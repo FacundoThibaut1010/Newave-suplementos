@@ -31,15 +31,15 @@ const MyOrdersPage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F4F4] text-black pt-32 pb-20">
+    <div className="min-h-screen bg-[#F4F4F4] text-black pt-40 md:pt-48 pb-20">
       <div className="max-w-5xl mx-auto px-6">
         
         <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
           <ArrowLeft size={14} /> Volver a la tienda
         </Link>
 
-        <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-4 text-[#202A36]">Mis Compras</h1>
-        <p className="text-gray-500 font-medium mb-12">Aquí puedes hacerle seguimiento a todos tus pedidos en Newave.</p>
+        <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-4 text-[#202A36] text-center md:text-left">Mis Compras</h1>
+        <p className="text-gray-500 font-medium mb-12 text-center md:text-left">Aquí puedes hacerle seguimiento a todos tus pedidos en Newave.</p>
 
         {isLoading ? (
           <div className="flex justify-center p-20">
