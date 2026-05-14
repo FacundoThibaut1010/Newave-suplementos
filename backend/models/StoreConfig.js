@@ -4,7 +4,7 @@ const storeConfigSchema = new mongoose.Schema({
   hero: {
     title: { type: String, default: 'Pure Essence.' },
     subtitle: { type: String, default: 'Piezas de autor curadas para transformar tu espacio cotidiano.' },
-    image: { type: String, default: 'https://images.unsplash.com/photo-1586023492125-27b2c045efd7' },
+    image: { type: String, default: '' },
     buttonText: { type: String, default: 'Ver Catálogo' }
   },
   announcement: {

@@ -63,9 +63,25 @@ const Hero = () => {
           </div>
 
           <h1 className="text-5xl md:text-7xl lg:text-8xl xl:text-9xl font-black leading-[0.9] text-white tracking-tighter uppercase mb-6 lg:mb-8 drop-shadow-2xl">
-            Energía.<br />
-            Fuerza.<br />
-            <span className="lg:text-transparent text-[#CAA959] tracking-normal font-bold" style={{ WebkitTextStroke: isMobile ? '0px' : '2px #CAA959', paintOrder: 'stroke fill', fontFamily: 'Inter, sans-serif' }}>Resultados.</span>
+            {config.title ? (
+              <>
+                {config.title.split(' ').map((word: string, i: number, arr: any[]) => (
+                  <span key={i}>
+                    {i === arr.length - 1 ? (
+                      <span className="lg:text-transparent text-[#CAA959] tracking-normal font-bold" style={{ WebkitTextStroke: isMobile ? '0px' : '2px #CAA959', paintOrder: 'stroke fill', fontFamily: 'Inter, sans-serif' }}>{word}</span>
+                    ) : (
+                      <>{word}<br /></>
+                    )}
+                  </span>
+                ))}
+              </>
+            ) : (
+              <>
+                Energía.<br />
+                Fuerza.<br />
+                <span className="lg:text-transparent text-[#CAA959] tracking-normal font-bold" style={{ WebkitTextStroke: isMobile ? '0px' : '2px #CAA959', paintOrder: 'stroke fill', fontFamily: 'Inter, sans-serif' }}>Resultados.</span>
+              </>
+            )}
           </h1>
 
           <p className="text-base md:text-xl text-white lg:text-zinc-400 mb-8 lg:mb-12 max-w-xl mx-auto lg:mx-0 font-semibold lg:font-medium leading-relaxed drop-shadow-lg">
@@ -104,7 +120,7 @@ const Hero = () => {
         >
           <div className="relative w-full max-w-[600px] lg:max-w-[1400px] h-[120%] lg:h-[200%] flex items-center justify-center lg:justify-end -translate-y-24 lg:translate-x-20 lg:-translate-y-12 drop-shadow-[0_0_100px_rgba(202,169,89,0.15)] lg:drop-shadow-[0_0_180px_rgba(202,169,89,0.3)] opacity-40 lg:opacity-100">
             <img
-              src={heroProducts}
+              src={(!config.image || config.image.trim() === '' || config.image.includes('unsplash.com')) ? heroProducts : config.image}
               alt="Newave Performance Products"
               className="w-auto h-full max-h-none object-contain lg:object-right"
             />

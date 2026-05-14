@@ -1,14 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { PackageOpen, Calendar, CreditCard, ShoppingBag, Truck, MapPin, ChevronDown, CheckCircle2, RotateCcw, User, Send } from 'lucide-react';
+import { PackageOpen, Calendar, CreditCard, ShoppingBag, Truck, MapPin, ChevronDown, CheckCircle2, RotateCcw, User, Send, Trash2 } from 'lucide-react';
 import apiClient from '../api/apiClient';
 import { toast } from 'sonner';
+import ConfirmModal from '../components/ConfirmModal';
 
 const OrdersTable = () => {
   const [orders, setOrders] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [expandedRow, setExpandedRow] = useState<string | null>(null);
   const [activeTab, setActiveTab] = useState<'activas' | 'despachadas' | 'entregadas'>('activas');
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [orderToDelete, setOrderToDelete] = useState<string | null>(null);
 
   useEffect(() => {
     fetchOrders();
@@ -55,6 +58,25 @@ const OrdersTable = () => {
       setExpandedRow(null);
     } catch (error) {
       toast.error('Error al actualizar la orden');
+    }
+  };
+
+  const confirmDeleteOrder = (orderId: string) => {
+    setOrderToDelete(orderId);
+    setDeleteModalOpen(true);
+  };
+
+  const executeDeleteOrder = async () => {
+    if (!orderToDelete) return;
+    try {
+      await apiClient.delete(`/admin/orders/${orderToDelete}`);
+      toast.success('¡Venta eliminada con éxito!');
+      fetchOrders();
+      setExpandedRow(null);
+    } catch (error) {
+      toast.error('Error al eliminar la venta');
+    } finally {
+      setOrderToDelete(null);
     }
   };
 
@@ -273,13 +295,22 @@ const OrdersTable = () => {
                                       Marcar como Entregado al Cliente
                                     </button>
                                   ) : (
-                                    <button 
-                                      onClick={(e) => { e.stopPropagation(); handleUndeliver(order._id); }}
-                                      className="mt-6 w-full py-3 border-2 border-red-100 text-red-500 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
-                                    >
-                                      <RotateCcw size={16} />
-                                      Deshacer Entrega (Volver a Despachadas)
-                                    </button>
+                                    <div className="flex gap-2 w-full mt-6">
+                                      <button 
+                                        onClick={(e) => { e.stopPropagation(); handleUndeliver(order._id); }}
+                                        className="flex-1 py-3 border-2 border-red-100 text-red-500 rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-50 transition-colors flex items-center justify-center gap-2"
+                                      >
+                                        <RotateCcw size={16} />
+                                        Deshacer Entrega
+                                      </button>
+                                      <button 
+                                        onClick={(e) => { e.stopPropagation(); confirmDeleteOrder(order._id); }}
+                                        className="py-3 px-4 bg-red-600 text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-red-700 transition-colors flex items-center justify-center shadow-lg hover:shadow-xl hover:-translate-y-0.5"
+                                        title="Eliminar venta permanentemente"
+                                      >
+                                        <Trash2 size={16} />
+                                      </button>
+                                    </div>
                                   )}
                                 </div>
 
@@ -315,6 +346,16 @@ const OrdersTable = () => {
           </div>
         )}
       </div>
+
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={executeDeleteOrder}
+        title="¿Eliminar Venta?"
+        message="Esta acción no se puede deshacer y el resumen volverá a descontar este monto de las estadísticas."
+        confirmText="Sí, Eliminar"
+        cancelText="Cancelar"
+      />
     </div>
   );
 };

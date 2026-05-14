@@ -174,6 +174,21 @@ router.put('/orders/:id/undeliver', async (req, res) => {
   }
 });
 
+// Eliminar orden (Para pruebas y limpieza)
+router.delete('/orders/:id', async (req, res) => {
+  try {
+    const order = await Order.findByIdAndDelete(req.params.id);
+    if (order) {
+      res.json({ message: 'Orden eliminada con éxito' });
+    } else {
+      res.status(404).json({ message: 'Orden no encontrada' });
+    }
+  } catch (error) {
+    console.error('❌ Error en DELETE /orders/:id:', error.message);
+    res.status(500).json({ message: 'Error al eliminar la orden' });
+  }
+});
+
 // --- DASHBOARD STATS ---
 
 router.get('/dashboard', async (req, res) => {

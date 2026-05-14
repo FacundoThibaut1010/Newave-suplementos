@@ -9,6 +9,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import { useState } from 'react';
 import apiClient from '../api/apiClient';
 import AuthModal from '../components/auth/AuthModal';
+import { toast } from 'sonner';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(3, { message: 'Nombre requerido' }),
@@ -107,7 +108,7 @@ const CheckoutPage = () => {
   const [paymentMethod, setPaymentMethod] = useState<'mercado_pago' | 'card'>('mercado_pago');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
-  const { register, handleSubmit, formState: { errors, isValid } } = useForm<CheckoutFormData>({
+  const { register, handleSubmit, setValue, formState: { errors, isValid } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     mode: 'onChange',
     defaultValues: {
@@ -115,6 +116,30 @@ const CheckoutPage = () => {
       fullName: user?.name || ''
     }
   });
+
+  // Base de datos de prueba para códigos postales
+  const cpDatabase: Record<string, { city: string; state: string }> = {
+    '1714': { city: 'Ituzaingó', state: 'Buenos Aires' },
+    '1708': { city: 'Morón', state: 'Buenos Aires' },
+    '1704': { city: 'Ramos Mejía', state: 'Buenos Aires' },
+    '1706': { city: 'Haedo', state: 'Buenos Aires' },
+    '1712': { city: 'Castelar', state: 'Buenos Aires' },
+    '1722': { city: 'Merlo', state: 'Buenos Aires' },
+    '1425': { city: 'Palermo', state: 'CABA' },
+    '1414': { city: 'Villa Crespo', state: 'CABA' },
+    // Puedes agregar más aquí o conectarlo a una API
+  };
+
+  const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const cp = e.target.value;
+    setValue('postalCode', cp, { shouldValidate: true });
+
+    if (cpDatabase[cp]) {
+      setValue('city', cpDatabase[cp].city, { shouldValidate: true });
+      setValue('state', cpDatabase[cp].state, { shouldValidate: true });
+      toast.success(`Ubicación detectada: ${cpDatabase[cp].city}`);
+    }
+  };
 
   const onSubmit = async (data: CheckoutFormData) => {
     setIsSubmitting(true);
@@ -279,10 +304,11 @@ const CheckoutPage = () => {
                   {/* Código Postal */}
                   <div className="md:col-span-1">
                     <input
-                      {...register('postalCode')}
-                      placeholder="CP"
+                      {...register('postalCode', { onChange: handlePostalCodeChange })}
+                      placeholder="CP (Ej: 1714)"
                       className="input-field"
                     />
+                    {errors.postalCode && <span className="text-red-500 text-xs mt-1 block">{errors.postalCode.message}</span>}
                   </div>
 
                   {/* Ciudad */}
@@ -292,6 +318,7 @@ const CheckoutPage = () => {
                       placeholder="Ciudad"
                       className="input-field"
                     />
+                    {errors.city && <span className="text-red-500 text-xs mt-1 block">{errors.city.message}</span>}
                   </div>
 
                   <div className="md:col-span-2">

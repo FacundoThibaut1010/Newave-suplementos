@@ -11,12 +11,15 @@ import {
 import { toast } from 'sonner';
 import apiClient from '../api/apiClient';
 import ProductForm from '../components/ProductForm';
+import ConfirmModal from '../components/ConfirmModal';
 
 const InventoryTable = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false);
+  const [productToDelete, setProductToDelete] = useState<string | null>(null);
 
   const fetchProducts = async () => {
     try {
@@ -33,14 +36,21 @@ const InventoryTable = () => {
     fetchProducts();
   }, []);
 
-  const handleDelete = async (id: string) => {
-    if (!window.confirm('¿Deseas eliminar este producto permanentemente de tu vitrina?')) return;
+  const confirmDelete = (id: string) => {
+    setProductToDelete(id);
+    setDeleteModalOpen(true);
+  };
+
+  const executeDelete = async () => {
+    if (!productToDelete) return;
     try {
-      await apiClient.delete(`/admin/products/${id}`);
+      await apiClient.delete(`/admin/products/${productToDelete}`);
       toast.success('¡Excelente! Inventario actualizado.');
       fetchProducts();
     } catch (err) {
       toast.error('Hubo un problema al eliminar.');
+    } finally {
+      setProductToDelete(null);
     }
   };
 
@@ -151,7 +161,7 @@ const InventoryTable = () => {
                           <Edit3 size={18} />
                         </button>
                         <button 
-                          onClick={() => handleDelete(p._id)} 
+                          onClick={() => confirmDelete(p._id)} 
                           className="p-2 text-gray-400 hover:text-red-500 hover:bg-white hover:shadow-sm rounded-xl transition-all"
                         >
                           <Trash2 size={18} />
@@ -165,6 +175,15 @@ const InventoryTable = () => {
           </table>
         </div>
       </div>
+      <ConfirmModal
+        isOpen={deleteModalOpen}
+        onClose={() => setDeleteModalOpen(false)}
+        onConfirm={executeDelete}
+        title="¿Eliminar Producto?"
+        message="¿Deseas eliminar este producto permanentemente de tu catálogo? Esta acción no se puede deshacer."
+        confirmText="Sí, Eliminar"
+        cancelText="Cancelar"
+      />
     </div>
   );
 };
