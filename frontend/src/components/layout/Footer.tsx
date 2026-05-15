@@ -1,12 +1,13 @@
 // @ts-ignore
 import { Mail } from 'lucide-react';
+import { Link } from 'react-router-dom';
 
 
 const Footer = () => {
   return (
     <footer id="contacto" className="bg-white border-t border-gray-100 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-12 mb-12">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-12 mb-12">
           <div className="md:col-span-1">
             <h2 className="text-2xl font-black text-[#202A36] italic tracking-widest mb-6">
               NEWAVE.
@@ -39,36 +40,25 @@ const Footer = () => {
             </div>
           </div>
 
-          <div>
+          <div className="md:col-span-1">
             <h3 className="text-xs font-black text-[#202A36] uppercase tracking-[0.2em] mb-6">Productos</h3>
             <ul className="space-y-4 text-sm text-gray-500 font-medium">
-              <li><a href="#" className="hover:text-[#CAA959] transition-colors">Todos los productos</a></li>
-              <li><a href="#" className="hover:text-[#CAA959] transition-colors">Proteínas</a></li>
-              <li><a href="#" className="hover:text-[#CAA959] transition-colors">Creatinas</a></li>
+              <li><Link to="/productos" className="hover:text-[#CAA959] transition-colors">Ver Todo</Link></li>
+              <li><Link to="/productos/Proteína" className="hover:text-[#CAA959] transition-colors">Proteínas</Link></li>
+              <li><Link to="/productos/Creatina" className="hover:text-[#CAA959] transition-colors">Creatinas</Link></li>
+              <li><Link to="/productos/Minerales" className="hover:text-[#CAA959] transition-colors">Minerales</Link></li>
+              <li><Link to="/productos/Colágeno" className="hover:text-[#CAA959] transition-colors">Colágenos</Link></li>
+              <li><Link to="/productos/Pre Entreno" className="hover:text-[#CAA959] transition-colors">Pre Entreno</Link></li>
+              <li><Link to="/productos/Barras Proteicas" className="hover:text-[#CAA959] transition-colors">Barras Proteicas</Link></li>
+              <li><Link to="/productos/Shakers" className="hover:text-[#CAA959] transition-colors">Shakers</Link></li>
             </ul>
           </div>
 
-          <div>
+          <div className="md:col-span-1">
             <h3 className="text-xs font-black text-[#202A36] uppercase tracking-[0.2em] mb-6">Soporte</h3>
             <ul className="space-y-4 text-sm text-gray-500 font-medium">
-              <li><a href="#" className="hover:text-[#CAA959] transition-colors">Contacto</a></li>
-              <li><a href="#" className="hover:text-[#CAA959] transition-colors">Envíos</a></li>
-              <li><a href="#" className="hover:text-[#CAA959] transition-colors">Devoluciones</a></li>
+              <li><a href="mailto:hola@newave.com" className="hover:text-[#CAA959] transition-colors">Contacto</a></li>
             </ul>
-          </div>
-
-          <div>
-            <h3 className="text-xs font-black text-[#202A36] uppercase tracking-[0.2em] mb-6">Newsletter</h3>
-            <div className="flex gap-2">
-              <input
-                type="email"
-                placeholder="tu@email.com"
-                className="bg-gray-50 border border-gray-100 rounded-full px-6 py-3 text-sm w-full focus:outline-none focus:ring-2 focus:ring-[#202A36]/5"
-              />
-              <button className="bg-[#202A36] text-white px-6 py-3 rounded-full text-xs font-bold uppercase tracking-widest hover:bg-[#202A36]/90 transition-colors">
-                Unirse
-              </button>
-            </div>
           </div>
         </div>
 

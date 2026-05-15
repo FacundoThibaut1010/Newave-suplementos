@@ -193,7 +193,9 @@ const Navbar = () => {
                                   <Link onClick={() => setIsMenuOpen(false)} to="/productos/Creatina" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Creatinas</Link>
                                   <Link onClick={() => setIsMenuOpen(false)} to="/productos/Minerales" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Minerales</Link>
                                   <Link onClick={() => setIsMenuOpen(false)} to="/productos/Colágeno" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Colágenos</Link>
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Pre-Entreno" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Pre-Entreno</Link>
+                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Pre Entreno" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Pre Entreno</Link>
+                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Barras Proteicas" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Barras Proteicas</Link>
+                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Shakers" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Shakers</Link>
                                   <Link onClick={() => setIsMenuOpen(false)} to="/productos" className="px-6 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#CAA959] hover:text-white transition-colors">Ver todos</Link>
                                 </div>
                               </motion.div>

@@ -19,6 +19,10 @@ const productSchema = new mongoose.Schema(
       type: Number,
       required: [true, 'El precio es obligatorio'],
     },
+    oldPrice: {
+      type: Number,
+      default: 0,
+    },
     category: {
       type: String, // Cambiado a String para mayor flexibilidad en el Dashboard
       default: 'General',

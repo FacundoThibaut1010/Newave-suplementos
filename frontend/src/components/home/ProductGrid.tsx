@@ -46,7 +46,7 @@ const ProductGrid = () => {
         setProducts(combos);
       } catch (err: any) {
         console.error('--- API: ¡Ups! Error al cargar productos:', err.message, '---');
-        setError(err.response?.data?.friendlyMessage || 'No pudimos encontrar los productos. 🤔');
+        setError(err.response?.data?.friendlyMessage || 'No pudimos encontrar los productos.');
       } finally {
         setLoading(false);
       }
@@ -84,7 +84,7 @@ const ProductGrid = () => {
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
           className="w-12 h-12 border-4 border-blue-600/30 border-t-blue-600 rounded-full mx-auto mb-4"
         />
-        <p className="text-gray-500 font-medium">Buscando las mejores cosas para ti... ✨</p>
+        <p className="text-gray-500 font-medium">Buscando las mejores cosas para ti... </p>
       </div>
     );
   }

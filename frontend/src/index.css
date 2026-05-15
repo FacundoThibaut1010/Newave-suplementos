@@ -21,6 +21,20 @@ body {
   overflow-x: hidden;
   position: relative;
   scroll-behavior: smooth;
+  font-size: 16px; /* Base for mobile */
+}
+
+/* Auto-scale (zoom out) the entire UI for larger screens so it doesn't look massive at 100% zoom */
+@media (min-width: 768px) {
+  html {
+    font-size: 14px; /* 87.5% zoom for tablets */
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 13px; /* ~81% zoom for laptops/desktops */
+  }
 }
 
 #root {

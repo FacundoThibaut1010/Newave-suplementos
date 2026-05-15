@@ -11,13 +11,14 @@ interface ProductCardProps {
   id: string;
   name: string;
   price: number;
+  oldPrice?: number;
   category: string;
   image: string; // for backward compatibility
   images?: string[];
   darkTheme?: boolean;
 }
 
-const ProductCard = ({ id, name, price, category, image, images, darkTheme }: ProductCardProps) => {
+const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkTheme }: ProductCardProps) => {
   const addItem = useCartStore((state) => state.addItem);
   const { user, setFavorites } = useAuthStore();
 
@@ -124,7 +125,9 @@ const ProductCard = ({ id, name, price, category, image, images, darkTheme }: Pr
         </Link>
         <div className="flex items-center justify-center md:justify-start gap-2 mt-auto pt-2">
           <span className="font-black text-xl text-[#CAA959] italic">${Number(price).toLocaleString('es-AR')}</span>
-          <span className="text-xs text-gray-400 line-through font-bold">${Math.round(price * 1.2).toLocaleString('es-AR')}</span>
+          {!!oldPrice && oldPrice > price && (
+            <span className="text-xs text-gray-400 line-through font-bold">${Number(oldPrice).toLocaleString('es-AR')}</span>
+          )}
         </div>
       </div>
     </motion.div>

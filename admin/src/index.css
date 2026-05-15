@@ -16,6 +16,22 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
+html {
+  font-size: 16px;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 14px;
+  }
+}
+
+@media (min-width: 1024px) {
+  html {
+    font-size: 13px;
+  }
+}
+
 @layer components {
   .card-premium {
     @apply bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden transition-all duration-500;

@@ -12,7 +12,9 @@ const categoryOptions = [
   { value: 'Creatina', label: 'Creatina' },
   { value: 'Minerales', label: 'Minerales' },
   { value: 'Colágeno', label: 'Colágeno' },
-  { value: 'Pre-Entreno', label: 'Pre-Entreno' },
+  { value: 'Pre Entreno', label: 'Pre Entreno' },
+  { value: 'Barras Proteicas', label: 'Barras Proteicas' },
+  { value: 'Shakers', label: 'Shakers' },
 ];
 
 const sortOptions = [

@@ -81,7 +81,7 @@ const AdminLayout = () => {
         </nav>
 
         <div className="pt-8 border-t border-white/5 space-y-2">
-          <a href={import.meta.env.VITE_FRONTEND_URL || 'http://localhost:5173'} target="_blank" rel="noreferrer" className="flex items-center gap-4 px-5 py-4 text-gray-400 hover:text-[#CAA959] transition-colors">
+          <a href="https://newave-suplementos.vercel.app/" target="_blank" rel="noreferrer" className="flex items-center gap-4 px-5 py-4 text-gray-400 hover:text-[#CAA959] transition-colors">
             <ExternalLink size={20} />
             <span className="text-xs font-black uppercase tracking-widest">Ver Tienda</span>
           </a>

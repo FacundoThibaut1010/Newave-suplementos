@@ -12,10 +12,15 @@ const ProductDetailPage = () => {
   const [product, setProduct] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
+  const scrollRef = React.useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
+  const [startX, setStartX] = useState(0);
+  const [scrollLeft, setScrollLeft] = useState(0);
   const addItem = useCartStore((state) => state.addItem);
   const { user, setFavorites } = useAuthStore();
 
   useEffect(() => {
+    window.scrollTo(0, 0);
     const fetchProduct = async () => {
       try {
         const { data } = await apiClient.get(`/products/${id}`);
@@ -92,13 +97,31 @@ const ProductDetailPage = () => {
               className="relative w-full max-w-md mx-auto"
             >
               <div className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden group/carousel">
-                <div className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10 pointer-events-auto">
+                <div 
+                  ref={scrollRef}
+                  className={`flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10 pointer-events-auto ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                  onMouseDown={(e) => {
+                    setIsDragging(true);
+                    setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0));
+                    setScrollLeft(scrollRef.current?.scrollLeft || 0);
+                  }}
+                  onMouseLeave={() => setIsDragging(false)}
+                  onMouseUp={() => setIsDragging(false)}
+                  onMouseMove={(e) => {
+                    if (!isDragging || !scrollRef.current) return;
+                    e.preventDefault();
+                    const x = e.pageX - scrollRef.current.offsetLeft;
+                    const walk = (x - startX) * 1.5;
+                    scrollRef.current.scrollLeft = scrollLeft - walk;
+                  }}
+                >
                   {((product.images && product.images.length > 0) ? product.images : [product.image]).map((img: string, idx: number) => (
                     <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center">
                       <img 
                         src={img || ''} 
                         alt={`${product.name} ${idx + 1}`} 
-                        className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                        draggable={false}
+                        className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
                       />
                     </div>
                   ))}
@@ -112,7 +135,7 @@ const ProductDetailPage = () => {
                     ))}
                   </div>
                 )}
-              <div className="absolute top-6 right-6">
+              <div className="absolute top-6 right-6 z-30">
                 <button 
                   onClick={handleToggleFavorite}
                   className="p-4 bg-white rounded-full text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all shadow-xl"
@@ -144,6 +167,11 @@ const ProductDetailPage = () => {
                   <span className="text-3xl md:text-4xl font-black italic text-[#202A36] break-all">
                     ${Number(product.price).toLocaleString('es-AR')}
                   </span>
+                  {!!product.oldPrice && product.oldPrice > product.price && (
+                    <span className="text-lg md:text-xl text-gray-400 line-through font-bold">
+                      ${Number(product.oldPrice).toLocaleString('es-AR')}
+                    </span>
+                  )}
                   {product.countInStock > 0 ? (
                     <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
                       En Stock

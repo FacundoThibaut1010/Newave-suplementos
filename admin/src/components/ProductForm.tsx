@@ -11,7 +11,9 @@ const categoryOptions = [
   { value: 'Creatina', label: 'Creatina' },
   { value: 'Minerales', label: 'Minerales' },
   { value: 'Colágeno', label: 'Colágeno' },
-  { value: 'Pre-Entreno', label: 'Pre-Entreno' }
+  { value: 'Pre Entreno', label: 'Pre Entreno' },
+  { value: 'Barras Proteicas', label: 'Barras Proteicas' },
+  { value: 'Shakers', label: 'Shakers' }
 ];
 
 const displaySectionOptions = [
@@ -29,6 +31,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   const [formData, setFormData] = useState({
     name: initialData?.name || '',
     price: initialData?.price ? Number(initialData.price).toLocaleString('es-AR') : '',
+    oldPrice: initialData?.oldPrice ? Number(initialData.oldPrice).toLocaleString('es-AR') : '',
     countInStock: initialData?.countInStock || '',
     description: initialData?.description || '',
     images: initialData?.images?.length ? initialData.images : (initialData?.image ? [initialData.image] : ['']),
@@ -113,6 +116,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
       const payload = {
         name: formData.name,
         price: Number(String(formData.price).replace(/\./g, '')),
+        oldPrice: formData.oldPrice ? Number(String(formData.oldPrice).replace(/\./g, '')) : 0,
         countInStock: Number(formData.countInStock) || 0,
         description: formData.description || 'Nueva pieza de la colección.',
         images: validImages, // El modelo espera un array
@@ -180,7 +184,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               />
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
+            <div className="grid grid-cols-3 gap-4">
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio ($)</label>
                 <input
@@ -191,6 +195,20 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                     const formatted = rawValue ? Number(rawValue).toLocaleString('es-AR') : '';
                     setFormData({ ...formData, price: formatted });
                   }}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio Anterior</label>
+                <input
+                  type="text"
+                  value={formData.oldPrice}
+                  onChange={(e) => {
+                    const rawValue = e.target.value.replace(/\D/g, '');
+                    const formatted = rawValue ? Number(rawValue).toLocaleString('es-AR') : '';
+                    setFormData({ ...formData, oldPrice: formatted });
+                  }}
+                  placeholder="Ej: 50.000"
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>

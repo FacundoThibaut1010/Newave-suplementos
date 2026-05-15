@@ -4,10 +4,14 @@ import { Link } from 'react-router-dom';
 
 const categories = [
   { name: 'Proteínas', slug: 'Proteína', image: '/proteina.jpg' },
-  { name: 'Pre-Entreno', slug: 'Pre-Entreno', image: '/pre entreno.jpg.png' },
+  { name: 'Pre Entreno', slug: 'Pre Entreno', image: '/pre entreno.jpg.png' },
   { name: 'Creatinas', slug: 'Creatina', image: '/creatina (1).jpg' },
   { name: 'Minerales', slug: 'Minerales', image: '/minerales.png' },
   { name: 'Colágenos', slug: 'Colágeno', image: '/colageno.jpg' },
+  { name: 'Barras Proteicas', slug: 'Barras Proteicas', image: '/BarrasProteicas.jpg' },
+  { name: 'Shakers', slug: 'Shakers', image: '/Shaker.png' },
+
+
 ];
 
 const CategoryScroll = () => {
