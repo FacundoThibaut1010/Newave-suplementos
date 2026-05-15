@@ -89,13 +89,29 @@ const ProductDetailPage = () => {
             <motion.div 
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
-              className="relative aspect-square md:aspect-[4/5] max-w-md mx-auto w-full bg-[#F8F9FA] rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden"
+              className="relative w-full max-w-md mx-auto"
             >
-              <img 
-                src={product.images?.[0] || product.image || ''} 
-                alt={product.name} 
-                className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
-              />
+              <div className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden group/carousel">
+                <div className="flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10 pointer-events-auto">
+                  {((product.images && product.images.length > 0) ? product.images : [product.image]).map((img: string, idx: number) => (
+                    <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center">
+                      <img 
+                        src={img || ''} 
+                        alt={`${product.name} ${idx + 1}`} 
+                        className="w-full h-full object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-700"
+                      />
+                    </div>
+                  ))}
+                </div>
+                
+                {/* Status Indicator */}
+                {((product.images && product.images.length > 1)) && (
+                  <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20 pointer-events-none">
+                    {product.images.map((_: any, idx: number) => (
+                      <div key={idx} className="w-2 h-2 rounded-full bg-[#CAA959]/50 shadow-md" />
+                    ))}
+                  </div>
+                )}
               <div className="absolute top-6 right-6">
                 <button 
                   onClick={handleToggleFavorite}
@@ -103,6 +119,7 @@ const ProductDetailPage = () => {
                 >
                   <Heart size={24} fill={isFavorite ? '#ef4444' : 'none'} color={isFavorite ? '#ef4444' : 'currentColor'} />
                 </button>
+              </div>
               </div>
             </motion.div>
 
@@ -113,22 +130,26 @@ const ProductDetailPage = () => {
               className="space-y-8"
             >
               <div>
-                <p className="text-xs font-black text-[#CAA959] uppercase tracking-[0.3em] mb-4">
-                  {product.category}
-                </p>
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {(product.category || 'General').split(/[,+\-]| y /i).filter(Boolean).map((cat: string, idx: number) => (
+                    <span key={idx} className="text-[10px] font-black text-[#CAA959] uppercase tracking-[0.3em] bg-[#CAA959]/10 px-3 py-1 rounded-full border border-[#CAA959]/20">
+                      {cat.trim()}
+                    </span>
+                  ))}
+                </div>
                 <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic uppercase leading-[1.1] text-[#202A36] mb-6">
                   {product.name}
                 </h1>
-                <div className="flex items-center gap-4">
-                  <span className="text-4xl font-black italic text-[#202A36]">
+                <div className="flex flex-wrap items-center gap-3 md:gap-4">
+                  <span className="text-3xl md:text-4xl font-black italic text-[#202A36] break-all">
                     ${Number(product.price).toLocaleString('es-AR')}
                   </span>
                   {product.countInStock > 0 ? (
-                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
                       En Stock
                     </span>
                   ) : (
-                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-[10px] font-black uppercase tracking-widest">
+                    <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
                       Sin Stock
                     </span>
                   )}

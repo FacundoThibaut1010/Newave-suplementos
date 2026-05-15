@@ -38,6 +38,20 @@ export const FloatingMenu = () => {
     mouseY.set((e.clientY - centerY) * 0.35);
   };
 
+  useEffect(() => {
+    if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+      document.documentElement.classList.add('overflow-hidden');
+    } else {
+      document.body.classList.remove('overflow-hidden');
+      document.documentElement.classList.remove('overflow-hidden');
+    }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+      document.documentElement.classList.remove('overflow-hidden');
+    };
+  }, [isOpen]);
+
   const handleMouseLeave = () => {
     mouseX.set(0);
     mouseY.set(0);

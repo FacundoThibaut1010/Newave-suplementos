@@ -11,7 +11,7 @@ const router = express.Router();
 // @desc    Get logged in user orders
 router.get('/orders', protect, async (req, res) => {
   try {
-    const orders = await Order.find({ user: req.user._id }).sort({ createdAt: -1 });
+    const orders = await Order.find({ user: req.user._id, isPaid: true }).sort({ createdAt: -1 });
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener compras' });

@@ -1,7 +1,7 @@
 import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
-import { sendOrderConfirmationEmail } from '../utils/emailService.js';
+import { sendOrderConfirmationEmail, sendNewOrderNotificationToSeller } from '../utils/emailService.js';
 import dotenv from 'dotenv';
 dotenv.config(); // Cargar variables de entorno AHORA para asegurar que el token exista
 
@@ -120,6 +120,9 @@ const processApprovedOrder = async (orderId, paymentInfo) => {
     if (order.guestInfo && order.guestInfo.email) {
       await sendOrderConfirmationEmail(order);
     }
+    
+    // 🌟 Enviar email al vendedor 🌟
+    await sendNewOrderNotificationToSeller(order);
   }
 };
 

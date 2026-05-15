@@ -1,9 +1,10 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { X, Save, Image as ImageIcon } from 'lucide-react';
+import { X, Save, Image as ImageIcon, UploadCloud, Loader2 } from 'lucide-react';
 import { toast } from 'sonner';
 import apiClient from '../api/apiClient';
 import AdminSelect from './AdminSelect';
+import AdminMultiSelect from './AdminMultiSelect';
 
 const categoryOptions = [
   { value: 'Proteína', label: 'Proteína' },
@@ -30,18 +31,74 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
     price: initialData?.price ? Number(initialData.price).toLocaleString('es-AR') : '',
     countInStock: initialData?.countInStock || '',
     description: initialData?.description || '',
-    image: initialData?.images?.[0] || '',
+    images: initialData?.images?.length ? initialData.images : (initialData?.image ? [initialData.image] : ['']),
     category: initialData?.category || '',
     displaySection: initialData?.displaySection || 'Producto'
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
+
+  const handleFileUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const formDataFile = new FormData();
+    formDataFile.append('image', file);
+
+    setUploadingImageIndex(index);
+    try {
+      const backendUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
+      const apiUrl = `${backendUrl}/api/upload`;
+
+      const response = await fetch(apiUrl, {
+        method: 'POST',
+        body: formDataFile,
+      });
+
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.message || 'Error al subir la imagen');
+      }
+
+      const data = await response.json();
+      const fullUrl = `${backendUrl}${data.url}`;
+      
+      handleImageChange(index, fullUrl);
+      toast.success('Imagen subida correctamente 📸');
+    } catch (err: any) {
+      toast.error(err.response?.data?.message || 'Error al subir la imagen');
+    } finally {
+      setUploadingImageIndex(null);
+      // Reset input value to allow uploading the same file again if needed
+      e.target.value = '';
+    }
+  };
+
+  const handleImageChange = (index: number, value: string) => {
+    const newImages = [...formData.images];
+    newImages[index] = value;
+    setFormData({ ...formData, images: newImages });
+  };
+
+  const addImageField = () => {
+    if (formData.images.length < 4) {
+      setFormData({ ...formData, images: [...formData.images, ''] });
+    }
+  };
+
+  const removeImageField = (index: number) => {
+    const newImages = formData.images.filter((_: any, i: number) => i !== index);
+    setFormData({ ...formData, images: newImages });
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (!formData.name || !formData.price || !formData.image) {
-      toast.error('Por favor completa los campos principales ✨');
+    const validImages = formData.images.filter((url: string) => url.trim() !== '');
+
+    if (!formData.name || !formData.price || validImages.length === 0) {
+      toast.error('Por favor completa los campos principales y añade al menos una imagen ✨');
       return;
     }
 
@@ -58,9 +115,9 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         price: Number(String(formData.price).replace(/\./g, '')),
         countInStock: Number(formData.countInStock) || 0,
         description: formData.description || 'Nueva pieza de la colección.',
-        images: [formData.image], // El modelo espera un array
+        images: validImages, // El modelo espera un array
         brand: 'Genérica',
-        category: formData.displaySection === 'Combo' ? 'General' : formData.category,
+        category: formData.displaySection === 'Combo' ? formData.category : (formData.category || 'Proteína'),
         displaySection: formData.displaySection
       };
 
@@ -148,28 +205,70 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               </div>
             </div>
 
-            <div>
-              <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Imagen (URL)</label>
-              <input
-                type="text"
-                value={formData.image}
-                onChange={(e) => setFormData({ ...formData, image: e.target.value })}
-                className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
-                placeholder="Pega la URL aquí..."
-              />
+            <div className="space-y-3">
+              <div className="flex items-center justify-between">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Imágenes (URL o Archivo) - Máximo 4</label>
+                {formData.images.length < 4 && (
+                  <button 
+                    type="button" 
+                    onClick={addImageField}
+                    className="text-[10px] text-[#CAA959] font-bold uppercase tracking-widest hover:underline"
+                  >
+                    + Agregar otra
+                  </button>
+                )}
+              </div>
+              
+              {formData.images.map((img: string, index: number) => (
+                <div key={index} className="flex gap-2 relative group">
+                  <input
+                    type="text"
+                    value={img}
+                    onChange={(e) => handleImageChange(index, e.target.value)}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl pl-4 pr-20 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                    placeholder={`URL de la imagen ${index + 1}...`}
+                  />
+                  <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
+                    <label className="cursor-pointer p-1 text-gray-400 hover:text-[#CAA959] transition-colors" title="Subir desde PC">
+                      {uploadingImageIndex === index ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
+                      <input 
+                        type="file" 
+                        accept="image/*" 
+                        className="hidden" 
+                        onChange={(e) => handleFileUpload(index, e)}
+                      />
+                    </label>
+                    {formData.images.length > 1 && (
+                      <button
+                        type="button"
+                        onClick={() => removeImageField(index)}
+                        className="p-1 text-gray-400 hover:text-red-500 transition-colors"
+                        title="Eliminar imagen"
+                      >
+                        <X size={16} />
+                      </button>
+                    )}
+                  </div>
+                </div>
+              ))}
             </div>
 
             <div className="grid grid-cols-2 gap-4">
               <div className="relative z-[60]">
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Categoría</label>
-                <AdminSelect
-                  value={formData.category}
-                  onChange={(val) => setFormData({ ...formData, category: val })}
-                  options={categoryOptions}
-                  disabled={formData.displaySection !== 'Producto'}
-                />
-                {formData.displaySection !== 'Producto' && (
-                  <p className="text-[9px] text-gray-400 mt-1 ml-1">No aplica a combos.</p>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Categoría / Contenido</label>
+                {formData.displaySection === 'Producto' ? (
+                  <AdminSelect
+                    value={formData.category}
+                    onChange={(val) => setFormData({ ...formData, category: val })}
+                    options={categoryOptions}
+                  />
+                ) : (
+                  <AdminMultiSelect
+                    value={formData.category === 'General' ? '' : formData.category}
+                    onChange={(val) => setFormData({ ...formData, category: val })}
+                    options={categoryOptions}
+                    placeholder="Elige los productos..."
+                  />
                 )}
               </div>
               <div className="relative z-[60]">
@@ -177,7 +276,11 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 <AdminSelect
                   value={formData.displaySection}
                   onChange={(val) => {
-                    setFormData({ ...formData, displaySection: val, category: val === 'Combo' ? 'General' : formData.category });
+                    setFormData({ 
+                      ...formData, 
+                      displaySection: val, 
+                      category: val === 'Combo' ? '' : (categoryOptions[0]?.value || 'Proteína') 
+                    });
                   }}
                   options={displaySectionOptions}
                 />
@@ -199,8 +302,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
             <div className="pt-2">
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Vista Previa</label>
               <div className="aspect-[16/9] bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 flex items-center justify-center relative">
-                {formData.image ? (
-                  <img src={formData.image} className="w-full h-full object-cover" alt="Preview" />
+                {formData.images[0] ? (
+                  <img src={formData.images[0]} className="w-full h-full object-cover" alt="Preview" />
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-gray-300">
                     <ImageIcon size={32} strokeWidth={1} />
@@ -208,6 +311,13 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   </div>
                 )}
               </div>
+              {formData.images.filter((img: string) => img.trim() !== '').length > 1 && (
+                <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
+                  {formData.images.filter((img: string) => img.trim() !== '').slice(1).map((img: string, idx: number) => (
+                    <img key={idx} src={img} className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0" alt={`Thumb ${idx}`} />
+                  ))}
+                </div>
+              )}
             </div>
           </div>
 

@@ -175,8 +175,9 @@ const ProductsPage = () => {
                   <ProductCard
                     id={product._id}
                     {...product}
-                    category={product.category?.name || 'General'}
+                    category={product.category || 'General'}
                     image={product.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
+                    images={product.images}
                     darkTheme
                   />
                 </div>

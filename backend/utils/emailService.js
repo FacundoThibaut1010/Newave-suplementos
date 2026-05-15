@@ -87,6 +87,75 @@ export const sendOrderConfirmationEmail = async (order) => {
   }
 };
 
+export const sendNewOrderNotificationToSeller = async (order) => {
+  try {
+    if (!process.env.BREVO_API_KEY) return;
+
+    const itemsHtml = order.orderItems.map(item => `
+      <tr>
+        <td style="padding: 10px; border-bottom: 1px solid #eee;">
+          ${item.name} (x${item.qty})
+        </td>
+        <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">
+          $${(item.price * item.qty).toLocaleString('es-AR')}
+        </td>
+      </tr>
+    `).join('');
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 20px;">
+        <h1 style="color: #202A36; font-weight: 900; font-size: 24px;">¡Nueva venta realizada! 🎉</h1>
+        <p style="color: #666; font-size: 16px;">El cliente <strong>${order.guestInfo.fullName}</strong> acaba de realizar una compra.</p>
+        
+        <table style="width: 100%; border-collapse: collapse; margin-bottom: 30px;">
+          <tbody>${itemsHtml}</tbody>
+          <tfoot>
+            <tr>
+              <td style="padding: 15px 10px; font-weight: bold; text-align: right;">TOTAL:</td>
+              <td style="padding: 15px 10px; font-weight: 900; text-align: right; color: #CAA959; font-size: 18px;">$${order.totalPrice.toLocaleString('es-AR')}</td>
+            </tr>
+          </tfoot>
+        </table>
+
+        <h3 style="color: #202A36;">Datos del Cliente:</h3>
+        <ul style="color: #555; line-height: 1.6;">
+          <li>Email: ${order.guestInfo.email}</li>
+          <li>Teléfono: ${order.guestInfo.phone || 'No especificado'}</li>
+          <li>Dirección: ${order.shippingAddress.address} ${order.shippingAddress.addressLine2 ? `(${order.shippingAddress.addressLine2})` : ''}</li>
+          <li>Localidad: ${order.shippingAddress.city}, ${order.shippingAddress.state} CP: ${order.shippingAddress.postalCode}</li>
+        </ul>
+        <p style="margin-top: 20px;">Ingresa al panel de administración para ver todos los detalles y gestionar el envío.</p>
+      </div>
+    `;
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'Newave Store',
+          email: 'newavesuplementos2026@gmail.com'
+        },
+        to: [{ email: 'newavesuplementos2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
+        subject: '¡Nueva Venta en Newave! 💰',
+        htmlContent: htmlContent
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(JSON.stringify(errorData));
+    }
+    console.log('✉️ Notificación de nueva venta enviada al vendedor');
+  } catch (error) {
+    console.error('❌ Error enviando notificación al vendedor:', error.message);
+  }
+};
+
 export const sendOrderDispatchedEmail = async (order) => {
   try {
     if (!process.env.BREVO_API_KEY) {

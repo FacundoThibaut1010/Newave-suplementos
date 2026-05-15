@@ -6,7 +6,7 @@ import { CreditCard, Truck, User, ArrowLeft, CheckCircle2, ShieldCheck, Phone, W
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
 import AuthModal from '../components/auth/AuthModal';
 import { toast } from 'sonner';
@@ -107,6 +107,10 @@ const CheckoutPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<'mercado_pago' | 'card'>('mercado_pago');
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
+
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
 
   const { register, handleSubmit, setValue, formState: { errors, isValid } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),

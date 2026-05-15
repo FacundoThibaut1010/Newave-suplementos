@@ -16,9 +16,18 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
 
   useEffect(() => {
     if (isOpen) {
+      document.body.classList.add('overflow-hidden');
+      document.documentElement.classList.add('overflow-hidden');
       setQuery('');
       setResults([]);
+    } else {
+      document.body.classList.remove('overflow-hidden');
+      document.documentElement.classList.remove('overflow-hidden');
     }
+    return () => {
+      document.body.classList.remove('overflow-hidden');
+      document.documentElement.classList.remove('overflow-hidden');
+    };
   }, [isOpen]);
 
   useEffect(() => {
@@ -49,7 +58,6 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
-            onClick={onClose}
             className="fixed inset-0 bg-black/60 backdrop-blur-md z-[100]"
           />
           <motion.div
