@@ -103,9 +103,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                   <ArrowRight size={18} className="group-hover:translate-x-1 transition-transform" />
                 </Link>
 
-                <p className="text-center text-[11px] font-medium text-gray-400 mt-6 uppercase tracking-wider">
-                  Envío premium gratuito incluido
-                </p>
+
               </div>
             )}
           </motion.div>

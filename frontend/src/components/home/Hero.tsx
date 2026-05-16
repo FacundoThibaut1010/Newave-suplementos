@@ -133,7 +133,7 @@ const Hero = () => {
 
       {/* Side Label */}
       <div className="absolute left-10 bottom-48 hidden xl:flex items-center gap-4 origin-left -rotate-90 pointer-events-none">
-        <span className="text-zinc-800 text-[10px] font-black uppercase tracking-[1em]">NEWAVE ELITE SERIES</span>
+        <span className="text-zinc-800 text-[10px] font-black uppercase tracking-[1em]">NEWAVE ELITE</span>
         <div className="h-[1px] w-24 bg-zinc-900" />
       </div>
     </div>

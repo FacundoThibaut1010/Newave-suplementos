@@ -27,7 +27,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
   const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
-    
+
     if (!user) {
       toast.error('Inicia sesión para guardar favoritos');
       return;
@@ -37,7 +37,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
       // Optimistic update
       const currentFavs = user.favorites || [];
       const isCurrentlyFav = currentFavs.some((fav: any) => fav._id === id || fav === id);
-      
+
       let newFavs;
       if (isCurrentlyFav) {
         newFavs = currentFavs.filter((fav: any) => fav._id !== id && fav !== id);
@@ -62,16 +62,16 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
       viewport={{ once: true }}
       className="group cursor-pointer h-full flex flex-col"
     >
-      <div className="relative aspect-square md:aspect-[4/5] rounded-3xl overflow-hidden bg-[#F8F9FA] mb-6 border border-gray-100 group/image">
+      <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#F8F9FA] mb-6 border border-gray-100 group/image">
         <Link to={`/producto/${id}`} className="absolute inset-0 z-10">
           {/* Default Image */}
           <img
             src={images?.length ? images[0] : image}
             alt={name}
-            className={`w-full h-full object-contain p-4 absolute inset-0 transition-opacity duration-500 ${(images && images.length > 1) ? 'group-hover/image:opacity-0' : ''}`}
+            className={`w-full h-full object-contain p-4 absolute inset-0 transition-opacity duration-500 ${(images && images.length > 1 && images[1] && images[1].trim() !== '') ? 'group-hover/image:opacity-0' : ''}`}
           />
           {/* Hover Image (Second image if exists) */}
-          {(images && images.length > 1) && (
+          {(images && images.length > 1 && images[1] && images[1].trim() !== '') && (
             <img
               src={images[1]}
               alt={`${name} alt`}
@@ -79,16 +79,16 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
             />
           )}
         </Link>
-        
-        {/* Badges */}
+
+        {/* Badges
         <div className="absolute top-4 left-4 z-20 pointer-events-none">
           <span className="px-3 py-1 bg-[#202A36] text-white text-[9px] font-black uppercase tracking-widest rounded-full italic pointer-events-auto">
             Top Seller
           </span>
-        </div>
+        </div> */}
 
         <div className="absolute top-4 right-4 flex flex-col gap-2 translate-x-16 group-hover:translate-x-0 transition-transform duration-500 z-20">
-          <button 
+          <button
             onClick={handleToggleFavorite}
             className="p-3 bg-white rounded-full text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all shadow-xl"
           >
@@ -97,7 +97,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
         </div>
 
         <div className="absolute bottom-6 left-6 right-6 translate-y-24 group-hover:translate-y-0 transition-transform duration-500 z-20">
-          <button 
+          <button
             onClick={(e) => {
               e.preventDefault();
               addItem({ id, name, price, image });
@@ -119,7 +119,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
           ))}
         </div>
         <Link to={`/producto/${id}`} className="flex-grow">
-          <h3 className={`text-xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#CAA959] transition-colors line-clamp-2 ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
+          <h3 className={`text-xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#CAA959] transition-colors ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
             {name}
           </h3>
         </Link>

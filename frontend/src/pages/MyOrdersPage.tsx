@@ -33,7 +33,7 @@ const MyOrdersPage = () => {
   return (
     <div className="min-h-screen bg-[#F4F4F4] text-black pt-40 md:pt-48 pb-20">
       <div className="max-w-5xl mx-auto px-6">
-        
+
         <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
           <ArrowLeft size={14} /> Volver a la tienda
         </Link>
@@ -51,7 +51,7 @@ const MyOrdersPage = () => {
               <PackageOpen size={40} className="text-gray-300" />
             </div>
             <h3 className="text-2xl font-black uppercase tracking-tight text-[#202A36] mb-2">Aún no tienes compras</h3>
-            <p className="text-gray-500 font-medium mb-8">Descubre nuestra nueva línea Elite Series.</p>
+            <p className="text-gray-500 font-medium mb-8">Realiza tu primera compra en nuestra tienda.</p>
             <Link to="/productos" className="py-4 px-8 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors">
               Explorar Productos
             </Link>
@@ -59,7 +59,7 @@ const MyOrdersPage = () => {
         ) : (
           <div className="space-y-6">
             {orders.map((order: any) => (
-              <motion.div 
+              <motion.div
                 key={order._id}
                 initial={{ opacity: 0, y: 20 }}
                 animate={{ opacity: 1, y: 0 }}
@@ -69,7 +69,7 @@ const MyOrdersPage = () => {
                   <div className="flex flex-wrap items-center gap-4">
                     <span className="font-mono text-sm text-gray-400 font-bold uppercase">#{order._id.slice(-6)}</span>
                     <span className="text-sm font-bold text-gray-500">{new Date(order.createdAt).toLocaleDateString('es-AR')}</span>
-                    
+
                     {order.isDelivered ? (
                       <span className="inline-flex items-center gap-1.5 px-3 py-1 bg-emerald-50 text-emerald-600 rounded-full text-[10px] font-black uppercase tracking-widest border border-emerald-100">
                         <CheckCircle2 size={12} /> Entregado

@@ -130,7 +130,7 @@ const ProductGrid = () => {
             className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 md:overflow-x-visible md:pb-0 scrollbar-hide"
           >
             {sortedProducts.map((product) => (
-              <div key={product._id} className="min-w-[85vw] sm:min-w-[60vw] md:min-w-0 snap-center shrink-0 h-full">
+              <div key={product._id} className="w-[85vw] max-w-[320px] sm:w-[60vw] md:w-auto shrink-0 h-full">
                 <ProductCard
                   id={product._id}
                   {...product}

@@ -79,7 +79,7 @@ const Navbar = () => {
     <>
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <SearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
-      
+
       <AnimatePresence>
         {isMenuOpen && (
           <motion.div
@@ -233,7 +233,7 @@ const Navbar = () => {
                       {/* Footer */}
                       <div className="mt-4 pt-4 border-t border-white/5 flex items-center justify-between opacity-30 relative z-10">
                         <span className="text-[9px] font-black tracking-[0.2em] uppercase italic">NEWAVE.</span>
-                        <div className="text-[9px] font-black px-2 py-1 border border-white/20 rounded uppercase tracking-tighter italic">ELITE SERIES</div>
+
                       </div>
                     </motion.div>
                   )}
@@ -250,7 +250,7 @@ const Navbar = () => {
 
             {/* Right: Actions */}
             <div className="flex-1 flex items-center justify-end gap-2 lg:gap-4">
-              <button 
+              <button
                 onClick={() => setIsSearchModalOpen(true)}
                 className="flex items-center gap-2 group p-2 md:p-3 rounded-full transition-all focus:outline-none"
               >
@@ -258,7 +258,7 @@ const Navbar = () => {
               </button>
 
               <div className="relative" ref={userMenuRef}>
-                <button 
+                <button
                   onClick={() => {
                     if (user) {
                       setIsUserMenuOpen(!isUserMenuOpen);
@@ -286,7 +286,7 @@ const Navbar = () => {
                       </div>
                       <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/compras" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Mis Compras</Link>
                       <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/favoritos" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Favoritos</Link>
-                      <button 
+                      <button
                         onClick={() => {
                           logout();
                           setIsUserMenuOpen(false);

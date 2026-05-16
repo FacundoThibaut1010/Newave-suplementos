@@ -53,9 +53,9 @@ const CardHoverStack = ({ visibleCardsCount = 3, totalCards = 5 }) => {
             <span className="text-xs font-black text-[#6B7280]">+{totalCards - visibleCardsCount}</span>
           </motion.div>
         ) : (
-          <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} className="flex items-center gap-2 bg-white p-2 rounded-full border border-gray-100 shadow-2xl ml-2">
-            {cardLogos.slice(visibleCardsCount).map((logo) => (
-              <motion.img key={logo} src={logo} alt="Other card" className="w-10 h-10 rounded-full bg-white p-1.5 object-contain shadow-inner border border-gray-50" layout />
+          <motion.div initial={{ opacity: 0, x: -15 }} animate={{ opacity: 1, x: 0 }} exit={{ opacity: 0, x: -15 }} className="flex items-center -space-x-5 -ml-5 z-0">
+            {cardLogos.slice(visibleCardsCount).map((logo, index) => (
+              <motion.img key={logo} src={logo} alt="Other card" className="w-12 h-12 rounded-full bg-white border-2 border-gray-100 p-2 object-contain shadow-md" style={{ zIndex: -(index + 1) }} layout />
             ))}
           </motion.div>
         )}
@@ -109,6 +109,11 @@ const CheckoutPage = () => {
       setValue('state', cpDatabase[cp].state, { shouldValidate: true });
       toast.success(`Ubicación detectada: ${cpDatabase[cp].city}`);
     }
+  };
+
+  const onFormError = (errors: any) => {
+    console.log("Errores de validación:", errors);
+    toast.error('Faltan datos obligatorios para el envío.');
   };
 
   const onSubmit = async (data: CheckoutFormData) => {
@@ -194,10 +199,10 @@ const CheckoutPage = () => {
         ) : (
           <div className="grid lg:grid-cols-12 gap-8 items-start">
 
-            <div className="lg:col-span-7 bg-white rounded-[3.5rem] p-10 shadow-sm border border-gray-100">
-              <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-14">Finalizar compra</h1>
+            <div className="lg:col-span-7 bg-white rounded-[3.5rem] p-6 md:p-10 shadow-sm border border-gray-100">
+              <h1 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-14">Finalizar compra</h1>
 
-              <form onSubmit={handleSubmit(onSubmit)} className="space-y-16">
+              <form onSubmit={handleSubmit(onSubmit, onFormError)} className="space-y-16" noValidate>
 
                 {/* 01. DATOS PERSONALES */}
                 <section className="space-y-8">
@@ -206,25 +211,29 @@ const CheckoutPage = () => {
                     <h3 className="text-[14px] font-black uppercase tracking-[0.2em] text-black-400">1. Tus Datos</h3>
                   </div>
                   <div className="grid md:grid-cols-2 gap-5">
-                    <input {...register('fullName')} placeholder="Nombre completo" className="input-field" />
-                    <input
-                      {...register('email')}
-                      placeholder="Email"
-                      className="input-field bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200"
-                      readOnly
-                      title="Email asociado a tu cuenta de Google"
-                    />
+                    <div>
+                      <input {...register('fullName')} placeholder="Nombre completo" className="input-field w-full" />
+                      {errors.fullName && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.fullName.message}</span>}
+                    </div>
+                    <div>
+                      <input
+                        {...register('email')}
+                        placeholder="Email"
+                        className="input-field w-full bg-gray-100 text-gray-500 cursor-not-allowed border-gray-200"
+                        readOnly
+                        title="Email asociado a tu cuenta"
+                      />
+                      {errors.email && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.email.message}</span>}
+                    </div>
                     <div className="md:col-span-2 relative">
                       <input
                         {...register('phone')}
                         placeholder="Telefono"
-                        className="input-field"
-                        style={{ paddingLeft: '3.2rem' }} // Forzamos el espacio para el texto
+                        className="input-field w-full"
+                        style={{ paddingLeft: '3.2rem' }}
                       />
-                      <Phone
-                        className="absolute left-7 top-1/2 -translate-y-1/2 text-gray-400"
-                        size={18}
-                      />
+                      <Phone className="absolute left-7 top-4 text-gray-400" size={18} />
+                      {errors.phone && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.phone.message}</span>}
                     </div>
                   </div>
                 </section>
@@ -244,11 +253,10 @@ const CheckoutPage = () => {
                       <input
                         {...register('address')}
                         placeholder="Calle y número de casa"
-                        className="input-field"
+                        className="input-field w-full"
                       />
+                      {errors.address && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.address.message}</span>}
                     </div>
-
-
 
                     {/*Departamento, casa, etc*/}
                     <div className="md:col-span-4">
@@ -256,7 +264,7 @@ const CheckoutPage = () => {
                         <input
                           {...register('addressLine2')}
                           placeholder="Casa, apartamento, etc (opcional)"
-                          className="input-field"
+                          className="input-field w-full"
                         />
                       </div>
                     </div>
@@ -266,9 +274,9 @@ const CheckoutPage = () => {
                       <input
                         {...register('postalCode', { onChange: handlePostalCodeChange })}
                         placeholder="CP (Ej: 1714)"
-                        className="input-field"
+                        className="input-field w-full"
                       />
-                      {errors.postalCode && <span className="text-red-500 text-xs mt-1 block">{errors.postalCode.message}</span>}
+                      {errors.postalCode && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.postalCode.message}</span>}
                     </div>
 
                     {/* Ciudad */}
@@ -276,9 +284,9 @@ const CheckoutPage = () => {
                       <input
                         {...register('city')}
                         placeholder="Ciudad"
-                        className="input-field"
+                        className="input-field w-full"
                       />
-                      {errors.city && <span className="text-red-500 text-xs mt-1 block">{errors.city.message}</span>}
+                      {errors.city && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.city.message}</span>}
                     </div>
 
                     <div className="md:col-span-2">
@@ -316,12 +324,13 @@ const CheckoutPage = () => {
                         </select>
 
                         {/* Flechita decorativa para que sepa que es un menú */}
-                        <div className="absolute right-6 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                        <div className="absolute right-6 top-4 pointer-events-none text-gray-400">
                           <svg width="10" height="6" viewBox="0 0 10 6" fill="none" xmlns="http://www.w3.org/2000/svg">
                             <path d="M1 1L5 5L9 1" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
                           </svg>
                         </div>
                       </div>
+                      {errors.state && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.state.message}</span>}
                     </div>
 
 
@@ -346,7 +355,7 @@ const CheckoutPage = () => {
                   </div>
                 </section>
 
-                <button disabled={!isValid || isSubmitting} type="submit"
+                <button disabled={isSubmitting} type="submit"
                   className="w-full py-8 rounded-full text-[11px] font-black uppercase tracking-[0.4em] transition-all shadow-2xl bg-[#009EE3] text-white hover:scale-[1.01]">
                   {isSubmitting ? "Procesando..." : `Pagar con Mercado Pago $${totalPrice().toLocaleString('es-AR')}`}
                 </button>
@@ -354,8 +363,8 @@ const CheckoutPage = () => {
             </div>
 
             {/* COLUMNA DERECHA: RESUMEN STICKY SIEMPRE VISIBLE */}
-            <div className="lg:col-span-5 sticky top-32">
-              <div className="bg-white rounded-[3.5rem] p-10 shadow-lg border border-gray-100">
+            <div className="lg:col-span-5 sticky top-32 mt-10 lg:mt-0">
+              <div className="bg-white rounded-[3.5rem] p-6 md:p-10 shadow-lg border border-gray-100">
                 <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-12 border-b-2 border-gray-50 pb-6 text-center">Tu Pedido</h3>
                 <div className="space-y-12">
                   {items.map((item) => (
@@ -385,7 +394,9 @@ const CheckoutPage = () => {
 
       <style>{`
         .input-field {
-          width: 100%; background-color: #F9F9F9; border: 2px solid transparent;
+          width: 100%;
+          background-color: #F9F9F9;
+          border: 1px solid #E5E7EB;
           border-radius: 9999px; padding: 1.4rem 2rem; font-size: 0.9rem;
           font-weight: 700; outline: none; transition: all 0.3s;
         }

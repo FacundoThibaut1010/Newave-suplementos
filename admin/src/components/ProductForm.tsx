@@ -66,7 +66,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
       const data = await response.json();
       const fullUrl = `${backendUrl}${data.url}`;
-      
+
       handleImageChange(index, fullUrl);
       toast.success('Imagen subida correctamente 📸');
     } catch (err: any) {
@@ -157,7 +157,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 my-10 md:my-auto"
+        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 pb-32 my-10 md:my-auto"
       >
         <div className="flex justify-between items-center mb-10">
           <div>
@@ -184,7 +184,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               />
             </div>
 
-            <div className="grid grid-cols-3 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio ($)</label>
                 <input
@@ -225,10 +225,10 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
             <div className="space-y-3">
               <div className="flex items-center justify-between">
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Imágenes (URL o Archivo) - Máximo 4</label>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Imágenes - Máximo 4</label>
                 {formData.images.length < 4 && (
-                  <button 
-                    type="button" 
+                  <button
+                    type="button"
                     onClick={addImageField}
                     className="text-[10px] text-[#CAA959] font-bold uppercase tracking-widest hover:underline"
                   >
@@ -236,7 +236,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   </button>
                 )}
               </div>
-              
+
               {formData.images.map((img: string, index: number) => (
                 <div key={index} className="flex gap-2 relative group">
                   <input
@@ -249,10 +249,10 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center gap-1">
                     <label className="cursor-pointer p-1 text-gray-400 hover:text-[#CAA959] transition-colors" title="Subir desde PC">
                       {uploadingImageIndex === index ? <Loader2 size={16} className="animate-spin" /> : <UploadCloud size={16} />}
-                      <input 
-                        type="file" 
-                        accept="image/*" 
-                        className="hidden" 
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
                         onChange={(e) => handleFileUpload(index, e)}
                       />
                     </label>
@@ -271,8 +271,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               ))}
             </div>
 
-            <div className="grid grid-cols-2 gap-4">
-              <div className="relative z-[60]">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="relative z-[70]">
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Categoría / Contenido</label>
                 {formData.displaySection === 'Producto' ? (
                   <AdminSelect
@@ -294,10 +294,10 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 <AdminSelect
                   value={formData.displaySection}
                   onChange={(val) => {
-                    setFormData({ 
-                      ...formData, 
-                      displaySection: val, 
-                      category: val === 'Combo' ? '' : (categoryOptions[0]?.value || 'Proteína') 
+                    setFormData({
+                      ...formData,
+                      displaySection: val,
+                      category: val === 'Combo' ? '' : (categoryOptions[0]?.value || 'Proteína')
                     });
                   }}
                   options={displaySectionOptions}

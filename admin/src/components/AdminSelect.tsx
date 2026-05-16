@@ -50,11 +50,10 @@ const AdminSelect = ({ value, onChange, options, placeholder = 'Selecciona...', 
       <AnimatePresence>
         {isOpen && !disabled && (
           <motion.div
-            initial={{ opacity: 0, y: 5, scale: 0.98 }} // Reducido el salto de Y
+            initial={{ opacity: 0, y: 5, scale: 0.98 }}
             animate={{ opacity: 1, y: 0, scale: 1 }}
             exit={{ opacity: 0, y: 5, scale: 0.98 }}
             transition={{ duration: 0.1, ease: 'easeOut' }}
-            // CLAVE: max-h-48 y overflow-y-auto para evitar que se escape del modal
             className="absolute top-full left-0 right-0 mt-2 rounded-2xl border border-gray-100 bg-white shadow-2xl z-[100] overflow-hidden"
           >
             <div className="py-1 max-h-[180px] overflow-y-auto scrollbar-thin scrollbar-thumb-gray-200">
@@ -72,7 +71,7 @@ const AdminSelect = ({ value, onChange, options, placeholder = 'Selecciona...', 
                   <div className="flex items-center justify-between">
                     {option.label}
                     {value === option.value && (
-                      <div className="w-1.5 h-1.5 rounded-full bg-black" /> // Indicador discreto de selección
+                      <div className="w-1.5 h-1.5 rounded-full bg-black" />
                     )}
                   </div>
                 </button>

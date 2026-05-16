@@ -5,10 +5,41 @@ import Product from '../models/Product.js';
 // @access  Public
 export const getProducts = async (req, res) => {
   try {
-    const { category } = req.query;
-    const query = category ? { category } : {};
+    const { category, search } = req.query;
+    const query = {};
+    if (category) query.category = category;
+    if (search) {
+      query.$or = [
+        { name: { $regex: search, $options: 'i' } },
+        { description: { $regex: search, $options: 'i' } },
+        { category: { $regex: search, $options: 'i' } }
+      ];
+    }
     
-    const products = await Product.find(query).populate('category', 'name');
+    let products = await Product.find(query);
+    
+    // Si hay una búsqueda, ordenamos manualmente para poner las coincidencias exactas del nombre primero
+    if (search) {
+      const searchLower = search.toLowerCase();
+      products.sort((a, b) => {
+        const aName = a.name.toLowerCase();
+        const bName = b.name.toLowerCase();
+        
+        // Prioridad 1: Coincidencia exacta
+        if (aName === searchLower) return -1;
+        if (bName === searchLower) return 1;
+        
+        // Prioridad 2: Empieza con el término
+        if (aName.startsWith(searchLower) && !bName.startsWith(searchLower)) return -1;
+        if (bName.startsWith(searchLower) && !aName.startsWith(searchLower)) return 1;
+        
+        // Prioridad 3: Contiene el término en el nombre (vs en descripción o categoría)
+        if (aName.includes(searchLower) && !bName.includes(searchLower)) return -1;
+        if (bName.includes(searchLower) && !aName.includes(searchLower)) return 1;
+        
+        return 0;
+      });
+    }
     
     res.json({
       message: '¡Aquí tienes los productos que encontramos para ti! 🎁',
