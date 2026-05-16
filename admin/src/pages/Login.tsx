@@ -5,7 +5,7 @@ import { toast } from 'sonner';
 
 // Define tus credenciales de acceso aquí:
 const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'newave2026';
+const ADMIN_PASS = 'Agusnacho2123';
 
 const Login = () => {
   const [username, setUsername] = useState('');
