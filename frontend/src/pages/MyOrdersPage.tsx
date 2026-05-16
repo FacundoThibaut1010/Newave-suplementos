@@ -85,9 +85,16 @@ const MyOrdersPage = () => {
                     )}
                   </div>
 
-                  <div className="flex -space-x-3 overflow-hidden py-2">
+                  <div className="flex flex-col gap-3 py-2">
                     {order.orderItems.map((item: any, i: number) => (
-                      <img key={i} src={item.image} alt={item.name} className="inline-block h-16 w-16 rounded-2xl border-2 border-white object-cover bg-gray-50 shadow-sm" />
+                      <div key={i} className="flex items-center gap-4">
+                        <img src={item.image} alt={item.name} className="inline-block h-16 w-16 rounded-2xl border-2 border-white object-cover bg-gray-50 shadow-sm" />
+                        <div>
+                          <p className="text-sm font-black text-[#202A36]">{item.name}</p>
+                          {item.variant && <p className="text-xs font-bold text-gray-500">Sabor: {item.variant}</p>}
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[#CAA959] mt-0.5">Cantidad: {item.qty}</p>
+                        </div>
+                      </div>
                     ))}
                   </div>
                 </div>

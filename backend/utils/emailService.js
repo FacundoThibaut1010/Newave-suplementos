@@ -174,11 +174,25 @@ export const sendOrderDispatchedEmail = async (order) => {
         </div>
         
         <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Datos de Entrega</h3>
-        <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; color: #555; line-height: 1.6;">
+        <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; color: #555; line-height: 1.6; margin-bottom: 20px;">
           <strong>${order.guestInfo.fullName}</strong><br>
           ${order.shippingAddress.address} ${order.shippingAddress.addressLine2 ? `(${order.shippingAddress.addressLine2})` : ''}<br>
           ${order.shippingAddress.city}, ${order.shippingAddress.state} CP: ${order.shippingAddress.postalCode}
         </div>
+
+        <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Productos en el paquete</h3>
+        <table style="width: 100%; border-collapse: collapse; background: #F9F9F9; border-radius: 12px; overflow: hidden;">
+          <tbody>
+            ${order.orderItems.map(item => `
+              <tr>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #333; font-weight: bold;">
+                  ${item.name} <span style="color: #CAA959;">(x${item.qty})</span>
+                  ${item.variant ? `<br><span style="font-size: 12px; color: #888; font-weight: normal;">Sabor: ${item.variant}</span>` : ''}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
 
         <div style="text-align: center; margin-top: 40px; color: #aaa; font-size: 12px;">
           <p>Gracias por confiar en nosotros.</p>
@@ -233,11 +247,25 @@ export const sendOrderDeliveredEmail = async (order) => {
         </div>
         
         <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Datos de Entrega</h3>
-        <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; color: #555; line-height: 1.6;">
+        <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; color: #555; line-height: 1.6; margin-bottom: 20px;">
           <strong>${order.guestInfo.fullName}</strong><br>
           ${order.shippingAddress.address} ${order.shippingAddress.addressLine2 ? `(${order.shippingAddress.addressLine2})` : ''}<br>
           ${order.shippingAddress.city}, ${order.shippingAddress.state} CP: ${order.shippingAddress.postalCode}
         </div>
+
+        <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Productos entregados</h3>
+        <table style="width: 100%; border-collapse: collapse; background: #F9F9F9; border-radius: 12px; overflow: hidden;">
+          <tbody>
+            ${order.orderItems.map(item => `
+              <tr>
+                <td style="padding: 12px 15px; border-bottom: 1px solid #eee; color: #333; font-weight: bold;">
+                  ${item.name} <span style="color: #10B981;">(x${item.qty})</span>
+                  ${item.variant ? `<br><span style="font-size: 12px; color: #888; font-weight: normal;">Sabor: ${item.variant}</span>` : ''}
+                </td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
 
         <div style="text-align: center; margin-top: 40px; color: #aaa; font-size: 12px;">
           <p>Gracias por tu compra. ¡Te esperamos pronto en Newave!</p>
