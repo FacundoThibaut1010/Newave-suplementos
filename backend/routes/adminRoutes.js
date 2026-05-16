@@ -193,8 +193,38 @@ router.delete('/orders/:id', async (req, res) => {
 
 router.get('/dashboard', async (req, res) => {
   try {
-    // 1. Alertas de Stock (Productos con menos de 5 unidades)
-    const lowStockProducts = await Product.find({ countInStock: { $lt: 5 } }).select('name countInStock image').sort({ countInStock: 1 });
+    // 1. Alertas de Stock (Productos o Sabores con menos de 5 unidades)
+    const allProducts = await Product.find({}, 'name countInStock image images variants');
+    const lowStockProducts = [];
+
+    allProducts.forEach(product => {
+      if (product.variants && product.variants.length > 0) {
+        // Revisar cada sabor
+        product.variants.forEach(variant => {
+          if (variant.countInStock < 5) {
+            lowStockProducts.push({
+              _id: `${product._id}-${variant.flavor}`,
+              name: `${product.name} - ${variant.flavor}`,
+              countInStock: variant.countInStock,
+              image: variant.image || product.image || (product.images && product.images[0])
+            });
+          }
+        });
+      } else {
+        // Revisar producto general
+        if (product.countInStock < 5) {
+          lowStockProducts.push({
+            _id: product._id,
+            name: product.name,
+            countInStock: product.countInStock,
+            image: product.image || (product.images && product.images[0])
+          });
+        }
+      }
+    });
+
+    // Ordenar de menor a mayor stock
+    lowStockProducts.sort((a, b) => a.countInStock - b.countInStock);
 
     // 2. Alertas de Órdenes Sin Despachar (Pagadas, pero isDispatched es false)
     const pendingOrdersCount = await Order.countDocuments({ isPaid: true, isDispatched: false });

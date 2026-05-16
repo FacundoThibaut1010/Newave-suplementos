@@ -42,6 +42,13 @@ const productSchema = new mongoose.Schema(
       required: true,
       default: 0,
     },
+    variants: [
+      {
+        flavor: { type: String, required: true },
+        image: { type: String, default: '' },
+        countInStock: { type: Number, required: true, default: 0 }
+      }
+    ],
     // ... (campos de rating y reviews se mantienen igual)
     displaySection: {
       type: String,

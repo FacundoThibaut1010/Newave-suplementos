@@ -121,13 +121,20 @@ const CheckoutPage = () => {
 
     try {
       const payload = {
-        orderItems: items.map(item => ({
-          product: item.id,
-          name: item.name,
-          qty: item.quantity,
-          price: item.price,
-          image: item.image
-        })),
+        orderItems: items.map(item => {
+          const isVariant = item.id.includes('-');
+          const productId = isVariant ? item.id.split('-')[0] : item.id;
+          const variantFlavor = isVariant ? item.id.split('-').slice(1).join('-') : undefined;
+          
+          return {
+            product: productId,
+            variant: variantFlavor,
+            name: item.name,
+            qty: item.quantity,
+            price: item.price,
+            image: item.image
+          };
+        }),
         guestInfo: {
           fullName: data.fullName,
           email: data.email,

@@ -36,11 +36,12 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
     description: initialData?.description || '',
     images: initialData?.images?.length ? initialData.images : (initialData?.image ? [initialData.image] : ['']),
     category: initialData?.category || '',
-    displaySection: initialData?.displaySection || 'Producto'
+    displaySection: initialData?.displaySection || 'Producto',
+    variants: initialData?.variants || []
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | null>(null);
+  const [uploadingImageIndex, setUploadingImageIndex] = useState<number | string | null>(null);
 
   const handleFileUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -67,7 +68,14 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
       const data = await response.json();
       const fullUrl = `${backendUrl}${data.url}`;
 
-      handleImageChange(index, fullUrl);
+      if (typeof index === 'string' && index.startsWith('variant_')) {
+        const varIndex = parseInt(index.split('_')[1]);
+        const newVariants = [...formData.variants];
+        newVariants[varIndex] = { ...newVariants[varIndex], image: fullUrl };
+        setFormData({ ...formData, variants: newVariants });
+      } else {
+        handleImageChange(index as number, fullUrl);
+      }
       toast.success('Imagen subida correctamente 📸');
     } catch (err: any) {
       toast.error(err.response?.data?.message || 'Error al subir la imagen');
@@ -93,6 +101,24 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   const removeImageField = (index: number) => {
     const newImages = formData.images.filter((_: any, i: number) => i !== index);
     setFormData({ ...formData, images: newImages });
+  };
+
+  const addVariant = () => {
+    setFormData({
+      ...formData,
+      variants: [...formData.variants, { flavor: '', countInStock: 0, image: '' }]
+    });
+  };
+
+  const removeVariant = (index: number) => {
+    const newVariants = formData.variants.filter((_: any, i: number) => i !== index);
+    setFormData({ ...formData, variants: newVariants });
+  };
+
+  const updateVariant = (index: number, field: string, value: any) => {
+    const newVariants = [...formData.variants];
+    newVariants[index] = { ...newVariants[index], [field]: value };
+    setFormData({ ...formData, variants: newVariants });
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -122,7 +148,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         images: validImages, // El modelo espera un array
         brand: 'Genérica',
         category: formData.displaySection === 'Combo' ? formData.category : (formData.category || 'Proteína'),
-        displaySection: formData.displaySection
+        displaySection: formData.displaySection,
+        variants: formData.variants.filter((v: any) => v.flavor.trim() !== '')
       };
 
       if (initialData) {
@@ -212,15 +239,17 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Stock</label>
-                <input
-                  type="number"
-                  value={formData.countInStock}
-                  onChange={(e) => setFormData({ ...formData, countInStock: e.target.value })}
-                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
-                />
-              </div>
+              {(!formData.variants || formData.variants.length === 0) && (
+                <div>
+                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Stock General</label>
+                  <input
+                    type="number"
+                    value={formData.countInStock}
+                    onChange={(e) => setFormData({ ...formData, countInStock: e.target.value })}
+                    className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                  />
+                </div>
+              )}
             </div>
 
             <div className="space-y-3">
@@ -269,6 +298,69 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   </div>
                 </div>
               ))}
+            </div>
+
+            {/* Variantes (Sabores) */}
+            <div className="space-y-3 bg-gray-50 p-4 rounded-2xl border border-gray-100">
+              <div className="flex items-center justify-between">
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Variantes / Sabores (Opcional)</label>
+                <button
+                  type="button"
+                  onClick={addVariant}
+                  className="text-[10px] text-[#CAA959] font-bold uppercase tracking-widest hover:underline"
+                >
+                  + Agregar Sabor
+                </button>
+              </div>
+              
+              {formData.variants.map((variant: any, index: number) => (
+                <div key={index} className="flex flex-col gap-2 p-3 bg-white border border-gray-200 rounded-xl relative group">
+                  <div className="grid grid-cols-[1fr_80px_auto] gap-2 items-center">
+                    <input
+                      type="text"
+                      value={variant.flavor}
+                      onChange={(e) => updateVariant(index, 'flavor', e.target.value)}
+                      placeholder="Sabor (ej: Vainilla)"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-black"
+                    />
+                    <input
+                      type="number"
+                      value={variant.countInStock}
+                      onChange={(e) => updateVariant(index, 'countInStock', e.target.value)}
+                      placeholder="Stock"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-black text-center"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => removeVariant(index)}
+                      className="p-2 text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center"
+                    >
+                      <X size={16} />
+                    </button>
+                  </div>
+                  <div className="relative">
+                    <input
+                      type="text"
+                      value={variant.image}
+                      onChange={(e) => updateVariant(index, 'image', e.target.value)}
+                      placeholder="URL Imagen Específica (Opcional)"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-3 pr-10 py-2 text-xs font-bold text-black"
+                    />
+                    <label className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer p-1 text-gray-400 hover:text-[#CAA959]">
+                      {uploadingImageIndex === `variant_${index}` ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                      <input
+                        type="file"
+                        accept="image/*"
+                        className="hidden"
+                        onChange={(e) => handleFileUpload(`variant_${index}` as unknown as number, e)}
+                      />
+                    </label>
+                  </div>
+                </div>
+              ))}
+              {formData.variants.length > 0 && (
+                <p className="text-[9px] text-gray-400 italic">Si usas sabores, el stock general se ignorará.</p>
+              )}
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">

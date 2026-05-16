@@ -12,6 +12,7 @@ export const sendOrderConfirmationEmail = async (order) => {
         </td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; font-weight: bold;">
           ${item.name}
+          ${item.variant ? `<br><span style="font-size: 12px; color: #666; font-weight: normal;">Sabor: ${item.variant}</span>` : ''}
         </td>
         <td style="padding: 10px; border-bottom: 1px solid #eee;">
           x${item.qty}
@@ -95,6 +96,7 @@ export const sendNewOrderNotificationToSeller = async (order) => {
       <tr>
         <td style="padding: 10px; border-bottom: 1px solid #eee;">
           ${item.name} (x${item.qty})
+          ${item.variant ? `<br><span style="font-size: 12px; color: #666;">Sabor: ${item.variant}</span>` : ''}
         </td>
         <td style="padding: 10px; border-bottom: 1px solid #eee; text-align: right; font-weight: bold;">
           $${(item.price * item.qty).toLocaleString('es-AR')}

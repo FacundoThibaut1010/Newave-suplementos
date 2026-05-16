@@ -16,9 +16,11 @@ interface ProductCardProps {
   image: string; // for backward compatibility
   images?: string[];
   darkTheme?: boolean;
+  variants?: any[];
+  countInStock?: number;
 }
 
-const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkTheme }: ProductCardProps) => {
+const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkTheme, variants, countInStock }: ProductCardProps) => {
   const addItem = useCartStore((state) => state.addItem);
   const { user, setFavorites } = useAuthStore();
 
@@ -97,16 +99,25 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
         </div>
 
         <div className="absolute bottom-6 left-6 right-6 translate-y-24 group-hover:translate-y-0 transition-transform duration-500 z-20">
-          <button
-            onClick={(e) => {
-              e.preventDefault();
-              addItem({ id, name, price, image });
-            }}
-            className="w-full bg-[#202A36] text-white py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
-          >
-            <ShoppingCart size={16} />
-            Añadir
-          </button>
+          {variants && variants.length > 0 ? (
+            <Link
+              to={`/producto/${id}`}
+              className="w-full bg-[#202A36] text-white py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
+            >
+              Ver Sabores
+            </Link>
+          ) : (
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                addItem({ id, name, price, image });
+              }}
+              className="w-full bg-[#202A36] text-white py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
+            >
+              <ShoppingCart size={16} />
+              Añadir
+            </button>
+          )}
         </div>
       </div>
 

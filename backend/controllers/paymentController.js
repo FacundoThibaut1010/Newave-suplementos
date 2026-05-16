@@ -31,12 +31,12 @@ export const createPreference = async (req, res) => {
       totalPrice,
       isPaid: false,
     });
-    
+
     const createdOrder = await order.save();
 
     // 2. Crear preferencia en Mercado Pago
     const preference = new Preference(client);
-    
+
     // Convertir orderItems al formato de Mercado Pago
     const items = orderItems.map((item) => ({
       id: String(item.product),
@@ -92,7 +92,7 @@ export const createPreference = async (req, res) => {
 // Helper function to process an approved order
 const processApprovedOrder = async (orderId, paymentInfo) => {
   const order = await Order.findById(orderId);
-          
+
   if (order && !order.isPaid) {
     order.isPaid = true;
     order.paidAt = Date.now();
@@ -103,7 +103,7 @@ const processApprovedOrder = async (orderId, paymentInfo) => {
       payment_method_id: paymentInfo.payment_method_id,
       payment_type_id: paymentInfo.payment_type_id
     };
-    
+
     await order.save();
     console.log(`✅ Orden ${orderId} pagada correctamente.`);
 
@@ -111,16 +111,25 @@ const processApprovedOrder = async (orderId, paymentInfo) => {
     for (const item of order.orderItems) {
       const product = await Product.findById(item.product);
       if (product) {
-        product.countInStock = Math.max(0, product.countInStock - item.qty);
+        if (item.variant && product.variants && product.variants.length > 0) {
+          // Descontar del sabor específico
+          const variantIndex = product.variants.findIndex(v => v.flavor === item.variant);
+          if (variantIndex !== -1) {
+            product.variants[variantIndex].countInStock = Math.max(0, product.variants[variantIndex].countInStock - item.qty);
+          }
+        } else {
+          // Descontar del stock general si no hay variante
+          product.countInStock = Math.max(0, product.countInStock - item.qty);
+        }
         await product.save();
       }
     }
-    
+
     // 🌟 Enviar email al cliente 🌟
     if (order.guestInfo && order.guestInfo.email) {
       await sendOrderConfirmationEmail(order);
     }
-    
+
     // 🌟 Enviar email al vendedor 🌟
     await sendNewOrderNotificationToSeller(order);
   }
@@ -132,15 +141,15 @@ const processApprovedOrder = async (orderId, paymentInfo) => {
 export const mercadoPagoWebhook = async (req, res) => {
   try {
     const { query } = req;
-    
+
     const topic = query.topic || query.type;
-    
+
     if (topic === 'payment') {
       const paymentId = query['data.id'] || query.id;
-      
+
       const paymentClient = new Payment(client);
       const paymentInfo = await paymentClient.get({ id: paymentId });
-      
+
       if (paymentInfo.status === 'approved') {
         const orderId = paymentInfo.external_reference;
         if (orderId) {
@@ -148,7 +157,7 @@ export const mercadoPagoWebhook = async (req, res) => {
         }
       }
     }
-    
+
     res.status(200).send('Webhook OK');
   } catch (error) {
     console.error('Error en Webhook de Mercado Pago:', error);
@@ -162,14 +171,14 @@ export const mercadoPagoWebhook = async (req, res) => {
 export const verifyPaymentFallback = async (req, res) => {
   try {
     const { payment_id, external_reference } = req.body;
-    
+
     if (!payment_id || !external_reference || external_reference === 'null') {
       return res.status(400).json({ message: 'Faltan parámetros' });
     }
 
     const paymentClient = new Payment(client);
     const paymentInfo = await paymentClient.get({ id: payment_id });
-    
+
     if (paymentInfo.status === 'approved') {
       await processApprovedOrder(external_reference, paymentInfo);
       return res.json({ message: 'Pago verificado exitosamente' });

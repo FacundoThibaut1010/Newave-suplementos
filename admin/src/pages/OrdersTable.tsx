@@ -326,6 +326,9 @@ const OrdersTable = () => {
                                         <img src={item.image} alt={item.name} className="w-16 h-16 rounded-xl object-cover bg-white shadow-sm" />
                                         <div className="flex-1">
                                           <p className="text-base font-black text-gray-800 leading-tight">{item.name}</p>
+                                          {item.variant && (
+                                            <p className="text-xs font-bold text-gray-500 mt-1">Sabor: {item.variant}</p>
+                                          )}
                                           <p className="text-xs font-black uppercase tracking-widest text-[#CAA959] mt-1">Cantidad: {item.qty}</p>
                                         </div>
                                       </div>

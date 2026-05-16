@@ -10,6 +10,7 @@ import { toast } from 'sonner';
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const [product, setProduct] = useState<any>(null);
+  const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [loading, setLoading] = useState(true);
   const [quantity, setQuantity] = useState(1);
   const scrollRef = React.useRef<HTMLDivElement>(null);
@@ -25,6 +26,9 @@ const ProductDetailPage = () => {
       try {
         const { data } = await apiClient.get(`/products/${id}`);
         setProduct(data.product);
+        if (data.product.variants && data.product.variants.length > 0) {
+          setSelectedVariant(data.product.variants[0]);
+        }
       } catch (error) {
         toast.error('Producto no encontrado');
       } finally {
@@ -69,16 +73,22 @@ const ProductDetailPage = () => {
   };
 
   const handleAddToCart = () => {
+    const currentStock = selectedVariant ? selectedVariant.countInStock : product.countInStock;
+    if (currentStock === 0) return;
+
     for (let i = 0; i < quantity; i++) {
       addItem({
-        id: product._id,
-        name: product.name,
+        id: selectedVariant ? `${product._id}-${selectedVariant.flavor}` : product._id,
+        name: selectedVariant ? `${product.name} - ${selectedVariant.flavor}` : product.name,
         price: product.price,
-        image: product.images?.[0] || product.image || ''
+        image: (selectedVariant && selectedVariant.image) ? selectedVariant.image : (product.images?.[0] || product.image || '')
       });
     }
     toast.success(`${quantity} ${quantity === 1 ? 'unidad añadida' : 'unidades añadidas'} al carrito`);
   };
+
+  const displayImages = selectedVariant && selectedVariant.image ? [selectedVariant.image] : (product.images && product.images.length > 0 ? product.images : [product.image]);
+  const currentStock = selectedVariant ? selectedVariant.countInStock : product.countInStock;
 
   return (
     <div className="min-h-screen bg-[#F4F4F4] pt-40 md:pt-48 pb-20">
@@ -99,8 +109,9 @@ const ProductDetailPage = () => {
               <div className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden group/carousel">
                 <div 
                   ref={scrollRef}
-                  className={`flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10 pointer-events-auto ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+                  className={`flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10 select-none ${displayImages.length > 1 ? (isDragging ? 'cursor-grabbing pointer-events-auto' : 'cursor-grab pointer-events-auto') : 'pointer-events-none'}`}
                   onMouseDown={(e) => {
+                    if (displayImages.length <= 1) return;
                     setIsDragging(true);
                     setStartX(e.pageX - (scrollRef.current?.offsetLeft || 0));
                     setScrollLeft(scrollRef.current?.scrollLeft || 0);
@@ -115,7 +126,7 @@ const ProductDetailPage = () => {
                     scrollRef.current.scrollLeft = scrollLeft - walk;
                   }}
                 >
-                  {((product.images && product.images.length > 0) ? product.images : [product.image]).map((img: string, idx: number) => (
+                  {displayImages.map((img: string, idx: number) => (
                     <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center">
                       <img 
                         src={img || ''} 
@@ -128,9 +139,9 @@ const ProductDetailPage = () => {
                 </div>
                 
                 {/* Status Indicator */}
-                {((product.images && product.images.length > 1)) && (
+                {(displayImages.length > 1) && (
                   <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20 pointer-events-none">
-                    {product.images.map((_: any, idx: number) => (
+                    {displayImages.map((_: any, idx: number) => (
                       <div key={idx} className="w-2 h-2 rounded-full bg-[#CAA959]/50 shadow-md" />
                     ))}
                   </div>
@@ -172,9 +183,9 @@ const ProductDetailPage = () => {
                       ${Number(product.oldPrice).toLocaleString('es-AR')}
                     </span>
                   )}
-                  {product.countInStock > 0 ? (
+                  {currentStock > 0 ? (
                     <span className="px-3 py-1 bg-green-100 text-green-700 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
-                      En Stock
+                      En Stock ({currentStock})
                     </span>
                   ) : (
                     <span className="px-3 py-1 bg-red-100 text-red-700 rounded-full text-[10px] font-black uppercase tracking-widest whitespace-nowrap">
@@ -184,11 +195,32 @@ const ProductDetailPage = () => {
                 </div>
               </div>
 
+              {product.variants && product.variants.length > 0 && (
+                <div className="mt-6">
+                  <h3 className="text-sm font-black uppercase tracking-widest text-[#202A36] mb-3">Elige un sabor:</h3>
+                  <div className="flex flex-wrap gap-2">
+                    {product.variants.map((v: any, idx: number) => (
+                      <button
+                        key={idx}
+                        onClick={() => {
+                          setSelectedVariant(v);
+                          setQuantity(1);
+                          if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+                        }}
+                        className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${selectedVariant?.flavor === v.flavor ? 'border-[#CAA959] bg-[#CAA959]/10 text-[#CAA959]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
+                      >
+                        {v.flavor}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              )}
+
               <div className="h-px w-full bg-gray-100 my-8" />
 
               <div>
                 <h3 className="text-sm font-black uppercase tracking-widest text-[#202A36] mb-4">Descripción</h3>
-                <p className="text-gray-500 leading-relaxed font-medium">
+                <p className="text-gray-500 leading-relaxed font-medium whitespace-pre-line">
                   {product.description || 'Este producto no cuenta con descripción detallada por el momento. Disfruta de la mejor calidad que Newave te ofrece.'}
                 </p>
               </div>
@@ -206,7 +238,7 @@ const ProductDetailPage = () => {
                   </button>
                   <span className="w-12 text-center font-black text-lg text-black">{quantity}</span>
                   <button 
-                    onClick={() => setQuantity(Math.min(product.countInStock || 10, quantity + 1))}
+                    onClick={() => setQuantity(Math.min(currentStock || 10, quantity + 1))}
                     className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all text-2xl leading-none pb-1"
                   >
                     +
@@ -216,7 +248,7 @@ const ProductDetailPage = () => {
                 {/* Add to Cart Button */}
                 <button 
                   onClick={handleAddToCart}
-                  disabled={product.countInStock === 0}
+                  disabled={currentStock === 0}
                   className="flex-1 bg-[#202A36] text-white py-4 px-8 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-[#CAA959] transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-xl hover:-translate-y-1 flex items-center justify-center gap-3"
                 >
                   <ShoppingCart size={20} />
