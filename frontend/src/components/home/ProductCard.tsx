@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { ShoppingCart, Heart } from 'lucide-react';
 import { useCartStore } from '../../store/useCartStore';
@@ -25,6 +25,46 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
   const { user, setFavorites } = useAuthStore();
 
   const isFavorite = user?.favorites?.some((fav: any) => fav._id === id || fav === id);
+
+  const [hoverImageIndex, setHoverImageIndex] = useState(1);
+  const [isHovered, setIsHovered] = useState(false);
+
+  useEffect(() => {
+    let interval: any;
+    if (isHovered && images && images.length > 2) {
+      const validImages = images.filter(img => img && img.trim() !== '');
+      if (validImages.length > 2) {
+        interval = setInterval(() => {
+          setHoverImageIndex(prev => {
+            const availableIndexes = Array.from({length: validImages.length - 1}, (_, i) => i + 1).filter(idx => idx !== prev);
+            if (availableIndexes.length > 0) {
+              return availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+            }
+            return prev;
+          });
+        }, 1500);
+      }
+    }
+    return () => clearInterval(interval);
+  }, [isHovered, images]);
+
+  const handleMouseEnter = () => {
+    setIsHovered(true);
+    if (images && images.length > 2) {
+      const validImages = images.filter(img => img && img.trim() !== '');
+      if (validImages.length > 2) {
+        const availableIndexes = Array.from({length: validImages.length - 1}, (_, i) => i + 1).filter(idx => idx !== hoverImageIndex);
+        if (availableIndexes.length > 0) {
+          const randomIdx = availableIndexes[Math.floor(Math.random() * availableIndexes.length)];
+          setHoverImageIndex(randomIdx);
+        }
+      }
+    }
+  };
+
+  const handleMouseLeave = () => {
+    setIsHovered(false);
+  };
 
   const handleToggleFavorite = async (e: React.MouseEvent) => {
     e.preventDefault();
@@ -64,18 +104,22 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
       viewport={{ once: true }}
       className="group cursor-pointer h-full flex flex-col"
     >
-      <div className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#F8F9FA] mb-6 border border-gray-100 group/image">
+      <div 
+        className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#F8F9FA] mb-6 border border-gray-100 group/image"
+        onMouseEnter={handleMouseEnter}
+        onMouseLeave={handleMouseLeave}
+      >
         <Link to={`/producto/${id}`} className="absolute inset-0 z-10">
           {/* Default Image */}
           <img
-            src={images?.length ? images[0] : image}
+            src={images?.length && images[0] ? images[0] : image}
             alt={name}
-            className={`w-full h-full object-contain p-4 absolute inset-0 transition-opacity duration-500 ${(images && images.length > 1 && images[1] && images[1].trim() !== '') ? 'group-hover/image:opacity-0' : ''}`}
+            className={`w-full h-full object-contain p-4 absolute inset-0 transition-opacity duration-500 ${(images && images.length > 1 && images[hoverImageIndex] && images[hoverImageIndex].trim() !== '') ? 'group-hover/image:opacity-0' : ''}`}
           />
-          {/* Hover Image (Second image if exists) */}
-          {(images && images.length > 1 && images[1] && images[1].trim() !== '') && (
+          {/* Hover Image */}
+          {(images && images.length > 1 && images[hoverImageIndex] && images[hoverImageIndex].trim() !== '') && (
             <img
-              src={images[1]}
+              src={images[hoverImageIndex]}
               alt={`${name} alt`}
               className="w-full h-full object-contain p-4 absolute inset-0 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500"
             />
