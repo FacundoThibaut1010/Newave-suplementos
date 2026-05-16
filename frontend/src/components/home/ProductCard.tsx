@@ -68,14 +68,14 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
           <img
             src={images?.length ? images[0] : image}
             alt={name}
-            className={`w-full h-full object-cover p-4 absolute inset-0 transition-opacity duration-500 ${(images && images.length > 1) ? 'group-hover/image:opacity-0' : ''}`}
+            className={`w-full h-full object-contain p-4 absolute inset-0 transition-opacity duration-500 ${(images && images.length > 1) ? 'group-hover/image:opacity-0' : ''}`}
           />
           {/* Hover Image (Second image if exists) */}
           {(images && images.length > 1) && (
             <img
               src={images[1]}
               alt={`${name} alt`}
-              className="w-full h-full object-cover p-4 absolute inset-0 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500"
+              className="w-full h-full object-contain p-4 absolute inset-0 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500"
             />
           )}
         </Link>

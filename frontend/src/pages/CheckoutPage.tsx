@@ -339,8 +339,8 @@ const CheckoutPage = () => {
                     {/* MERCADO PAGO CON ABANICO */}
                     <div className="p-10 rounded-[3rem] border-2 border-[#009EE3] bg-blue-50/40 shadow-xl shadow-blue-100 flex flex-col items-center gap-4">
                       <img src="/mercadopago.BK20nVmQ.svg" alt="MP" className="h-10 object-contain" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#009EE3]">Mercado pago</span>
-                      <span className="text-[8px] font-black uppercase tracking-widest text-[#009EE3]">Paga con Mercado Pago de forma 100% segura</span>
+                      <span className="text-[10px] font-black uppercase tracking-widest text-[#009EE3] text-center">Mercado pago</span>
+                      <span className="text-[8px] font-black uppercase tracking-widest text-[#009EE3] text-center">Paga con Mercado Pago de forma 100% segura</span>
                       <CardHoverStack />
                     </div>
                   </div>
