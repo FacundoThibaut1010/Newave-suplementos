@@ -92,13 +92,13 @@ const ProductDetailPage = () => {
 
   return (
     <div className="min-h-screen bg-[#F4F4F4] pt-40 md:pt-48 pb-20">
-      <div className="max-w-7xl mx-auto px-6">
+      <div className="max-w-7xl mx-auto px-3 sm:px-6">
         <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
           <ArrowLeft size={14} /> Volver a la tienda
         </Link>
 
-        <div className="bg-white rounded-[3.5rem] p-8 md:p-12 shadow-sm border border-gray-100">
-          <div className="grid md:grid-cols-2 gap-12 lg:gap-20 items-center">
+        <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] p-5 sm:p-8 md:p-12 shadow-sm border border-gray-100">
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-center">
             
             {/* Image Section */}
             <motion.div 
@@ -106,7 +106,7 @@ const ProductDetailPage = () => {
               animate={{ opacity: 1, x: 0 }}
               className="relative w-full max-w-md mx-auto"
             >
-              <div className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden group/carousel">
+              <div className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[1.5rem] md:rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden group/carousel">
                 <div 
                   ref={scrollRef}
                   className={`flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10 select-none ${displayImages.length > 1 ? (isDragging ? 'cursor-grabbing pointer-events-auto' : 'cursor-grab pointer-events-auto') : 'pointer-events-none'}`}
@@ -171,11 +171,11 @@ const ProductDetailPage = () => {
                     </span>
                   ))}
                 </div>
-                <h1 className="text-4xl md:text-5xl lg:text-6xl font-black italic uppercase leading-[1.1] text-[#202A36] mb-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black italic uppercase leading-[1.1] text-[#202A36] mb-6 break-words">
                   {product.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 md:gap-4">
-                  <span className="text-3xl md:text-4xl font-black italic text-[#202A36] break-all">
+                  <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-[#202A36] break-words">
                     ${Number(product.price).toLocaleString('es-AR')}
                   </span>
                   {!!product.oldPrice && product.oldPrice > product.price && (
@@ -229,7 +229,7 @@ const ProductDetailPage = () => {
 
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Quantity Selector */}
-                <div className="flex items-center justify-between bg-[#F8F9FA] rounded-2xl border border-gray-100 p-2 shrink-0 min-w-[140px]">
+                <div className="flex items-center justify-between bg-[#F8F9FA] rounded-[1rem] md:rounded-2xl border border-gray-100 p-2 shrink-0 sm:min-w-[140px]">
                   <button 
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all text-2xl leading-none pb-1"
@@ -249,7 +249,7 @@ const ProductDetailPage = () => {
                 <button 
                   onClick={handleAddToCart}
                   disabled={currentStock === 0}
-                  className="flex-1 bg-[#202A36] text-white py-4 px-8 rounded-2xl font-black uppercase tracking-widest text-sm hover:bg-[#CAA959] transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-xl hover:-translate-y-1 flex items-center justify-center gap-3"
+                  className="flex-1 bg-[#202A36] text-white py-4 px-4 sm:px-8 rounded-[1rem] md:rounded-2xl font-black uppercase tracking-widest text-xs sm:text-sm hover:bg-[#CAA959] transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 sm:gap-3"
                 >
                   <ShoppingCart size={20} />
                   Añadir al Carrito
