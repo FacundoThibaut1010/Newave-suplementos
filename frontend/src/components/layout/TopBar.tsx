@@ -4,10 +4,10 @@ import { motion, AnimatePresence } from 'framer-motion';
 import apiClient from '../../api/apiClient';
 
 const defaultMessages = [
-  "ENVÍO GRATIS EN COMPRAS SUPERIORES A $90.000",
-  "3 CUOTAS SIN INTERÉS EN TODO EL SITIO",
+  "ENVÍO GRATIS EN COMPRAS SUPERIORES A $150.000",
   "NUEVA CREATINA MICRONIZADA - ¡YA DISPONIBLE!",
-  "SUMATE A LA REVOLUCIÓN NEWAVE 🚀"
+  "SUMATE A LA REVOLUCIÓN NEWAVE 🚀",
+  "SEGUINOS EN INSTAGRAM COMO @NEWAVE.FITNESS",
 ];
 
 const TopBar = () => {

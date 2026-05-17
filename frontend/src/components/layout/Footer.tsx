@@ -49,7 +49,7 @@ const Footer = () => {
               <li><Link to="/productos/Minerales" className="hover:text-[#CAA959] transition-colors">Minerales</Link></li>
               <li><Link to="/productos/Colágeno" className="hover:text-[#CAA959] transition-colors">Colágenos</Link></li>
               <li><Link to="/productos/Pre Entreno" className="hover:text-[#CAA959] transition-colors">Pre Entreno</Link></li>
-              <li><Link to="/productos/Barras Proteicas" className="hover:text-[#CAA959] transition-colors">Barras Proteicas</Link></li>
+              <li><Link to="/productos/Comestibles" className="hover:text-[#CAA959] transition-colors">Comestibles</Link></li>
               <li><Link to="/productos/Shakers" className="hover:text-[#CAA959] transition-colors">Shakers</Link></li>
             </ul>
           </div>

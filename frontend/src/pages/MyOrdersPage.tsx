@@ -88,7 +88,7 @@ const MyOrdersPage = () => {
                   <div className="flex flex-col gap-3 py-2">
                     {order.orderItems.map((item: any, i: number) => (
                       <div key={i} className="flex items-center gap-4">
-                        <img src={item.image} alt={item.name} className="inline-block h-16 w-16 rounded-2xl border-2 border-white object-cover bg-gray-50 shadow-sm" />
+                        <img src={item.image} alt={item.name} className="inline-block h-24 w-24 md:h-28 md:w-28 rounded-[1.5rem] border-2 border-white object-cover bg-gray-50 shadow-sm flex-shrink-0" />
                         <div>
                           <p className="text-sm font-black text-[#202A36]">{item.name}</p>
                           {item.variant && <p className="text-xs font-bold text-gray-500">Sabor: {item.variant}</p>}

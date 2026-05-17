@@ -13,7 +13,7 @@ const categoryOptions = [
   { value: 'Minerales', label: 'Minerales' },
   { value: 'Colágeno', label: 'Colágeno' },
   { value: 'Pre Entreno', label: 'Pre Entreno' },
-  { value: 'Barras Proteicas', label: 'Barras Proteicas' },
+  { value: 'Comestibles', label: 'Comestibles' },
   { value: 'Shakers', label: 'Shakers' },
 ];
 

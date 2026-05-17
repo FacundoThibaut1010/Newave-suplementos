@@ -8,9 +8,9 @@ const categories = [
   { name: 'Creatinas', slug: 'Creatina', image: '/creatina (1).jpg' },
   { name: 'Minerales', slug: 'Minerales', image: '/minerales.png' },
   { name: 'Colágenos', slug: 'Colágeno', image: '/colageno.jpg' },
-  { name: 'Barras Proteicas', slug: 'Barras Proteicas', image: '/BarrasProteicas.jpg' },
+  { name: 'Comestibles', slug: 'Comestibles', image: '/BarrasProteicas.jpg' },
   { name: 'Shakers', slug: 'Shakers', image: '/Shaker.png' },
-
+  { name: 'Vitaminas', slug: 'Vitaminas', image: '/vitaminas.jpg' },
 
 ];
 

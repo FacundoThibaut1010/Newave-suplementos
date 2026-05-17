@@ -20,6 +20,7 @@ const InventoryTable = () => {
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const fetchProducts = async () => {
     try {
@@ -59,6 +60,10 @@ const InventoryTable = () => {
     setShowModal(true);
   };
 
+  const filteredProducts = products.filter(p => 
+    p.name.toLowerCase().includes(searchTerm.toLowerCase())
+  );
+
   return (
     <div className="space-y-8">
       <AnimatePresence>
@@ -91,6 +96,8 @@ const InventoryTable = () => {
             <Search className="absolute left-4 top-1/2 -translate-y-1/2 text-gray-300" size={18} />
             <input 
               type="text" 
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
               placeholder="Buscar por nombre..." 
               className="input-admin pl-12"
             />
@@ -108,7 +115,7 @@ const InventoryTable = () => {
             </thead>
             <tbody className="divide-y divide-gray-50">
               <AnimatePresence mode="popLayout">
-                {products.map((p) => (
+                {filteredProducts.map((p: any) => (
                   <motion.tr 
                     layout
                     key={p._id} 
@@ -125,7 +132,15 @@ const InventoryTable = () => {
                           <span className="text-[10px] md:text-xs font-bold text-gray-500 mt-0.5">${p.price}</span>
                           {/* Stock in mobile */}
                           <div className="md:hidden mt-1">
-                            {p.countInStock <= 5 ? (
+                            {p.variants && p.variants.length > 0 ? (
+                              <div className="flex flex-col gap-1 mt-1">
+                                {p.variants.map((v: any, i: number) => (
+                                  <span key={i} className={`text-[10px] font-bold ${v.countInStock <= 5 ? 'text-red-500' : 'text-green-600'}`}>
+                                    {v.flavor}: {v.countInStock === 0 ? 'Agotado' : `${v.countInStock} unids`}
+                                  </span>
+                                ))}
+                              </div>
+                            ) : p.countInStock <= 5 ? (
                               <span className="text-[10px] text-red-500 font-bold">{p.countInStock === 0 ? 'Agotado' : `${p.countInStock} unids`}</span>
                             ) : (
                               <span className="text-[10px] text-green-600 font-bold">{p.countInStock} unids</span>
@@ -136,7 +151,16 @@ const InventoryTable = () => {
                     </td>
                     <td className="hidden md:table-cell px-8 py-6">
                       <div className="flex flex-col gap-1">
-                        {p.countInStock <= 5 ? (
+                        {p.variants && p.variants.length > 0 ? (
+                          <div className="flex flex-col gap-1">
+                            {p.variants.map((v: any, i: number) => (
+                              <div key={i} className={`flex items-center gap-2 text-sm font-bold ${v.countInStock <= 5 ? 'text-red-500' : 'text-green-600'}`}>
+                                {v.countInStock <= 5 ? <AlertCircle size={14} /> : <PackageCheck size={14} />}
+                                <span><span className="text-gray-500 font-medium mr-1">{v.flavor}:</span>{v.countInStock === 0 ? 'Agotado' : `${v.countInStock} unidades`}</span>
+                              </div>
+                            ))}
+                          </div>
+                        ) : p.countInStock <= 5 ? (
                           <div className="flex items-center gap-2 text-red-500 font-bold text-sm">
                             <AlertCircle size={16} />
                             {p.countInStock === 0 ? 'Agotado' : `${p.countInStock} unidades`}
@@ -147,7 +171,7 @@ const InventoryTable = () => {
                             {p.countInStock} unidades
                           </div>
                         )}
-                        <span className="text-[10px] uppercase font-black tracking-widest text-gray-400">
+                        <span className="text-[10px] uppercase font-black tracking-widest text-gray-400 mt-1">
                           {p.displaySection === 'Producto' && p.category ? `Producto • ${p.category}` : p.displaySection}
                         </span>
                       </div>
