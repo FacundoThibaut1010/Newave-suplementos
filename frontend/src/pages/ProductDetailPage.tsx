@@ -19,6 +19,7 @@ const ProductDetailPage = () => {
   const [scrollLeft, setScrollLeft] = useState(0);
   const addItem = useCartStore((state) => state.addItem);
   const { user, setFavorites } = useAuthStore();
+  const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -77,9 +78,15 @@ const ProductDetailPage = () => {
     if (currentStock === 0) return;
 
     for (let i = 0; i < quantity; i++) {
+      const variantName = selectedVariant ? selectedVariant.flavor : '';
+      const baseNameParts = [product.name];
+      if (product.weight) baseNameParts.push(`(${product.weight})`);
+      if (product.servings) baseNameParts.push(`[${product.servings}]`);
+      const baseName = baseNameParts.join(' ');
+
       addItem({
-        id: selectedVariant ? `${product._id}-${selectedVariant.flavor}` : product._id,
-        name: selectedVariant ? `${product.name} - ${selectedVariant.flavor}` : product.name,
+        id: selectedVariant ? `${product._id}-${variantName}` : product._id,
+        name: selectedVariant ? `${baseName} - ${variantName}` : baseName,
         price: product.price,
         image: (selectedVariant && selectedVariant.image) ? selectedVariant.image : (product.images?.[0] || product.image || '')
       });
@@ -98,16 +105,16 @@ const ProductDetailPage = () => {
         </Link>
 
         <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] p-5 sm:p-8 md:p-12 shadow-sm border border-gray-100">
-          <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-center">
-            
+          <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-start">
+
             {/* Image Section */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: -30 }}
               animate={{ opacity: 1, x: 0 }}
               className="relative w-full max-w-md mx-auto"
             >
               <div className="relative aspect-square md:aspect-[4/5] bg-[#F8F9FA] rounded-[1.5rem] md:rounded-[2.5rem] p-4 md:p-8 flex items-center justify-center overflow-hidden group/carousel">
-                <div 
+                <div
                   ref={scrollRef}
                   className={`flex w-full h-full overflow-x-auto snap-x snap-mandatory scrollbar-hide relative z-10 select-none ${displayImages.length > 1 ? (isDragging ? 'cursor-grabbing pointer-events-auto' : 'cursor-grab pointer-events-auto') : 'pointer-events-none'}`}
                   onMouseDown={(e) => {
@@ -128,16 +135,16 @@ const ProductDetailPage = () => {
                 >
                   {displayImages.map((img: string, idx: number) => (
                     <div key={idx} className="w-full h-full flex-shrink-0 snap-center relative flex items-center justify-center">
-                      <img 
-                        src={img || ''} 
-                        alt={`${product.name} ${idx + 1}`} 
+                      <img
+                        src={img || ''}
+                        alt={`${product.name} ${idx + 1}`}
                         draggable={false}
                         className="w-full h-full object-contain drop-shadow-2xl pointer-events-none"
                       />
                     </div>
                   ))}
                 </div>
-                
+
                 {/* Status Indicator */}
                 {(displayImages.length > 1) && (
                   <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20 pointer-events-none">
@@ -146,19 +153,19 @@ const ProductDetailPage = () => {
                     ))}
                   </div>
                 )}
-              <div className="absolute top-6 right-6 z-30">
-                <button 
-                  onClick={handleToggleFavorite}
-                  className="p-4 bg-white rounded-full text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all shadow-xl"
-                >
-                  <Heart size={24} fill={isFavorite ? '#ef4444' : 'none'} color={isFavorite ? '#ef4444' : 'currentColor'} />
-                </button>
-              </div>
+                <div className="absolute top-6 right-6 z-30">
+                  <button
+                    onClick={handleToggleFavorite}
+                    className="p-4 bg-white rounded-full text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all shadow-xl"
+                  >
+                    <Heart size={24} fill={isFavorite ? '#ef4444' : 'none'} color={isFavorite ? '#ef4444' : 'currentColor'} />
+                  </button>
+                </div>
               </div>
             </motion.div>
 
             {/* Content Section */}
-            <motion.div 
+            <motion.div
               initial={{ opacity: 0, x: 30 }}
               animate={{ opacity: 1, x: 0 }}
               className="space-y-8"
@@ -197,47 +204,61 @@ const ProductDetailPage = () => {
 
               {product.variants && product.variants.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-sm font-black uppercase tracking-widest text-[#202A36] mb-3">Elige un sabor:</h3>
-                  <div className="flex flex-wrap gap-2">
-                    {product.variants.map((v: any, idx: number) => (
-                      <button
-                        key={idx}
-                        onClick={() => {
-                          setSelectedVariant(v);
-                          setQuantity(1);
-                          if (scrollRef.current) scrollRef.current.scrollLeft = 0;
-                        }}
-                        className={`px-4 py-2 rounded-xl text-sm font-bold border-2 transition-all ${selectedVariant?.flavor === v.flavor ? 'border-[#CAA959] bg-[#CAA959]/10 text-[#CAA959]' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
-                      >
-                        {v.flavor}
-                      </button>
-                    ))}
+                  <h3 className="text-sm font-bold text-gray-500 mb-3">Sabor: <span className="text-[#202A36] font-black">{selectedVariant?.flavor || ''}</span></h3>
+                  <div className="flex flex-wrap gap-3">
+                    {product.variants.map((v: any, idx: number) => {
+                      const variantName = v.flavor;
+                      const isSelected = selectedVariant?._id === v._id;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => {
+                            setSelectedVariant(v);
+                            setQuantity(1);
+                            if (scrollRef.current) scrollRef.current.scrollLeft = 0;
+                          }}
+                          className={`flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold border-2 transition-all ${isSelected ? 'border-[#202A36] text-[#202A36]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                        >
+                          {v.image && (
+                            <img src={v.image} className="w-8 h-8 rounded-lg object-cover bg-gray-50 border border-gray-100" />
+                          )}
+                          {variantName || `Opción ${idx + 1}`}
+                        </button>
+                      );
+                    })}
                   </div>
                 </div>
               )}
 
-              <div className="h-px w-full bg-gray-100 my-8" />
+              {product.weight && (
+                <div className="mt-6" >
+                  <h3 className="text-sm font-bold text-gray-500 mb-2">Formato: <span className="text-[#202A36]">{product.weight}</span></h3>
+                  <div className="w-full bg-white border border-gray-200 rounded-2xl px-6 py-5 text-lg font-black text-[#202A36] shadow-sm">
+                    {product.weight}
+                  </div>
+                </div>
+              )}
 
-              <div>
-                <h3 className="text-sm font-black uppercase tracking-widest text-[#202A36] mb-4">Descripción</h3>
-                <p className="text-gray-500 leading-relaxed font-medium whitespace-pre-line">
-                  {product.description || 'Este producto no cuenta con descripción detallada por el momento. Disfruta de la mejor calidad que Newave te ofrece.'}
-                </p>
-              </div>
+              {product.servings && (
+                <div className="mt-4 inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-5 py-3">
+                  <img src="/gramajes.png" className="w-9 h-9" />
+                  <span className="text-sm font-bold text-[#202A36]">{product.servings} {product.servings.toLowerCase().includes('servicio') ? '' : 'Servicios'}</span>
+                </div>
+              )}
 
               <div className="h-px w-full bg-gray-100 my-8" />
 
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Quantity Selector */}
                 <div className="flex items-center justify-between bg-[#F8F9FA] rounded-[1rem] md:rounded-2xl border border-gray-100 p-2 shrink-0 sm:min-w-[140px]">
-                  <button 
+                  <button
                     onClick={() => setQuantity(Math.max(1, quantity - 1))}
                     className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all text-2xl leading-none pb-1"
                   >
                     -
                   </button>
                   <span className="w-12 text-center font-black text-lg text-black">{quantity}</span>
-                  <button 
+                  <button
                     onClick={() => setQuantity(Math.min(currentStock || 10, quantity + 1))}
                     className="w-12 h-12 flex items-center justify-center text-gray-500 hover:text-black hover:bg-white rounded-xl transition-all text-2xl leading-none pb-1"
                   >
@@ -246,7 +267,7 @@ const ProductDetailPage = () => {
                 </div>
 
                 {/* Add to Cart Button */}
-                <button 
+                <button
                   onClick={handleAddToCart}
                   disabled={currentStock === 0}
                   className="flex-1 bg-[#202A36] text-white py-4 px-4 sm:px-8 rounded-[1rem] md:rounded-2xl font-black uppercase tracking-widest text-xs sm:text-sm hover:bg-[#CAA959] transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 sm:gap-3"
@@ -259,6 +280,31 @@ const ProductDetailPage = () => {
 
           </div>
         </div>
+
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mt-12 bg-white rounded-[2rem] md:rounded-[3.5rem] p-8 md:p-12 shadow-sm border border-gray-100"
+        >
+          <div 
+            className="flex items-center justify-between cursor-pointer select-none group"
+            onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
+          >
+            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-[#202A36] group-hover:text-[#CAA959] transition-colors">Descripción del Producto</h3>
+            <div className={`transform transition-transform duration-300 ${isDescriptionOpen ? 'rotate-180' : ''}`}>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-[#202A36] group-hover:text-[#CAA959] transition-colors"><polyline points="6 9 12 15 18 9"></polyline></svg>
+            </div>
+          </div>
+          
+          <div className={`grid transition-all duration-300 ease-in-out ${isDescriptionOpen ? 'grid-rows-[1fr] opacity-100 mt-6' : 'grid-rows-[0fr] opacity-0'}`}>
+            <div className="overflow-hidden">
+              <div className="text-gray-500 font-medium whitespace-pre-line leading-relaxed">
+                {product.description || 'Este producto no cuenta con descripción detallada por el momento. Disfruta de la mejor calidad que Newave te ofrece.'}
+              </div>
+            </div>
+          </div>
+        </motion.div>
+
       </div>
     </div>
   );

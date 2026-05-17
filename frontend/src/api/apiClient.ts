@@ -9,13 +9,16 @@ const apiClient = axios.create({
 
 apiClient.interceptors.request.use(
   (config) => {
-    // Buscar el token en Zustand persist storage
-    const storage = localStorage.getItem('newave-auth');
-    if (storage) {
-      const { state } = JSON.parse(storage);
-      if (state && state.user && state.user.token) {
-        config.headers.Authorization = `Bearer ${state.user.token}`;
+    try {
+      const storage = localStorage.getItem('newave-auth');
+      if (storage) {
+        const { state } = JSON.parse(storage);
+        if (state && state.user && state.user.token) {
+          config.headers.Authorization = `Bearer ${state.user.token}`;
+        }
       }
+    } catch (e) {
+      console.warn('Error reading auth state from local storage', e);
     }
     return config;
   },

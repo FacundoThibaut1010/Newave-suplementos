@@ -85,7 +85,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
         newFavs = currentFavs.filter((fav: any) => fav._id !== id && fav !== id);
       } else {
         // En frontend solo agregamos el ID temporalmente para que cambie el color rápido
-        newFavs = [...currentFavs, { _id: id, name, price, category, image }];
+        newFavs = [...currentFavs, { _id: id, name, price, category, image, images }];
       }
       setFavorites(newFavs);
 

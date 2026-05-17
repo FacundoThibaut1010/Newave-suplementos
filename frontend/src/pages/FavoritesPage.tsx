@@ -60,7 +60,6 @@ const FavoritesPage = () => {
                 category={product.category}
                 image={product.image || product.images?.[0] || ''}
                 images={product.images}
-                darkTheme
               />
             ))}
           </div>

@@ -36,6 +36,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
     description: initialData?.description || '',
     images: initialData?.images?.length ? initialData.images : (initialData?.image ? [initialData.image] : ['']),
     category: initialData?.category || '',
+    weight: initialData?.weight || '',
+    servings: initialData?.servings || '',
     displaySection: initialData?.displaySection || 'Producto',
     variants: initialData?.variants || []
   });
@@ -145,6 +147,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         oldPrice: formData.oldPrice ? Number(String(formData.oldPrice).replace(/\./g, '')) : 0,
         countInStock: Number(formData.countInStock) || 0,
         description: formData.description || 'Nueva pieza de la colección.',
+        weight: formData.weight,
+        servings: formData.servings,
         images: validImages, // El modelo espera un array
         brand: 'Genérica',
         category: formData.displaySection === 'Combo' ? formData.category : (formData.category || 'Proteína'),
@@ -184,7 +188,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         initial={{ scale: 0.9, opacity: 0, y: 20 }}
         animate={{ scale: 1, opacity: 1, y: 0 }}
         exit={{ scale: 0.9, opacity: 0, y: 20 }}
-        className="relative w-full max-w-2xl bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 pb-32 my-10 md:my-auto"
+        className="relative w-full max-w-4xl bg-white rounded-[2.5rem] shadow-2xl p-6 md:p-10 pb-32 my-10 md:my-auto"
       >
         <div className="flex justify-between items-center mb-10">
           <div>
@@ -252,6 +256,29 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               )}
             </div>
 
+            <div className="grid grid-cols-2 gap-4">
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Gramaje / Peso</label>
+                <input
+                  type="text"
+                  value={formData.weight}
+                  onChange={(e) => setFormData({ ...formData, weight: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                  placeholder="Ej: 1 kg"
+                />
+              </div>
+              <div>
+                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Servicios </label>
+                <input
+                  type="text"
+                  value={formData.servings}
+                  onChange={(e) => setFormData({ ...formData, servings: e.target.value })}
+                  className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
+                  placeholder="Ej: 30 servicios"
+                />
+              </div>
+            </div>
+
             <div className="space-y-3">
               <div className="flex items-center justify-between">
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 ml-1">Imágenes - Máximo 4</label>
@@ -312,15 +339,15 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   + Agregar Sabor
                 </button>
               </div>
-              
+
               {formData.variants.map((variant: any, index: number) => (
                 <div key={index} className="flex flex-col gap-2 p-3 bg-white border border-gray-200 rounded-xl relative group">
                   <div className="grid grid-cols-[1fr_80px_auto] gap-2 items-center">
                     <input
                       type="text"
-                      value={variant.flavor}
+                      value={variant.flavor || ''}
                       onChange={(e) => updateVariant(index, 'flavor', e.target.value)}
-                      placeholder="Sabor (ej: Vainilla)"
+                      placeholder="Sabor (Opcional)"
                       className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-black"
                     />
                     <input

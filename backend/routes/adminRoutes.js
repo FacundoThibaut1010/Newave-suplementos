@@ -199,16 +199,15 @@ router.get('/dashboard', async (req, res) => {
 
     allProducts.forEach(product => {
       if (product.variants && product.variants.length > 0) {
-        // Revisar cada sabor
-        product.variants.forEach(variant => {
-          if (variant.countInStock < 5) {
-            lowStockProducts.push({
-              _id: `${product._id}-${variant.flavor}`,
-              name: `${product.name} - ${variant.flavor}`,
-              countInStock: variant.countInStock,
-              image: variant.image || product.image || (product.images && product.images[0])
-            });
-          }
+        product.variants.forEach(v => {
+            if (v.countInStock < 5) {
+              lowStockProducts.push({
+                _id: `${product._id}-${v.flavor}`,
+                name: `${product.name} - ${v.flavor}`,
+                countInStock: v.countInStock,
+                image: v.image || (product.images && product.images[0]) || product.image
+              });
+            }
         });
       } else {
         // Revisar producto general

@@ -23,6 +23,14 @@ const productSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    weight: {
+      type: String,
+      default: '',
+    },
+    servings: {
+      type: String,
+      default: '',
+    },
     category: {
       type: String, // Cambiado a String para mayor flexibilidad en el Dashboard
       default: 'General',
@@ -44,7 +52,7 @@ const productSchema = new mongoose.Schema(
     },
     variants: [
       {
-        flavor: { type: String, required: true },
+        flavor: { type: String, default: '' },
         image: { type: String, default: '' },
         countInStock: { type: Number, required: true, default: 0 }
       }
