@@ -89,7 +89,18 @@ export const getActiveCategories = async (req, res) => {
 
     // Buscar todas las categorías que tengan al menos un producto
     const activeCategoriesNames = await Product.distinct('category');
-    const normalizedActiveNames = activeCategoriesNames.map(name => name?.toLowerCase().trim());
+    const normalizedActiveNames = [];
+    
+    activeCategoriesNames.forEach(name => {
+      if (!name) return;
+      // Split using the same regex as the frontend to capture individual categories
+      const parts = name.split(/[,+\-]| y /i);
+      parts.forEach(p => {
+        if (p.trim()) {
+          normalizedActiveNames.push(p.toLowerCase().trim());
+        }
+      });
+    });
     
     // Filtrar las categorías de configuración para dejar solo las activas
     const activeCategories = configCategories.filter(cat => {

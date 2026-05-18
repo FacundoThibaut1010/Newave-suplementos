@@ -157,7 +157,7 @@ const StoreSettings = () => {
             <h3 className="text-xl font-bold tracking-tight">Categorías (Imágenes y Nombres)</h3>
           </div>
           <p className="text-sm text-gray-400 mb-8">
-            Aquí puedes personalizar cómo se ven las categorías en tu página principal. Nota: Las categorías solo aparecerán en la web si tienes al menos un producto creado con esa categoría.
+            Aquí puedes personalizar cómo se ven las categorías en tu página principal. Nota: Las categorías solo aparecerán en la web (menú, filtros, etc.) si tienes al menos un producto cargado con esa categoría.
           </p>
 
           <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">

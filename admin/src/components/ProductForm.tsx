@@ -209,7 +209,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
           </button>
         </div>
 
-        <form onSubmit={handleSubmit} className="grid grid-cols-2 gap-x-8 gap-y-6">
+        <form onSubmit={handleSubmit} className="grid grid-cols-1 lg:grid-cols-2 gap-x-8 gap-y-6">
           <div className="space-y-6">
             <div>
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Nombre</label>
@@ -467,7 +467,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
             </div>
           </div>
 
-          <div className="col-span-2 pt-4">
+          <div className="col-span-1 lg:col-span-2 pt-4">
             <button
               type="submit"
               disabled={isSubmitting}
