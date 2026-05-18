@@ -81,7 +81,6 @@ const ProductDetailPage = () => {
       const variantName = selectedVariant ? selectedVariant.flavor : '';
       const baseNameParts = [product.name];
       if (product.weight) baseNameParts.push(`(${product.weight})`);
-      if (product.servings) baseNameParts.push(`[${product.servings}]`);
       const baseName = baseNameParts.join(' ');
 
       addItem({
@@ -205,7 +204,7 @@ const ProductDetailPage = () => {
               {product.variants && product.variants.length > 0 && (
                 <div className="mt-6">
                   <h3 className="text-sm font-bold text-gray-500 mb-3">Sabor: <span className="text-[#202A36] font-black">{selectedVariant?.flavor || ''}</span></h3>
-                  <div className="flex flex-wrap gap-3">
+                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
                     {product.variants.map((v: any, idx: number) => {
                       const variantName = v.flavor;
                       const isSelected = selectedVariant?._id === v._id;
@@ -217,12 +216,12 @@ const ProductDetailPage = () => {
                             setQuantity(1);
                             if (scrollRef.current) scrollRef.current.scrollLeft = 0;
                           }}
-                          className={`flex items-center gap-3 px-5 py-3 rounded-xl text-sm font-bold border-2 transition-all ${isSelected ? 'border-[#202A36] text-[#202A36]' : 'border-gray-200 text-gray-600 hover:border-gray-300'}`}
+                          className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl text-xs sm:text-sm font-bold border-2 transition-all w-full ${isSelected ? 'border-[#202A36] text-[#202A36] bg-gray-50' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
                         >
                           {v.image && (
-                            <img src={v.image} className="w-8 h-8 rounded-lg object-cover bg-gray-50 border border-gray-100" />
+                            <img src={v.image} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover bg-white border border-gray-100 shrink-0 shadow-sm" />
                           )}
-                          {variantName || `Opción ${idx + 1}`}
+                          <span className="truncate w-full text-center leading-tight whitespace-normal">{variantName || `Opción ${idx + 1}`}</span>
                         </button>
                       );
                     })}

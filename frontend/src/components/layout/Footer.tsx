@@ -1,9 +1,21 @@
 // @ts-ignore
 import { Mail } from 'lucide-react';
 import { Link } from 'react-router-dom';
-
+import { useState, useEffect } from 'react';
+import apiClient from '../../api/apiClient';
 
 const Footer = () => {
+  const [categories, setCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await apiClient.get('/products/active-categories');
+        setCategories(data);
+      } catch (err) {}
+    };
+    fetchCategories();
+  }, []);
   return (
     <footer id="contacto" className="bg-white border-t border-gray-100 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -44,13 +56,11 @@ const Footer = () => {
             <h3 className="text-xs font-black text-[#202A36] uppercase tracking-[0.2em] mb-6">Productos</h3>
             <ul className="space-y-4 text-sm text-gray-500 font-medium">
               <li><Link to="/productos" className="hover:text-[#CAA959] transition-colors">Ver Todo</Link></li>
-              <li><Link to="/productos/Proteína" className="hover:text-[#CAA959] transition-colors">Proteínas</Link></li>
-              <li><Link to="/productos/Creatina" className="hover:text-[#CAA959] transition-colors">Creatinas</Link></li>
-              <li><Link to="/productos/Minerales" className="hover:text-[#CAA959] transition-colors">Minerales</Link></li>
-              <li><Link to="/productos/Colágeno" className="hover:text-[#CAA959] transition-colors">Colágenos</Link></li>
-              <li><Link to="/productos/Pre Entreno" className="hover:text-[#CAA959] transition-colors">Pre Entreno</Link></li>
-              <li><Link to="/productos/Comestibles" className="hover:text-[#CAA959] transition-colors">Comestibles</Link></li>
-              <li><Link to="/productos/Shakers" className="hover:text-[#CAA959] transition-colors">Shakers</Link></li>
+              {categories.map((cat, idx) => (
+                <li key={idx}>
+                  <Link to={`/productos/${cat.slug}`} className="hover:text-[#CAA959] transition-colors">{cat.name}</Link>
+                </li>
+              ))}
             </ul>
           </div>
 

@@ -6,26 +6,16 @@ import apiClient from '../api/apiClient';
 import AdminSelect from './AdminSelect';
 import AdminMultiSelect from './AdminMultiSelect';
 
-const categoryOptions = [
-  { value: 'Proteína', label: 'Proteína' },
-  { value: 'Creatina', label: 'Creatina' },
-  { value: 'Minerales', label: 'Minerales' },
-  { value: 'Colágeno', label: 'Colágeno' },
-  { value: 'Pre Entreno', label: 'Pre Entreno' },
-  { value: 'Comestibles', label: 'Comestibles' },
-  { value: 'Shakers', label: 'Shakers' }
-];
-
-const displaySectionOptions = [
-  { value: 'Producto', label: 'Producto' },
-  { value: 'Combo', label: 'Combo' }
-];
-
 interface ProductFormProps {
   onClose: () => void;
   onSuccess: () => void;
   initialData?: any;
 }
+
+const displaySectionOptions = [
+  { value: 'Producto', label: 'Producto' },
+  { value: 'Combo', label: 'Combo' }
+];
 
 const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   const [formData, setFormData] = useState({
@@ -44,8 +34,25 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImageIndex, setUploadingImageIndex] = useState<number | string | null>(null);
+  const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([]);
 
-  const handleFileUpload = async (index: number, e: React.ChangeEvent<HTMLInputElement>) => {
+  React.useEffect(() => {
+    const fetchConfig = async () => {
+      try {
+        const { data } = await apiClient.get('/admin/config');
+        if (data.categories) {
+          const opts = data.categories.map((c: any) => ({ value: c.name, label: c.name }));
+          setCategoryOptions(opts);
+          if (!formData.category && opts.length > 0) {
+            setFormData(prev => ({ ...prev, category: opts[0].value }));
+          }
+        }
+      } catch (err) {}
+    };
+    fetchConfig();
+  }, []);
+
+  const handleFileUpload = async (index: number | string, e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
@@ -257,8 +264,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
             </div>
 
             <div className="grid grid-cols-2 gap-4">
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Gramaje / Peso</label>
+              <div className="flex flex-col justify-end">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1 min-h-[20px] flex items-end">Gramaje / Peso</label>
                 <input
                   type="text"
                   value={formData.weight}
@@ -267,8 +274,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   placeholder="Ej: 1 kg"
                 />
               </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Servicios </label>
+              <div className="flex flex-col justify-end">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1 min-h-[20px] flex items-end">Servicios </label>
                 <input
                   type="text"
                   value={formData.servings}
@@ -342,25 +349,27 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
               {formData.variants.map((variant: any, index: number) => (
                 <div key={index} className="flex flex-col gap-2 p-3 bg-white border border-gray-200 rounded-xl relative group">
-                  <div className="grid grid-cols-[1fr_80px_auto] gap-2 items-center">
+                  <div className="grid grid-cols-[1fr_auto] md:grid-cols-[1fr_80px_auto] gap-2 items-center">
                     <input
                       type="text"
                       value={variant.flavor || ''}
                       onChange={(e) => updateVariant(index, 'flavor', e.target.value)}
                       placeholder="Sabor (Opcional)"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-black"
+                      className="col-span-2 md:col-span-1 w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-black"
                     />
-                    <input
-                      type="number"
-                      value={variant.countInStock}
-                      onChange={(e) => updateVariant(index, 'countInStock', e.target.value)}
-                      placeholder="Stock"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-black text-center"
-                    />
+                    <div className="flex w-full">
+                      <input
+                        type="number"
+                        value={variant.countInStock}
+                        onChange={(e) => updateVariant(index, 'countInStock', e.target.value)}
+                        placeholder="Stock"
+                        className="w-full bg-gray-50 border border-gray-200 rounded-lg px-3 py-2 text-sm font-bold text-black text-center"
+                      />
+                    </div>
                     <button
                       type="button"
                       onClick={() => removeVariant(index)}
-                      className="p-2 text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center"
+                      className="p-2 text-gray-400 hover:text-red-500 transition-colors flex items-center justify-center bg-gray-50 md:bg-transparent rounded-lg md:rounded-none border border-gray-200 md:border-transparent h-full"
                     >
                       <X size={16} />
                     </button>

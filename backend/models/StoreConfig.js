@@ -8,12 +8,18 @@ const storeConfigSchema = new mongoose.Schema({
     buttonText: { type: String, default: 'Ver Catálogo' }
   },
   announcement: {
-    text: { type: String, default: 'Envío premium gratuito en órdenes superiores a $150' },
+    text: { type: String, default: '' },
+    messages: { type: [String], default: ['Envío premium gratuito en órdenes superiores a $150'] },
     enabled: { type: Boolean, default: true }
   },
   styles: {
     accentColor: { type: String, default: '#000000' }
-  }
+  },
+  categories: [{
+    name: { type: String },
+    slug: { type: String },
+    image: { type: String }
+  }]
 }, { timestamps: true });
 
 const StoreConfig = mongoose.model('StoreConfig', storeConfigSchema);

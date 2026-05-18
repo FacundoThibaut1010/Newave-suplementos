@@ -1,22 +1,20 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
-
-const categories = [
-  { name: 'Proteínas', slug: 'Proteína', image: '/proteina.jpg' },
-  { name: 'Pre Entreno', slug: 'Pre Entreno', image: '/pre entreno.jpg.png' },
-  { name: 'Creatinas', slug: 'Creatina', image: '/creatina (1).jpg' },
-  { name: 'Minerales', slug: 'Minerales', image: '/minerales.png' },
-  { name: 'Colágenos', slug: 'Colágeno', image: '/colageno.jpg' },
-  { name: 'Comestibles', slug: 'Comestibles', image: '/BarrasProteicas.jpg' },
-  { name: 'Shakers', slug: 'Shakers', image: '/Shaker.png' },
-  { name: 'Vitaminas', slug: 'Vitaminas', image: '/vitaminas.jpg' },
-
-];
+import apiClient from '../../api/apiClient';
 
 const CategoryScroll = () => {
-  // Solo mostramos las 5 categorías originales
-  const displayCategories = categories;
+  const [displayCategories, setDisplayCategories] = useState<any[]>([]);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await apiClient.get('/products/active-categories');
+        setDisplayCategories(data);
+      } catch (err) {}
+    };
+    fetchCategories();
+  }, []);
 
   const scrollRef = useRef<HTMLDivElement>(null);
   const [isHovered, setIsHovered] = useState(false);

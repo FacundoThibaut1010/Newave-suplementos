@@ -6,16 +6,7 @@ import ProductCard from '../components/home/ProductCard';
 import apiClient from '../api/apiClient';
 import CustomSelect from '../components/ui/CustomSelect';
 
-const categoryOptions = [
-  { value: 'Todas', label: 'Todos' },
-  { value: 'Proteína', label: 'Proteína' },
-  { value: 'Creatina', label: 'Creatina' },
-  { value: 'Minerales', label: 'Minerales' },
-  { value: 'Colágeno', label: 'Colágeno' },
-  { value: 'Pre Entreno', label: 'Pre Entreno' },
-  { value: 'Comestibles', label: 'Comestibles' },
-  { value: 'Shakers', label: 'Shakers' },
-];
+// Options will be fetched dynamically
 
 const sortOptions = [
   { value: 'featured', label: 'Filtrar' },
@@ -33,8 +24,20 @@ const ProductsPage = () => {
 
   const [selectedCategory, setSelectedCategory] = useState<string>(category || 'Todas');
   const [sortBy, setSortBy] = useState<string>('featured');
+  const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([{ value: 'Todas', label: 'Todos' }]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(false);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await apiClient.get('/products/active-categories');
+        const dynamicOptions = data.map((c: any) => ({ value: c.slug, label: c.name }));
+        setCategoryOptions([{ value: 'Todas', label: 'Todos' }, ...dynamicOptions]);
+      } catch (err) {}
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const checkScroll = () => {

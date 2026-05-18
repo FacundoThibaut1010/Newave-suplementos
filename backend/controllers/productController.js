@@ -77,3 +77,30 @@ export const getProductById = async (req, res) => {
     throw new Error('Tuvimos un problemita al buscar el producto. ¡Vuelve a intentarlo! 🛠️');
   }
 };
+
+// @desc    Get active categories with images
+// @route   GET /api/products/active-categories
+// @access  Public
+export const getActiveCategories = async (req, res) => {
+  try {
+    const StoreConfig = (await import('../models/StoreConfig.js')).default;
+    const config = await StoreConfig.findOne();
+    const configCategories = config?.categories || [];
+
+    // Buscar todas las categorías que tengan al menos un producto
+    const activeCategoriesNames = await Product.distinct('category');
+    const normalizedActiveNames = activeCategoriesNames.map(name => name?.toLowerCase().trim());
+    
+    // Filtrar las categorías de configuración para dejar solo las activas
+    const activeCategories = configCategories.filter(cat => {
+      const catName = cat.name?.toLowerCase().trim();
+      const catSlug = cat.slug?.toLowerCase().trim();
+      return normalizedActiveNames.includes(catName) || normalizedActiveNames.includes(catSlug);
+    });
+
+    res.json(activeCategories);
+  } catch (error) {
+    res.status(500);
+    throw new Error('No pudimos cargar las categorías. ¡Danos un segundo! ⏳');
+  }
+};

@@ -20,7 +20,18 @@ const Navbar = () => {
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
+  const [categories, setCategories] = useState<any[]>([]);
   const userMenuRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    const fetchCategories = async () => {
+      try {
+        const { data } = await apiClient.get('/products/active-categories');
+        setCategories(data);
+      } catch (err) {}
+    };
+    fetchCategories();
+  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -189,13 +200,9 @@ const Navbar = () => {
                                 className="overflow-hidden rounded-xl mx-2 mt-1"
                               >
                                 <div className="flex flex-col py-2">
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Proteína" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Proteínas</Link>
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Creatina" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Creatinas</Link>
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Minerales" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Minerales</Link>
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Colágeno" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Colágenos</Link>
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Pre Entreno" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Pre Entreno</Link>
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Comestibles" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Comestibles</Link>
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos/Shakers" className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">Shakers</Link>
+                                  {categories.map((cat: any, i: number) => (
+                                    <Link key={i} onClick={() => setIsMenuOpen(false)} to={`/productos/${cat.slug}`} className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">{cat.name}</Link>
+                                  ))}
                                   <Link onClick={() => setIsMenuOpen(false)} to="/productos" className="px-6 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#CAA959] hover:text-white transition-colors">Ver todos</Link>
                                 </div>
                               </motion.div>

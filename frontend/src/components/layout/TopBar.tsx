@@ -12,28 +12,52 @@ const defaultMessages = [
 
 const TopBar = () => {
   const [index, setIndex] = useState(0);
-  const [messages, setMessages] = useState(defaultMessages);
+  const [messages, setMessages] = useState<string[]>([]);
+  const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
     const fetchConfig = async () => {
       try {
         const { data } = await apiClient.get('/admin/config');
-        if (data.announcement && data.announcement.enabled && data.announcement.text) {
-          setMessages([data.announcement.text]);
+        if (data.announcement) {
+          if (!data.announcement.enabled) {
+            setMessages(defaultMessages);
+            setIsVisible(true);
+            return;
+          }
+          
+          let combined = [...defaultMessages];
+          if (data.announcement.messages && data.announcement.messages.length > 0) {
+            const validMsgs = data.announcement.messages.filter((m: string) => m.trim() !== '');
+            if (validMsgs.length > 0) {
+              combined = [...combined, ...validMsgs];
+            }
+          }
+          
+          setMessages(combined);
+          setIsVisible(true);
+          return;
         }
+        
+        // If enabled but no custom messages, show defaults
+        setMessages(defaultMessages);
+        setIsVisible(true);
       } catch (err) {
-        // Fallback to default messages
+        setMessages(defaultMessages);
       }
     };
     fetchConfig();
   }, []);
 
   useEffect(() => {
+    if (messages.length <= 1) return;
     const timer = setInterval(() => {
       setIndex((prev) => (prev + 1) % messages.length);
     }, 4000);
     return () => clearInterval(timer);
-  }, []);
+  }, [messages.length]);
+
+  if (!isVisible || messages.length === 0) return null;
 
   return (
     <div className="bg-black text-white min-h-[3rem] h-12 md:h-10 flex items-center justify-center overflow-hidden fixed top-0 w-full z-[60] px-4 text-center">

@@ -71,8 +71,30 @@ router.get('/config', async (req, res) => {
         heroTitle: 'Bienvenidos a mi tienda',
         heroSubtitle: 'Diseño y calidad en cada detalle',
         heroImage: '',
-        promoBanner: 'Envío gratis en tu primera compra'
+        promoBanner: 'Envío gratis en tu primera compra',
+        categories: [
+          { name: 'Proteínas', slug: 'Proteína', image: '/proteina.jpg' },
+          { name: 'Pre Entreno', slug: 'Pre Entreno', image: '/pre entreno.jpg.png' },
+          { name: 'Creatinas', slug: 'Creatina', image: '/creatina (1).jpg' },
+          { name: 'Minerales', slug: 'Minerales', image: '/minerales.png' },
+          { name: 'Colágenos', slug: 'Colágeno', image: '/colageno.jpg' },
+          { name: 'Comestibles', slug: 'Comestibles', image: '/BarrasProteicas.jpg' },
+          { name: 'Shakers', slug: 'Shakers', image: '/Shaker.png' },
+          { name: 'Vitaminas', slug: 'Vitaminas', image: '/vitaminas.jpg' }
+        ]
       });
+    } else if (!config.categories || config.categories.length === 0) {
+      config.categories = [
+        { name: 'Proteínas', slug: 'Proteína', image: '/proteina.jpg' },
+        { name: 'Pre Entreno', slug: 'Pre Entreno', image: '/pre entreno.jpg.png' },
+        { name: 'Creatinas', slug: 'Creatina', image: '/creatina (1).jpg' },
+        { name: 'Minerales', slug: 'Minerales', image: '/minerales.png' },
+        { name: 'Colágenos', slug: 'Colágeno', image: '/colageno.jpg' },
+        { name: 'Comestibles', slug: 'Comestibles', image: '/BarrasProteicas.jpg' },
+        { name: 'Shakers', slug: 'Shakers', image: '/Shaker.png' },
+        { name: 'Vitaminas', slug: 'Vitaminas', image: '/vitaminas.jpg' }
+      ];
+      await config.save();
     }
     res.json(config);
   } catch (error) {
