@@ -4,7 +4,7 @@ import Order from '../models/Order.js';
 import generateToken from '../utils/generateToken.js';
 import { protect } from '../middleware/authMiddleware.js';
 import admin from '../config/firebaseAdmin.js';
-import { sendWelcomeEmail, sendVerificationEmail } from '../utils/emailService.js';
+import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail } from '../utils/emailService.js';
 
 const verificationCodes = new Map();
 
@@ -181,6 +181,63 @@ router.post('/google-login', async (req, res) => {
   } catch (error) {
     console.error('Error en Google Login:', error);
     res.status(401).json({ message: 'Token de Google inválido o expirado' });
+  }
+});
+
+// @route   POST /api/users/forgot-password
+// @desc    Send password reset code to email
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'No existe un usuario con ese correo' });
+    }
+
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    verificationCodes.set(email + '_reset', { code, expires: Date.now() + 15 * 60000 });
+
+    await sendPasswordResetEmail(email, code);
+
+    res.json({ message: 'Código de recuperación enviado con éxito' });
+  } catch (error) {
+    console.error('Error sending reset code:', error);
+    res.status(500).json({ message: 'Error al enviar el código de recuperación' });
+  }
+});
+
+// @route   POST /api/users/reset-password
+// @desc    Reset password using verification code
+router.post('/reset-password', async (req, res) => {
+  try {
+    const { email, code, newPassword } = req.body;
+
+    const storedData = verificationCodes.get(email + '_reset');
+    if (!storedData) {
+      return res.status(400).json({ message: 'Por favor, solicita un código de recuperación primero' });
+    }
+    if (Date.now() > storedData.expires) {
+      verificationCodes.delete(email + '_reset');
+      return res.status(400).json({ message: 'El código expiró. Por favor, solicita uno nuevo' });
+    }
+    if (storedData.code !== code) {
+      return res.status(400).json({ message: 'El código de verificación es incorrecto' });
+    }
+
+    const user = await User.findOne({ email });
+    if (!user) {
+      return res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    verificationCodes.delete(email + '_reset');
+
+    res.json({ message: 'Contraseña restablecida exitosamente' });
+  } catch (error) {
+    console.error('Error in reset password:', error);
+    res.status(500).json({ message: 'Error al restablecer la contraseña' });
   }
 });
 

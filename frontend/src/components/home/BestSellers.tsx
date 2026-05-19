@@ -90,7 +90,7 @@ const BestSellers = () => {
               const walk = (y - startY) * 1.5;
               scrollRef.current.scrollTop = scrollTop - walk;
             }}
-            className={`grid grid-cols-2 gap-4 md:gap-8 pb-8 md:pb-4 h-[600px] overflow-y-auto scrollbar-hide select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+            className={`grid grid-cols-2 gap-4 md:gap-8 pb-8 md:pb-4 h-[600px] overflow-hidden md:overflow-y-auto scrollbar-hide select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
           >
             {(bestSellers.length % 2 !== 0 ? [...bestSellers, { ...bestSellers[0], _id: bestSellers[0]._id + '_dup' }] : bestSellers).map((product) => (
               <div key={product._id} className="w-full shrink-0 h-full">

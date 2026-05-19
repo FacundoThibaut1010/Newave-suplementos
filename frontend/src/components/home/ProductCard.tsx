@@ -174,16 +174,10 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
           ))}
         </div>
         <Link to={`/producto/${id}`} className="flex-grow">
-          <h3 className={`text-xl font-black italic uppercase leading-tight mb-2 group-hover:text-[#CAA959] transition-colors ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
+          <h3 className={`text-xl font-black italic uppercase leading-tight mt-2 group-hover:text-[#CAA959] transition-colors ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
             {name}
           </h3>
         </Link>
-        <div className="flex items-center justify-center md:justify-start gap-2 mt-auto pt-2">
-          <span className="font-black text-xl text-[#CAA959] italic">${Number(price).toLocaleString('es-AR')}</span>
-          {!!oldPrice && oldPrice > price && (
-            <span className="text-xs text-gray-400 line-through font-bold">${Number(oldPrice).toLocaleString('es-AR')}</span>
-          )}
-        </div>
       </div>
     </motion.div>
   );

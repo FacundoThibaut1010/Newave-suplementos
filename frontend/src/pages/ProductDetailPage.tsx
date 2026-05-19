@@ -131,7 +131,7 @@ const ProductDetailPage = () => {
         image: (selectedVariant && selectedVariant.image) ? selectedVariant.image : (product.images?.[0] || product.image || '')
       });
     }
-    toast.success(`${quantity} ${quantity === 1 ? 'unidad añadida' : 'unidades añadidas'} al carrito`);
+
   };
 
   const displayImages = selectedVariant && selectedVariant.image ? [selectedVariant.image] : (product.images && product.images.length > 0 ? product.images : [product.image]);
