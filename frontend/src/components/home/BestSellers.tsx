@@ -100,6 +100,7 @@ const BestSellers = () => {
                   category={product.category || 'Destacado'}
                   image={product.images?.[0] || product.image || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
                   images={product.images}
+                  hidePrice={true}
                 />
               </div>
             ))}
