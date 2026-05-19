@@ -4,6 +4,9 @@ import Order from '../models/Order.js';
 import generateToken from '../utils/generateToken.js';
 import { protect } from '../middleware/authMiddleware.js';
 import admin from '../config/firebaseAdmin.js';
+import { sendWelcomeEmail, sendVerificationEmail } from '../utils/emailService.js';
+
+const verificationCodes = new Map();
 
 const router = express.Router();
 
@@ -15,6 +18,115 @@ router.get('/orders', protect, async (req, res) => {
     res.json(orders);
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener compras' });
+  }
+});
+
+// @route   POST /api/users/send-verification-code
+// @desc    Send 4-digit code to email
+router.post('/send-verification-code', async (req, res) => {
+  try {
+    const { email } = req.body;
+    const userExists = await User.findOne({ email });
+    if (userExists) {
+      return res.status(400).json({ message: 'El usuario ya existe con este correo' });
+    }
+
+    const code = Math.floor(1000 + Math.random() * 9000).toString();
+    verificationCodes.set(email, { code, expires: Date.now() + 15 * 60000 });
+
+    await sendVerificationEmail(email, code);
+
+    res.json({ message: 'Código enviado con éxito' });
+  } catch (error) {
+    console.error('Error sending code:', error);
+    res.status(500).json({ message: 'Error al enviar el código de verificación' });
+  }
+});
+
+// @route   POST /api/users/register
+// @desc    Register a new user
+router.post('/register', async (req, res) => {
+  try {
+    const { name, email, password, verificationCode } = req.body;
+
+    const userExists = await User.findOne({ email });
+
+    if (userExists) {
+      return res.status(400).json({ message: 'El usuario ya existe con este correo' });
+    }
+
+    const storedData = verificationCodes.get(email);
+    if (!storedData) {
+      return res.status(400).json({ message: 'Por favor, solicita un código de verificación primero' });
+    }
+    if (Date.now() > storedData.expires) {
+      verificationCodes.delete(email);
+      return res.status(400).json({ message: 'El código expiró. Por favor, solicita uno nuevo' });
+    }
+    if (storedData.code !== verificationCode) {
+      return res.status(400).json({ message: 'El código de verificación es incorrecto' });
+    }
+
+    const user = await User.create({
+      name,
+      email,
+      password,
+    });
+
+    if (user) {
+      // Éxito, borrar código de memoria
+      verificationCodes.delete(email);
+      // Enviar correo de bienvenida de forma asíncrona (sin bloquear la respuesta)
+      sendWelcomeEmail(user);
+
+      res.status(201).json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        dni: user.dni,
+        dateOfBirth: user.dateOfBirth,
+        address: user.address,
+        favorites: user.favorites,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(400).json({ message: 'Datos de usuario inválidos' });
+    }
+  } catch (error) {
+    console.error('Error en register:', error);
+    res.status(500).json({ message: 'Error al registrar usuario' });
+  }
+});
+
+// @route   POST /api/users/login
+// @desc    Auth user & get token
+router.post('/login', async (req, res) => {
+  try {
+    const { email, password } = req.body;
+
+    const user = await User.findOne({ email }).select('+password').populate('favorites');
+
+    if (user && (await user.matchPassword(password))) {
+      res.json({
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        phone: user.phone,
+        dni: user.dni,
+        dateOfBirth: user.dateOfBirth,
+        address: user.address,
+        favorites: user.favorites,
+        token: generateToken(user._id),
+      });
+    } else {
+      res.status(401).json({ message: 'Correo o contraseña incorrectos' });
+    }
+  } catch (error) {
+    console.error('Error en login:', error);
+    res.status(500).json({ message: 'Error al iniciar sesión' });
   }
 });
 
@@ -32,24 +144,25 @@ router.post('/google-login', async (req, res) => {
     const decodedToken = await admin.auth().verifyIdToken(idToken);
     const { email, name } = decodedToken;
 
-    // Solo permitir @gmail.com si es un requerimiento estricto (opcional, Firebase ya valida cuentas reales de Google, pero lo forzaremos)
-    if (!email.endsWith('@gmail.com')) {
-      return res.status(400).json({ message: 'Solo se permiten correos de @gmail.com' });
-    }
-
     // Buscar si el usuario ya existe en MongoDB
     let user = await User.findOne({ email });
 
     // Si no existe, lo creamos automáticamente (sin contraseña, ya que usa Google)
+    let isNewUser = false;
     if (!user) {
       user = await User.create({
         name: name || 'Usuario de Google',
         email,
         password: Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8), // Contraseña aleatoria imposible
       });
+      isNewUser = true;
     }
 
     user = await User.findById(user._id).populate('favorites');
+
+    if (isNewUser) {
+      sendWelcomeEmail(user);
+    }
 
     // Generar nuestro propio JWT para la sesión en nuestra app
     res.json({
@@ -57,6 +170,10 @@ router.post('/google-login', async (req, res) => {
       name: user.name,
       email: user.email,
       role: user.role,
+      phone: user.phone,
+      dni: user.dni,
+      dateOfBirth: user.dateOfBirth,
+      address: user.address,
       favorites: user.favorites,
       token: generateToken(user._id),
     });
@@ -64,6 +181,57 @@ router.post('/google-login', async (req, res) => {
   } catch (error) {
     console.error('Error en Google Login:', error);
     res.status(401).json({ message: 'Token de Google inválido o expirado' });
+  }
+});
+
+// @route   PUT /api/users/profile
+// @desc    Update user profile
+router.put('/profile', protect, async (req, res) => {
+  try {
+    const user = await User.findById(req.user._id);
+
+    if (user) {
+      user.name = req.body.name || user.name;
+      user.email = req.body.email || user.email;
+      user.phone = req.body.phone || user.phone;
+      user.dni = req.body.dni || user.dni;
+      user.dateOfBirth = req.body.dateOfBirth || user.dateOfBirth;
+      
+      if (req.body.address) {
+        user.address = {
+          street: req.body.address.street || user.address?.street,
+          city: req.body.address.city || user.address?.city,
+          state: req.body.address.state || user.address?.state,
+          zipCode: req.body.address.zipCode || user.address?.zipCode,
+          country: req.body.address.country || user.address?.country,
+        };
+      }
+
+      if (req.body.password) {
+        user.password = req.body.password;
+      }
+
+      const updatedUser = await user.save();
+      const populatedUser = await User.findById(updatedUser._id).populate('favorites');
+
+      res.json({
+        _id: populatedUser._id,
+        name: populatedUser.name,
+        email: populatedUser.email,
+        role: populatedUser.role,
+        phone: populatedUser.phone,
+        dni: populatedUser.dni,
+        dateOfBirth: populatedUser.dateOfBirth,
+        address: populatedUser.address,
+        favorites: populatedUser.favorites,
+        token: generateToken(populatedUser._id),
+      });
+    } else {
+      res.status(404).json({ message: 'Usuario no encontrado' });
+    }
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ message: 'Error al actualizar el perfil' });
   }
 });
 

@@ -8,9 +8,10 @@ interface CustomSelectProps {
   options: { value: string, label: string }[];
   placeholder?: string;
   darkTheme?: boolean;
+  icon?: React.ReactNode;
 }
 
-const CustomSelect = ({ value, onChange, options, placeholder, darkTheme = false }: CustomSelectProps) => {
+const CustomSelect = ({ value, onChange, options, placeholder, darkTheme = false, icon }: CustomSelectProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -39,9 +40,12 @@ const CustomSelect = ({ value, onChange, options, placeholder, darkTheme = false
         onClick={() => setIsOpen(!isOpen)}
         className={`flex items-center justify-between gap-3 px-6 py-3 rounded-full border ${baseBorder} ${hoverBorder} transition-all min-w-[180px] bg-transparent outline-none focus:border-[#CAA959]`}
       >
-        <span className={`text-[10px] font-bold uppercase tracking-widest ${baseText}`}>
-          {selectedOption ? selectedOption.label : placeholder}
-        </span>
+        <div className="flex items-center gap-2">
+          {icon && <span className={`${baseText}`}>{icon}</span>}
+          <span className={`text-[10px] font-bold uppercase tracking-widest ${baseText}`}>
+            {selectedOption ? selectedOption.label : placeholder}
+          </span>
+        </div>
         <motion.div animate={{ rotate: isOpen ? 180 : 0 }} transition={{ duration: 0.2 }}>
           <ChevronDown size={14} className={baseText} />
         </motion.div>

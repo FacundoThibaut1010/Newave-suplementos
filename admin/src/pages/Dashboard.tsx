@@ -113,7 +113,7 @@ const Dashboard = () => {
             Alertas de Stock
           </h2>
           
-          <div className="flex-1 overflow-y-auto custom-scrollbar pr-2 space-y-4">
+          <div className="max-h-[300px] overflow-y-auto custom-scrollbar pr-2 space-y-4">
             {stats?.lowStockProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center text-gray-400">
                 <Package size={40} className="mb-4 opacity-50" />

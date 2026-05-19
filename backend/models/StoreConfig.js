@@ -19,6 +19,10 @@ const storeConfigSchema = new mongoose.Schema({
     name: { type: String },
     slug: { type: String },
     image: { type: String }
+  }],
+  bestSellers: [{
+    type: mongoose.Schema.Types.ObjectId,
+    ref: 'Product'
   }]
 }, { timestamps: true });
 

@@ -1,34 +1,37 @@
+import { useEffect } from 'react';
+import { useLocation } from 'react-router-dom';
 import Hero from '../components/home/Hero';
 import ProductGrid from '../components/home/ProductGrid';
 import CategoryScroll from '../components/home/CategoryScroll';
-import { Truck, ShieldCheck, MessageCircle, Award } from 'lucide-react';
+import BestSellers from '../components/home/BestSellers';
 
 const HomePage = () => {
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.hash) {
+      const id = location.hash.replace('#', '');
+      const timer = setTimeout(() => {
+        const element = document.getElementById(id);
+        if (element) {
+          const y = element.getBoundingClientRect().top + window.scrollY - 100;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }, 300); // Wait a bit for layout to settle
+      return () => clearTimeout(timer);
+    } else {
+      window.scrollTo(0, 0);
+    }
+  }, [location]);
+
   return (
     <>
       <Hero />
       <CategoryScroll />
       <ProductGrid />
+      <BestSellers />
 
-      {/* Trust Badges Section - ENA Style */}
-      <section className="bg-[#202A36] py-20 mt-12">
-        <div className="max-w-7xl mx-auto px-8 grid grid-cols-2 md:grid-cols-4 gap-12">
-          {[
-            { icon: Truck, title: 'Envíos a todo el país', desc: 'Recibí tu pedido en casa' },
-            { icon: ShieldCheck, title: 'Compra Segura', desc: 'Protegemos tus datos' },
-            { icon: MessageCircle, title: 'Asesoramiento', desc: 'Te ayudamos a elegir' },
-            { icon: Award, title: 'Calidad Premium', desc: 'Los mejores suplementos' },
-          ].map((item, i) => (
-            <div key={i} className="flex flex-col items-center text-center group">
-              <div className="w-16 h-16 bg-white/5 rounded-full flex items-center justify-center text-[#CAA959] mb-6 group-hover:bg-[#CAA959] group-hover:text-white transition-all duration-500">
-                <item.icon size={32} strokeWidth={1.5} />
-              </div>
-              <h4 className="text-white text-xs font-black uppercase tracking-widest mb-2">{item.title}</h4>
-              <p className="text-gray-400 text-[10px] font-medium uppercase tracking-widest">{item.desc}</p>
-            </div>
-          ))}
-        </div>
-      </section>
+
     </>
   );
 };

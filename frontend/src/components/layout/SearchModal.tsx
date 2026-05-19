@@ -108,12 +108,15 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm md:text-base font-black text-[#202A36] truncate uppercase tracking-tight">{product.name}</h4>
-                        <p className="text-[10px] font-black uppercase tracking-widest text-[#CAA959]">{product.category}</p>
+                        <h4 className="text-sm md:text-base font-black text-[#202A36] uppercase tracking-tight leading-tight">{product.name}</h4>
+                        <div className="flex flex-col mt-1">
+                          <span className="font-bold text-[#CAA959] text-sm md:hidden">${Number(product.price).toLocaleString('es-AR')}</span>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{product.category}</p>
+                        </div>
                       </div>
                       <div className="shrink-0 flex items-center gap-4">
                         <span className="font-bold text-gray-500 hidden md:block">${Number(product.price).toLocaleString('es-AR')}</span>
-                        <div className="w-10 h-10 bg-gray-50 rounded-full flex items-center justify-center group-hover:bg-[#CAA959] group-hover:text-white transition-colors">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[#CAA959] text-white md:bg-gray-50 md:text-black md:group-hover:bg-[#CAA959] md:group-hover:text-white transition-colors">
                           <ArrowRight size={18} />
                         </div>
                       </div>

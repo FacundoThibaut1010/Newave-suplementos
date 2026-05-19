@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { ShoppingBag, Search, User, Menu, ChevronDown, Home, Package, MessageSquare, X, ChevronRight, Gift } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, ChevronDown, Home, Package, MessageSquare, X, ChevronRight, Gift, AlertCircle, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '../../store/useCartStore';
 import { useUIStore } from '../../store/useUIStore';
@@ -17,6 +17,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
   const [hasCombos, setHasCombos] = useState(true);
+  const [hasBestSellers, setHasBestSellers] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
@@ -49,16 +50,19 @@ const Navbar = () => {
   }, [isUserMenuOpen]);
 
   useEffect(() => {
-    const checkCombos = async () => {
+    const checkSections = async () => {
       try {
         const { data } = await apiClient.get('/products');
         const combos = data.products.filter((p: any) => p.displaySection === 'Combo');
         setHasCombos(combos.length > 0);
+        
+        const { data: configData } = await apiClient.get('/admin/config');
+        setHasBestSellers(configData?.bestSellers?.length > 0);
       } catch (err) {
-        console.error('Error fetching combos for navbar', err);
+        console.error('Error fetching sections for navbar', err);
       }
     };
-    checkCombos();
+    checkSections();
   }, []);
 
   useEffect(() => {
@@ -77,12 +81,14 @@ const Navbar = () => {
 
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     setIsMenuOpen(false);
-    if (window.location.pathname === '/') {
-      e.preventDefault();
-      const element = document.getElementById(id);
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' });
-      }
+    e.preventDefault();
+    
+    const element = document.getElementById(id);
+    if (element) {
+      const y = element.getBoundingClientRect().top + window.scrollY - 100;
+      window.scrollTo({ top: y, behavior: 'smooth' });
+    } else if (window.location.pathname !== '/') {
+      navigate(`/#${id}`);
     }
   };
 
@@ -105,7 +111,7 @@ const Navbar = () => {
       </AnimatePresence>
 
       <nav className="fixed top-12 md:top-10 left-0 w-full bg-black/40 backdrop-blur-2xl text-white z-[50] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] border-b border-white/10">
-        <div className="mx-auto px-4 lg:px-10">
+        <div className="mx-auto px-2 sm:px-4 lg:px-10">
           <div className="flex justify-between items-center h-20">
 
             {/* Left: Menu */}
@@ -224,6 +230,20 @@ const Navbar = () => {
                           </a>
                         )}
 
+                        {hasBestSellers && (
+                          <a
+                            onClick={(e) => handleScrollTo(e, 'mas-vendidos')}
+                            href="/#mas-vendidos"
+                            className="flex items-center justify-between p-3 rounded-2xl group transition-all"
+                          >
+                            <div className="flex items-center gap-4">
+                              <Star size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
+                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Más Vendidos</span>
+                            </div>
+                            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                          </a>
+                        )}
+
                         <a
                           onClick={(e) => handleScrollTo(e, 'contacto')}
                           href="/#contacto"
@@ -256,7 +276,7 @@ const Navbar = () => {
             </div>
 
             {/* Right: Actions */}
-            <div className="flex-1 flex items-center justify-end gap-2 lg:gap-4">
+            <div className="flex-1 flex items-center justify-end gap-0 sm:gap-2 lg:gap-4">
               <button
                 onClick={() => setIsSearchModalOpen(true)}
                 className="flex items-center gap-2 group p-2 md:p-3 rounded-full transition-all focus:outline-none"
@@ -273,9 +293,14 @@ const Navbar = () => {
                       setIsAuthModalOpen(true);
                     }
                   }}
-                  className="p-3 rounded-full transition-all group focus:outline-none flex items-center gap-2"
+                  className="p-2 sm:p-3 rounded-full transition-all group focus:outline-none flex items-center gap-2"
                 >
-                  <User size={20} strokeWidth={2.5} className={`${user ? 'text-[#CAA959]' : ''} group-hover:text-[#CAA959] transition-all duration-300`} />
+                  <div className="relative">
+                    <User size={20} strokeWidth={2.5} className={`${user ? 'text-[#CAA959]' : ''} group-hover:text-[#CAA959] transition-all duration-300`} />
+                    {user && (!user.phone || !user.dni || !user.address?.street) && (
+                      <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(234,179,8,0.8)]" title="Faltan datos en tu perfil" />
+                    )}
+                  </div>
                   {user && <span className="hidden md:block text-[11px] font-bold uppercase tracking-widest text-white/80">{user.name.split(' ')[0]}</span>}
                 </button>
 
@@ -291,6 +316,12 @@ const Navbar = () => {
                         <p className="text-sm font-bold text-white">{user.name}</p>
                         <p className="text-[10px] text-gray-400 truncate">{user.email}</p>
                       </div>
+                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/datos" className="flex items-center justify-between px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">
+                        <span>Mis Datos</span>
+                        {(!user.phone || !user.dni || !user.address?.street) && (
+                          <AlertCircle size={14} className="text-yellow-500" />
+                        )}
+                      </Link>
                       <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/compras" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Mis Compras</Link>
                       <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/favoritos" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Favoritos</Link>
                       <button
@@ -310,7 +341,7 @@ const Navbar = () => {
 
               <button
                 onClick={openCart}
-                className="group relative flex items-center justify-center p-3 rounded-full transition-all focus:outline-none"
+                className="group relative flex items-center justify-center p-2 sm:p-3 rounded-full transition-all focus:outline-none"
               >
                 <ShoppingBag size={22} strokeWidth={2.5} className="group-hover:text-[#CAA959] transition-all duration-300" />
                 <AnimatePresence>

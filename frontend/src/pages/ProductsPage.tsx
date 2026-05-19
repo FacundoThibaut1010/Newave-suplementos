@@ -1,7 +1,7 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ListFilter, ArrowUpDown } from 'lucide-react';
 import ProductCard from '../components/home/ProductCard';
 import apiClient from '../api/apiClient';
 import CustomSelect from '../components/ui/CustomSelect';
@@ -9,7 +9,7 @@ import CustomSelect from '../components/ui/CustomSelect';
 // Options will be fetched dynamically
 
 const sortOptions = [
-  { value: 'featured', label: 'Filtrar' },
+  { value: 'featured', label: 'Ordenar' },
   { value: 'price_asc', label: 'Menor a mayor ($)' },
   { value: 'price_desc', label: 'Mayor a menor ($)' },
   { value: 'name_asc', label: 'A - Z' },
@@ -111,9 +111,8 @@ const ProductsPage = () => {
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-12 h-12 border-4 border-[#202A36]/20 border-t-[#202A36] rounded-full mb-4"
+          className="w-8 h-8 border-4 border-[#202A36]/20 border-t-[#202A36] rounded-full"
         />
-        <p className="text-gray-500 font-medium">Cargando catálogo...</p>
       </div>
     );
   }
@@ -148,6 +147,7 @@ const ProductsPage = () => {
                 onChange={setSelectedCategory}
                 options={categoryOptions}
                 darkTheme
+                icon={<ListFilter size={16} />}
               />
             </div>
             <div className="w-full sm:w-auto">
@@ -156,6 +156,7 @@ const ProductsPage = () => {
                 onChange={setSortBy}
                 options={sortOptions}
                 darkTheme
+                icon={<ArrowUpDown size={16} />}
               />
             </div>
           </div>

@@ -303,3 +303,110 @@ export const sendOrderDeliveredEmail = async (order) => {
     console.error('❌ Error enviando email de entrega:', error.message);
   }
 };
+
+export const sendWelcomeEmail = async (user) => {
+  try {
+    if (!process.env.BREVO_API_KEY) {
+      console.warn('⚠️ BREVO_API_KEY no configurada. Simulando envío de Bienvenida a:', user.email);
+      return;
+    }
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="background: #CAA959; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; color: #fff; font-weight: 900; font-size: 20px; font-style: italic; margin: 0 auto 10px;">NW</div>
+          <h1 style="color: #202A36; font-style: italic; text-transform: uppercase; margin: 0; font-weight: 900; font-size: 24px;">¡Bienvenido a Newave!</h1>
+          <p style="color: #666; margin-top: 10px; font-size: 16px;">¡Hola ${user.name}! Gracias por registrarte en Newave Suplementos.</p>
+        </div>
+        
+        <div style="background: #F9F9F9; padding: 20px; border-radius: 12px; color: #555; line-height: 1.6; margin-bottom: 20px; text-align: center;">
+          <p>Estamos emocionados de acompañarte en tu progreso.</p>
+          <p>En nuestra tienda encontrarás la mejor calidad de suplementación deportiva para potenciar tus entrenamientos y alcanzar tus metas.</p>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #aaa; font-size: 12px;">
+          <p>Si tienes alguna pregunta, responde a este correo o contáctanos por nuestras redes.</p>
+          <p>&copy; ${new Date().getFullYear()} Newave Store. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    `;
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: {
+          name: 'Newave Store',
+          email: 'newavesuplementos2026@gmail.com'
+        },
+        to: [{ email: user.email, name: user.name }],
+        subject: '¡Bienvenido a Newave Suplementos! 💪',
+        htmlContent: htmlContent
+      })
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(JSON.stringify(errorData));
+    }
+
+    console.log(`✉️ Email de Bienvenida enviado a ${user.email} vía Brevo`);
+
+  } catch (error) {
+    console.error('❌ Error enviando email de bienvenida:', error.message);
+  }
+};
+
+export const sendVerificationEmail = async (email, code) => {
+  try {
+    if (!process.env.BREVO_API_KEY) {
+      console.warn('⚠️ BREVO_API_KEY no configurada. Código simulado para', email, ':', code);
+      return;
+    }
+
+    const htmlContent = `
+      <div style="font-family: Arial, sans-serif; max-width: 600px; margin: 0 auto; background: #fff; padding: 20px; border-radius: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.05);">
+        <div style="text-align: center; margin-bottom: 30px;">
+          <div style="background: #CAA959; width: 50px; height: 50px; line-height: 50px; border-radius: 50%; color: #fff; font-weight: 900; font-size: 20px; font-style: italic; margin: 0 auto 10px;">NW</div>
+          <h1 style="color: #202A36; font-style: italic; text-transform: uppercase; margin: 0; font-weight: 900; font-size: 24px;">Verifica tu correo</h1>
+          <p style="color: #666; margin-top: 10px; font-size: 16px;">Usa este código de 4 dígitos para completar tu registro en Newave.</p>
+        </div>
+        
+        <div style="text-align: center; margin: 30px 0;">
+          <span style="font-size: 40px; font-weight: 900; letter-spacing: 10px; color: #CAA959;">${code}</span>
+        </div>
+
+        <div style="text-align: center; margin-top: 40px; color: #aaa; font-size: 12px;">
+          <p>&copy; ${new Date().getFullYear()} Newave Store. Todos los derechos reservados.</p>
+        </div>
+      </div>
+    `;
+
+    const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+      method: 'POST',
+      headers: {
+        'accept': 'application/json',
+        'api-key': process.env.BREVO_API_KEY,
+        'content-type': 'application/json'
+      },
+      body: JSON.stringify({
+        sender: { name: 'Newave Store', email: 'newavesuplementos2026@gmail.com' },
+        to: [{ email: email, name: 'Nuevo Usuario' }],
+        subject: 'Código de verificación - Newave',
+        htmlContent: htmlContent
+      })
+    });
+
+    if (!response.ok) throw new Error(await response.text());
+    console.log(`✉️ Email de verificación enviado a ${email}`);
+  } catch (error) {
+    console.error('❌ Error enviando email de verificación:', error.message);
+    throw new Error('No se pudo enviar el correo de verificación');
+  }
+};
+
+

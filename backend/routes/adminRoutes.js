@@ -64,7 +64,7 @@ router.delete('/products/:id', async (req, res) => {
 // Obtener configuración global
 router.get('/config', async (req, res) => {
   try {
-    let config = await StoreConfig.findOne();
+    let config = await StoreConfig.findOne().populate('bestSellers');
     if (!config) {
       // Si no existe, creamos una con valores por defecto cálidos
       config = await StoreConfig.create({

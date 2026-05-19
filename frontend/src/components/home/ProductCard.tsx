@@ -105,7 +105,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
       className="group cursor-pointer h-full flex flex-col"
     >
       <div 
-        className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#F8F9FA] mb-6 border border-gray-100 group/image"
+        className="relative aspect-[4/5] rounded-3xl overflow-hidden bg-[#F8F9FA] mb-6 border border-gray-100 group/image shrink-0"
         onMouseEnter={handleMouseEnter}
         onMouseLeave={handleMouseLeave}
       >

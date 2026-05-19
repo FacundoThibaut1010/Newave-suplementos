@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronRight, ListFilter } from 'lucide-react';
 import ProductCard from './ProductCard';
 import apiClient from '../../api/apiClient';
 import CustomSelect from '../ui/CustomSelect';
@@ -78,13 +78,12 @@ const ProductGrid = () => {
 
   if (loading) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-32 text-center">
+      <div className="max-w-7xl mx-auto px-4 py-32 text-center flex justify-center">
         <motion.div
           animate={{ rotate: 360 }}
           transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-12 h-12 border-4 border-blue-600/30 border-t-blue-600 rounded-full mx-auto mb-4"
+          className="w-8 h-8 border-4 border-[#CAA959]/20 border-t-[#CAA959] rounded-full"
         />
-        <p className="text-gray-500 font-medium">Buscando las mejores cosas para ti... </p>
       </div>
     );
   }
@@ -116,6 +115,7 @@ const ProductGrid = () => {
               onChange={setSortBy}
               options={sortOptions}
               darkTheme
+              icon={<ListFilter size={16} />}
             />
           </div>
         </div>

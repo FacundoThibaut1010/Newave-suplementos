@@ -74,7 +74,7 @@ const CategoryScroll = () => {
             <motion.div
               key={i}
               whileHover={{ y: -10 }}
-              className="relative rounded-3xl overflow-hidden group shrink-0 bg-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 min-w-[280px] h-[380px]"
+              className="relative rounded-3xl overflow-hidden group shrink-0 bg-gray-200 shadow-sm hover:shadow-xl transition-all duration-500 w-[240px] md:w-[280px] h-[340px] md:h-[380px]"
             >
               <img src={cat.image} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 pointer-events-none" alt={cat.name} />
 

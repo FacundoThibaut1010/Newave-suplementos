@@ -1,11 +1,13 @@
 // @ts-ignore
-import { Mail } from 'lucide-react';
+import { Mail, Phone, ChevronDown } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useState, useEffect } from 'react';
 import apiClient from '../../api/apiClient';
 
 const Footer = () => {
   const [categories, setCategories] = useState<any[]>([]);
+  const [isContactOpen, setIsContactOpen] = useState(false);
 
   useEffect(() => {
     const fetchCategories = async () => {
@@ -67,7 +69,43 @@ const Footer = () => {
           <div className="md:col-span-1">
             <h3 className="text-xs font-black text-[#202A36] uppercase tracking-[0.2em] mb-6">Soporte</h3>
             <ul className="space-y-4 text-sm text-gray-500 font-medium">
-              <li><a href="mailto:hola@newave.com" className="hover:text-[#CAA959] transition-colors">Contacto</a></li>
+              <li>
+                <button 
+                  onClick={() => setIsContactOpen(!isContactOpen)}
+                  className="hover:text-[#CAA959] transition-colors flex items-center gap-2 outline-none font-black uppercase tracking-widest text-xs"
+                >
+                  Contacto
+                  <ChevronDown size={14} className={`transition-transform ${isContactOpen ? 'rotate-180' : ''}`} />
+                </button>
+                <AnimatePresence>
+                  {isContactOpen && (
+                    <motion.div 
+                      initial={{ height: 0, opacity: 0 }}
+                      animate={{ height: 'auto', opacity: 1 }}
+                      exit={{ height: 0, opacity: 0 }}
+                      className="overflow-hidden"
+                    >
+                      <ul className="pt-4 space-y-4 pl-4 border-l-2 border-gray-100 mt-2 font-bold text-xs uppercase tracking-widest text-gray-400">
+                        <li>
+                          <a href="tel:+5491112345678" className="flex items-center gap-2 hover:text-[#CAA959] transition-colors">
+                            <Phone size={14} /> WhatsApp
+                          </a>
+                        </li>
+                        <li>
+                          <a href="mailto:hola@newave.com" className="flex items-center gap-2 hover:text-[#CAA959] transition-colors">
+                            <Mail size={14} /> Correo
+                          </a>
+                        </li>
+                        <li>
+                          <a href="https://www.instagram.com/newave.fitness/" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-[#CAA959] transition-colors group/insta">
+                            <img src="/mdi--instagram.svg" alt="Instagram" className="w-3.5 h-3.5 object-contain opacity-40 group-hover/insta:opacity-100 group-hover/insta:brightness-0 group-hover/insta:invert-0" style={{ filter: 'brightness(0.6)' }} /> Instagram
+                          </a>
+                        </li>
+                      </ul>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </li>
             </ul>
           </div>
         </div>

@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
+import { useParams, useNavigate } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import { ArrowLeft, ShoppingCart, Loader2, Heart } from 'lucide-react';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
 import apiClient from '../api/apiClient';
 import { toast } from 'sonner';
+import ProductCard from '../components/home/ProductCard';
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
+  const navigate = useNavigate();
   const [product, setProduct] = useState<any>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -20,6 +22,12 @@ const ProductDetailPage = () => {
   const addItem = useCartStore((state) => state.addItem);
   const { user, setFavorites } = useAuthStore();
   const [isDescriptionOpen, setIsDescriptionOpen] = useState(false);
+  const [relatedProducts, setRelatedProducts] = useState<any[]>([]);
+  const relatedScrollRef = React.useRef<HTMLDivElement>(null);
+  const [isInteractingRelated, setIsInteractingRelated] = useState(false);
+  const [isDraggingRelated, setIsDraggingRelated] = useState(false);
+  const [startXR, setStartXR] = useState(0);
+  const [scrollLeftR, setScrollLeftR] = useState(0);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -36,8 +44,41 @@ const ProductDetailPage = () => {
         setLoading(false);
       }
     };
+    const fetchRelated = async () => {
+      try {
+        const { data } = await apiClient.get('/products');
+        const related = data.products.filter((p: any) => p._id !== id);
+        // Shuffle to show random related
+        setRelatedProducts(related.sort(() => 0.5 - Math.random()).slice(0, 8));
+      } catch (err) {}
+    };
     fetchProduct();
+    fetchRelated();
   }, [id]);
+
+  useEffect(() => {
+    let animationId: number;
+    let scrollDirection = 1;
+
+    const scrollStep = () => {
+      const scrollContainer = relatedScrollRef.current;
+      if (scrollContainer && !isInteractingRelated) {
+        if (scrollContainer.scrollLeft + scrollContainer.clientWidth >= scrollContainer.scrollWidth - 1) {
+          scrollDirection = -1; // Reverse
+        } else if (scrollContainer.scrollLeft <= 0) {
+          scrollDirection = 1; // Forward
+        }
+        scrollContainer.scrollLeft += scrollDirection * 1;
+      }
+      animationId = requestAnimationFrame(scrollStep);
+    };
+
+    if (relatedProducts.length > 0) {
+      animationId = requestAnimationFrame(scrollStep);
+    }
+    
+    return () => cancelAnimationFrame(animationId);
+  }, [relatedProducts, isInteractingRelated]);
 
   if (loading) {
     return (
@@ -99,9 +140,9 @@ const ProductDetailPage = () => {
   return (
     <div className="min-h-screen bg-[#F4F4F4] pt-40 md:pt-48 pb-20">
       <div className="max-w-7xl mx-auto px-3 sm:px-6">
-        <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
-          <ArrowLeft size={14} /> Volver a la tienda
-        </Link>
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
+          <ArrowLeft size={14} /> Volver
+        </button>
 
         <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] p-5 sm:p-8 md:p-12 shadow-sm border border-gray-100">
           <div className="grid md:grid-cols-2 gap-8 lg:gap-20 items-start">
@@ -303,6 +344,58 @@ const ProductDetailPage = () => {
             </div>
           </div>
         </motion.div>
+
+        {/* Related Products Carousel */}
+        {relatedProducts.length > 0 && (
+          <motion.div
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="mt-12"
+          >
+            <h3 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-[#202A36] mb-8 text-center md:text-left">También te puede interesar</h3>
+            <div 
+              ref={relatedScrollRef}
+              onMouseEnter={() => setIsInteractingRelated(true)}
+              onMouseLeave={() => {
+                setIsInteractingRelated(false);
+                setIsDraggingRelated(false);
+              }}
+              onTouchStart={() => setIsInteractingRelated(true)}
+              onTouchEnd={() => setIsInteractingRelated(false)}
+              onMouseDown={(e) => {
+                setIsInteractingRelated(true);
+                setIsDraggingRelated(true);
+                setStartXR(e.pageX - (relatedScrollRef.current?.offsetLeft || 0));
+                setScrollLeftR(relatedScrollRef.current?.scrollLeft || 0);
+              }}
+              onMouseUp={() => {
+                setIsInteractingRelated(false);
+                setIsDraggingRelated(false);
+              }}
+              onMouseMove={(e) => {
+                if (!isDraggingRelated || !relatedScrollRef.current) return;
+                e.preventDefault();
+                const x = e.pageX - relatedScrollRef.current.offsetLeft;
+                const walk = (x - startXR) * 1.5;
+                relatedScrollRef.current.scrollLeft = scrollLeftR - walk;
+              }}
+              className={`flex overflow-x-auto gap-4 md:gap-6 pb-8 scrollbar-hide select-none ${isDraggingRelated ? 'cursor-grabbing' : 'cursor-grab'}`}
+            >
+              {relatedProducts.map((p) => (
+                <div key={p._id} className="w-[280px] sm:w-[300px] md:w-[320px] shrink-0">
+                  <ProductCard
+                    id={p._id}
+                    {...p}
+                    category={p.category || 'General'}
+                    image={p.images?.[0] || 'https://images.unsplash.com/photo-1523275335684-37898b6baf30?q=80&w=800&auto=format&fit=crop'}
+                    images={p.images}
+                    darkTheme={false}
+                  />
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        )}
 
       </div>
     </div>

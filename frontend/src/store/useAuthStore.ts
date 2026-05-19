@@ -7,6 +7,15 @@ export interface User {
   email: string;
   token: string;
   role: string;
+  phone?: string;
+  dni?: string;
+  dateOfBirth?: string | Date;
+  address?: {
+    street?: string;
+    city?: string;
+    state?: string;
+    zipCode?: string;
+  };
   favorites?: any[];
 }
 

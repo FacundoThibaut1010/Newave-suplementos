@@ -83,9 +83,26 @@ const CheckoutPage = () => {
     mode: 'onChange',
     defaultValues: {
       email: user?.email || '',
-      fullName: user?.name || ''
+      fullName: user?.name || '',
+      phone: user?.phone || '',
+      address: user?.address?.street || '',
+      city: user?.address?.city || '',
+      state: user?.address?.state || '',
+      postalCode: user?.address?.zipCode || '',
     }
   });
+
+  useEffect(() => {
+    if (user) {
+      setValue('email', user.email || '');
+      setValue('fullName', user.name || '');
+      setValue('phone', user.phone || '');
+      setValue('address', user.address?.street || '');
+      setValue('city', user.address?.city || '');
+      setValue('state', user.address?.state || '');
+      setValue('postalCode', user.address?.zipCode || '');
+    }
+  }, [user, setValue]);
 
   // Base de datos de prueba para códigos postales
   const cpDatabase: Record<string, { city: string; state: string }> = {
@@ -182,9 +199,9 @@ const CheckoutPage = () => {
     <div className="min-h-screen bg-[#F4F4F4] text-black pt-40 md:pt-48 pb-20">
       <div className="max-w-7xl mx-auto px-6">
 
-        <Link to="/" className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
-          <ArrowLeft size={14} /> Volver a la tienda
-        </Link>
+        <button onClick={() => navigate(-1)} className="inline-flex items-center gap-2 text-gray-400 hover:text-black mb-10 transition-colors uppercase text-[10px] font-black tracking-widest">
+          <ArrowLeft size={14} /> Volver
+        </button>
 
         {!user ? (
           <div className="bg-white rounded-[3.5rem] p-16 shadow-sm border border-gray-100 text-center max-w-2xl mx-auto">
@@ -204,10 +221,10 @@ const CheckoutPage = () => {
             <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
           </div>
         ) : (
-          <div className="grid lg:grid-cols-12 gap-8 items-start">
+          <div className="flex flex-col-reverse lg:grid lg:grid-cols-12 gap-8 items-start">
 
-            <div className="lg:col-span-7 bg-white rounded-[3.5rem] p-6 md:p-10 shadow-sm border border-gray-100">
-              <h1 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter mb-14">Finalizar compra</h1>
+            <div className="lg:col-span-7 bg-white rounded-[2rem] md:rounded-[3.5rem] p-6 md:p-10 shadow-sm border border-gray-100 w-full overflow-hidden">
+              <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter mb-10 md:mb-14 text-center md:text-left">Finalizar compra</h1>
 
               <form onSubmit={handleSubmit(onSubmit, onFormError)} className="space-y-16" noValidate>
 
@@ -370,28 +387,31 @@ const CheckoutPage = () => {
             </div>
 
             {/* COLUMNA DERECHA: RESUMEN STICKY SIEMPRE VISIBLE */}
-            <div className="lg:col-span-5 sticky top-32 mt-10 lg:mt-0">
-              <div className="bg-white rounded-[3.5rem] p-6 md:p-10 shadow-lg border border-gray-100">
-                <h3 className="text-3xl font-black uppercase italic tracking-tighter mb-12 border-b-2 border-gray-50 pb-6 text-center">Tu Pedido</h3>
-                <div className="space-y-12">
+            <div className="lg:col-span-5 sticky top-32 w-full">
+              <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] p-6 md:p-10 shadow-lg border border-gray-100">
+                <h3 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter mb-8 border-b-2 border-gray-50 pb-6 text-center">Tu Pedido</h3>
+                <div className="space-y-4">
                   {items.map((item) => (
-                    <div key={item.id}>
-                      <div className="relative aspect-square w-full rounded-[3.5rem] overflow-hidden bg-[#F9F9F9] border border-gray-50 mb-8 p-14 group">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply group-hover:scale-110 transition-transform duration-700" />
-                        <div className="absolute top-10 right-10 bg-black text-white w-14 h-14 rounded-full flex items-center justify-center font-black italic text-xl shadow-2xl">
-                          x{item.quantity}
+                    <div key={item.id} className="flex items-center gap-4 bg-[#F9F9F9] p-3 md:p-4 rounded-[1.5rem] border border-gray-50">
+                      <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white flex-shrink-0 p-2 shadow-sm">
+                        <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                        <div className="absolute -top-2 -right-2 bg-black text-white w-7 h-7 rounded-full flex items-center justify-center font-black italic text-xs shadow-md">
+                          {item.quantity}
                         </div>
                       </div>
-                      <div className="flex justify-between items-center px-4">
-                        <h4 className="text-3xl font-black uppercase italic leading-none">{item.name}</h4>
-                        <p className="text-3xl font-black italic tracking-tighter">${(item.price * item.quantity).toLocaleString('es-AR')}</p>
+                      <div className="flex-1 min-w-0 pr-2">
+                        <h4 className="text-sm md:text-base font-black uppercase italic leading-tight truncate">{item.name}</h4>
+                        {item.id.includes('-') && (
+                          <p className="text-xs text-gray-400 font-bold uppercase mt-1">{item.id.split('-').slice(1).join('-')}</p>
+                        )}
+                        <p className="text-lg md:text-xl font-black italic tracking-tighter mt-1">${(item.price * item.quantity).toLocaleString('es-AR')}</p>
                       </div>
                     </div>
                   ))}
                 </div>
-                <div className="pt-12 border-t-2 border-dashed border-gray-100 mt-12 flex justify-between items-center px-4">
-                  <span className="text-3xl font-black uppercase italic tracking-tighter">TOTAL</span>
-                  <span className="text-3xl font-black italic tracking-tighter">${totalPrice().toLocaleString('es-AR')}</span>
+                <div className="pt-8 border-t-2 border-dashed border-gray-100 mt-8 flex justify-between items-center px-2">
+                  <span className="text-xl md:text-3xl font-black uppercase italic tracking-tighter">TOTAL</span>
+                  <span className="text-2xl md:text-3xl font-black italic tracking-tighter">${totalPrice().toLocaleString('es-AR')}</span>
                 </div>
               </div>
             </div>

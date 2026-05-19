@@ -126,3 +126,17 @@ body::-webkit-scrollbar {
 .animate-marquee:hover {
   animation-play-state: paused;
 }
+
+/* 3D Flip Card Utilities */
+.perspective-\[1000px\] {
+  perspective: 1000px;
+}
+
+.preserve-3d {
+  transform-style: preserve-3d;
+}
+
+.backface-hidden {
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}

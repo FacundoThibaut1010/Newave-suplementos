@@ -1,4 +1,5 @@
 import React from 'react';
+import { Toaster } from 'sonner';
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
@@ -8,10 +9,12 @@ import SuccessPage from './pages/SuccessPage';
 import MyOrdersPage from './pages/MyOrdersPage';
 import FavoritesPage from './pages/FavoritesPage';
 import ProductDetailPage from './pages/ProductDetailPage';
+import ProfilePage from './pages/ProfilePage';
 
 function App() {
   return (
     <Router>
+      <Toaster position="bottom-right" richColors />
       <Routes>
         <Route path="/checkout/success" element={<SuccessPage />} />
         
@@ -25,6 +28,7 @@ function App() {
               <Route path="/checkout" element={<CheckoutPage />} />
               <Route path="/perfil/compras" element={<MyOrdersPage />} />
               <Route path="/perfil/favoritos" element={<FavoritesPage />} />
+              <Route path="/perfil/datos" element={<ProfilePage />} />
             </Routes>
           </Layout>
         } />
