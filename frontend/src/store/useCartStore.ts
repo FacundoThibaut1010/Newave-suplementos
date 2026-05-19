@@ -22,10 +22,14 @@ export const useCartStore = create<CartState>()(
         const existingItem = currentItems.find((item) => item.id === product.id);
 
         if (existingItem) {
+          const newQuantity = existingItem.quantity + 1;
+          if (existingItem.countInStock !== undefined && newQuantity > existingItem.countInStock) {
+            return; // Block adding more than stock
+          }
           set({
             items: currentItems.map((item) =>
               item.id === product.id
-                ? { ...item, quantity: item.quantity + 1 }
+                ? { ...item, quantity: newQuantity }
                 : item
             ),
           });
@@ -46,9 +50,13 @@ export const useCartStore = create<CartState>()(
           return;
         }
         set({
-          items: get().items.map((item) =>
-            item.id === id ? { ...item, quantity } : item
-          ),
+          items: get().items.map((item) => {
+            if (item.id === id) {
+              const finalQuantity = item.countInStock !== undefined ? Math.min(quantity, item.countInStock) : quantity;
+              return { ...item, quantity: finalQuantity };
+            }
+            return item;
+          }),
         });
       },
 

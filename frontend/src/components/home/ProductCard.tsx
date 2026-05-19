@@ -155,7 +155,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
             <button
               onClick={(e) => {
                 e.preventDefault();
-                addItem({ id, name, price, image });
+                addItem({ id, name, price, image, countInStock });
               }}
               className="w-full bg-[#202A36] text-white py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
             >

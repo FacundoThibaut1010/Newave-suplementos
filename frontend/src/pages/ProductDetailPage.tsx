@@ -128,7 +128,8 @@ const ProductDetailPage = () => {
         id: selectedVariant ? `${product._id}-${variantName}` : product._id,
         name: selectedVariant ? `${baseName} - ${variantName}` : baseName,
         price: product.price,
-        image: (selectedVariant && selectedVariant.image) ? selectedVariant.image : (product.images?.[0] || product.image || '')
+        image: (selectedVariant && selectedVariant.image) ? selectedVariant.image : (product.images?.[0] || product.image || ''),
+        countInStock: currentStock
       });
     }
 

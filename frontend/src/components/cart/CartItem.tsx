@@ -37,9 +37,14 @@ const CartItem = ({ item }: { item: CartItemType }) => {
             </motion.button>
             <span className="w-8 text-center text-xs font-bold text-black">{item.quantity}</span>
             <motion.button 
-              whileTap={{ scale: 0.8 }}
-              onClick={() => updateQuantity(item.id, item.quantity + 1)}
-              className="p-1.5 hover:text-black text-gray-400 transition-colors"
+              whileTap={item.countInStock === undefined || item.quantity < item.countInStock ? { scale: 0.8 } : {}}
+              onClick={() => {
+                if (item.countInStock === undefined || item.quantity < item.countInStock) {
+                  updateQuantity(item.id, item.quantity + 1);
+                }
+              }}
+              disabled={item.countInStock !== undefined && item.quantity >= item.countInStock}
+              className={`p-1.5 transition-colors ${item.countInStock !== undefined && item.quantity >= item.countInStock ? 'text-gray-200 cursor-not-allowed' : 'hover:text-black text-gray-400'}`}
             >
               <Plus size={14} strokeWidth={2.5} />
             </motion.button>
