@@ -147,7 +147,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
           {variants && variants.length > 0 ? (
             <Link
               to={`/producto/${id}`}
-              className="w-full bg-[#202A36] text-white py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
+              className="w-full bg-[#202A36] text-white py-3 md:py-4 rounded-full font-black text-[10px] md:text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
             >
               Ver Sabores
             </Link>
@@ -157,7 +157,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
                 e.preventDefault();
                 addItem({ id, name, price, image, countInStock });
               }}
-              className="w-full bg-[#202A36] text-white py-4 rounded-full font-black text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
+              className="w-full bg-[#202A36] text-white py-3 md:py-4 rounded-full font-black text-[10px] md:text-xs uppercase tracking-widest shadow-2xl flex items-center justify-center gap-2 hover:bg-[#202A36]/90 transition-colors"
             >
               <ShoppingCart size={16} />
               Añadir
@@ -167,23 +167,23 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
       </div>
 
       <div className="px-1 text-center md:text-left flex flex-col flex-grow">
-        <div className="flex flex-wrap gap-1.5 mb-2 justify-center md:justify-start">
+        <div className="flex flex-wrap gap-1.5 mb-1 md:mb-2 justify-center md:justify-start">
           {category.split(/[,+\-]| y /i).filter(Boolean).map((cat, idx) => (
-            <span key={idx} className="text-[9px] font-black text-[#CAA959] uppercase tracking-[0.2em] bg-[#CAA959]/10 px-2 py-0.5 rounded-full border border-[#CAA959]/20">
+            <span key={idx} className="text-[9px] font-black text-[#CAA959] uppercase tracking-[0.2em] bg-[#CAA959]/10 px-2 py-0.5 rounded-full border border-[#CAA959]/20 hidden md:inline-block">
               {cat.trim()}
             </span>
           ))}
         </div>
         <Link to={`/producto/${id}`} className="flex-grow">
-          <h3 className={`text-xl font-black italic uppercase leading-tight ${hidePrice ? 'mt-2' : 'mb-2'} group-hover:text-[#CAA959] transition-colors ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
+          <h3 className={`text-xs sm:text-sm md:text-xl font-black italic uppercase leading-tight ${hidePrice ? 'mt-2' : 'mb-1 md:mb-2'} group-hover:text-[#CAA959] transition-colors ${darkTheme ? 'text-white' : 'text-[#202A36]'}`}>
             {name}
           </h3>
         </Link>
         {!hidePrice && (
-          <div className="flex items-center justify-center md:justify-start gap-2 mt-auto pt-2">
-            <span className="font-black text-xl text-[#CAA959] italic">${Number(price).toLocaleString('es-AR')}</span>
+          <div className="flex items-center justify-center md:justify-start gap-1.5 md:gap-2 mt-auto pt-1 md:pt-2">
+            <span className="font-black text-xs sm:text-sm md:text-xl text-[#CAA959] italic">${Number(price).toLocaleString('es-AR')}</span>
             {!!oldPrice && oldPrice > price && (
-              <span className="text-xs text-gray-400 line-through font-bold">${Number(oldPrice).toLocaleString('es-AR')}</span>
+              <span className="text-[10px] md:text-xs text-gray-400 line-through font-bold">${Number(oldPrice).toLocaleString('es-AR')}</span>
             )}
           </div>
         )}

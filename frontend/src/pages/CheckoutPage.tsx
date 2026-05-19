@@ -249,14 +249,16 @@ const CheckoutPage = () => {
                       />
                       {errors.email && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.email.message}</span>}
                     </div>
-                    <div className="md:col-span-2 relative">
-                      <input
-                        {...register('phone')}
-                        placeholder="Telefono"
-                        className="input-field w-full"
-                        style={{ paddingLeft: '3.2rem' }}
-                      />
-                      <Phone className="absolute left-7 top-4 text-gray-400" size={18} />
+                    <div className="md:col-span-2">
+                      <div className="relative w-full">
+                        <input
+                          {...register('phone')}
+                          placeholder="Telefono"
+                          className="input-field w-full"
+                          style={{ paddingLeft: '3.2rem' }}
+                        />
+                        <Phone className="absolute left-7 top-1/2 -translate-y-1/2 text-gray-400" size={18} />
+                      </div>
                       {errors.phone && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.phone.message}</span>}
                     </div>
                   </div>

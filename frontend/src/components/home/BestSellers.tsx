@@ -1,17 +1,32 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { motion } from 'framer-motion';
-import { ChevronRight } from 'lucide-react';
+import { ChevronUp, ChevronDown, ChevronLeft, ChevronRight } from 'lucide-react';
 import ProductCard from './ProductCard';
 import apiClient from '../../api/apiClient';
 
 const BestSellers = () => {
   const [bestSellers, setBestSellers] = useState<any[]>([]);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const [canScrollDown, setCanScrollDown] = useState(false);
+  const [canScrollUp, setCanScrollUp] = useState(false);
   const [canScrollRight, setCanScrollRight] = useState(false);
-  const [isInteracting, setIsInteracting] = useState(false);
-  const [isDragging, setIsDragging] = useState(false);
-  const [startY, setStartY] = useState(0);
-  const [scrollTop, setScrollTop] = useState(0);
+  const [canScrollLeft, setCanScrollLeft] = useState(false);
+
+  const checkScroll = () => {
+    if (scrollRef.current) {
+      const { scrollTop, scrollHeight, clientHeight, scrollLeft, scrollWidth, clientWidth } = scrollRef.current;
+      setCanScrollDown(scrollTop + clientHeight < scrollHeight - 5);
+      setCanScrollUp(scrollTop > 5);
+      setCanScrollRight(scrollLeft + clientWidth < scrollWidth - 5);
+      setCanScrollLeft(scrollLeft > 5);
+    }
+  };
+
+  useEffect(() => {
+    checkScroll();
+    window.addEventListener('resize', checkScroll);
+    return () => window.removeEventListener('resize', checkScroll);
+  }, [bestSellers]);
 
   useEffect(() => {
     const fetchConfig = async () => {
@@ -27,29 +42,7 @@ const BestSellers = () => {
     fetchConfig();
   }, []);
 
-  useEffect(() => {
-    let animationId: number;
-    let scrollDirection = 1;
 
-    const scrollStep = () => {
-      const scrollContainer = scrollRef.current;
-      if (scrollContainer && !isInteracting) {
-        if (scrollContainer.scrollTop + scrollContainer.clientHeight >= scrollContainer.scrollHeight - 1) {
-          scrollDirection = -1; // Reverse
-        } else if (scrollContainer.scrollTop <= 0) {
-          scrollDirection = 1; // Forward
-        }
-        scrollContainer.scrollTop += scrollDirection * 1;
-      }
-      animationId = requestAnimationFrame(scrollStep);
-    };
-
-    if (bestSellers.length > 0) {
-      animationId = requestAnimationFrame(scrollStep);
-    }
-    
-    return () => cancelAnimationFrame(animationId);
-  }, [bestSellers, isInteracting]);
 
   if (bestSellers.length === 0) {
     return null;
@@ -63,37 +56,14 @@ const BestSellers = () => {
           <p className="text-[10px] font-black text-[#CAA959] uppercase tracking-[0.2em] mt-2">Los favoritos de nuestros clientes</p>
         </div>
 
-        <div className="relative max-w-2xl mx-auto">
+        <div className="relative max-w-5xl lg:max-w-6xl mx-auto">
           <div
             ref={scrollRef}
-            onMouseEnter={() => setIsInteracting(true)}
-            onMouseLeave={() => {
-              setIsInteracting(false);
-              setIsDragging(false);
-            }}
-            onTouchStart={() => setIsInteracting(true)}
-            onTouchEnd={() => setIsInteracting(false)}
-            onMouseDown={(e) => {
-              setIsInteracting(true);
-              setIsDragging(true);
-              setStartY(e.pageY - (scrollRef.current?.offsetTop || 0));
-              setScrollTop(scrollRef.current?.scrollTop || 0);
-            }}
-            onMouseUp={() => {
-              setIsInteracting(false);
-              setIsDragging(false);
-            }}
-            onMouseMove={(e) => {
-              if (!isDragging || !scrollRef.current) return;
-              e.preventDefault();
-              const y = e.pageY - scrollRef.current.offsetTop;
-              const walk = (y - startY) * 1.5;
-              scrollRef.current.scrollTop = scrollTop - walk;
-            }}
-            className={`grid grid-cols-2 gap-4 md:gap-8 pb-8 md:pb-4 h-[600px] overflow-hidden md:overflow-y-auto scrollbar-hide select-none ${isDragging ? 'cursor-grabbing' : 'cursor-grab'}`}
+            onScroll={checkScroll}
+            className="flex flex-col md:flex-row gap-6 md:gap-8 h-[600px] md:h-auto pb-8 overflow-y-auto md:overflow-y-hidden overflow-x-hidden md:overflow-x-auto snap-y md:snap-x snap-mandatory scrollbar-hide select-none"
           >
-            {(bestSellers.length % 2 !== 0 ? [...bestSellers, { ...bestSellers[0], _id: bestSellers[0]._id + '_dup' }] : bestSellers).map((product) => (
-              <div key={product._id} className="w-full shrink-0 h-full">
+            {bestSellers.map((product, idx) => (
+              <div key={`${product._id}-${idx}`} className="w-[70vw] sm:w-[50vw] md:w-[320px] mx-auto md:mx-0 shrink-0 h-[450px] md:h-full snap-center">
                 <ProductCard
                   id={product._id}
                   {...product}
@@ -105,6 +75,44 @@ const BestSellers = () => {
               </div>
             ))}
           </div>
+
+          {/* MOBILE ARROWS */}
+          {canScrollUp && (
+            <button 
+              onClick={() => scrollRef.current?.scrollBy({ top: -450, behavior: 'smooth' })}
+              className="md:hidden absolute top-0 left-1/2 -translate-x-1/2 -translate-y-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all z-10"
+            >
+              <ChevronUp size={24} />
+            </button>
+          )}
+          
+          {canScrollDown && (
+            <button 
+              onClick={() => scrollRef.current?.scrollBy({ top: 450, behavior: 'smooth' })}
+              className="md:hidden absolute bottom-0 left-1/2 -translate-x-1/2 translate-y-4 w-10 h-10 bg-white rounded-full shadow-lg flex items-center justify-center text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all z-10"
+            >
+              <ChevronDown size={24} />
+            </button>
+          )}
+
+          {/* DESKTOP ARROWS */}
+          {canScrollLeft && (
+            <button 
+              onClick={() => scrollRef.current?.scrollBy({ left: -320, behavior: 'smooth' })}
+              className="hidden md:flex absolute left-0 top-1/2 -translate-y-1/2 -translate-x-6 lg:-translate-x-12 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all z-10"
+            >
+              <ChevronLeft size={24} />
+            </button>
+          )}
+
+          {canScrollRight && (
+            <button 
+              onClick={() => scrollRef.current?.scrollBy({ left: 320, behavior: 'smooth' })}
+              className="hidden md:flex absolute right-0 top-1/2 -translate-y-1/2 translate-x-6 lg:translate-x-12 w-12 h-12 bg-white rounded-full shadow-lg items-center justify-center text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all z-10"
+            >
+              <ChevronRight size={24} />
+            </button>
+          )}
 
         </div>
       </div>

@@ -21,6 +21,8 @@ const ProductsPage = () => {
   const [products, setProducts] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState<number>(1);
+  const itemsPerPage = 8;
 
   const [selectedCategory, setSelectedCategory] = useState<string>(category || 'Todas');
   const [sortBy, setSortBy] = useState<string>('featured');
@@ -57,6 +59,7 @@ const ProductsPage = () => {
     } else {
       setSelectedCategory('Todas');
     }
+    setCurrentPage(1); // Reset page on category change
   }, [category]);
 
   useEffect(() => {
@@ -82,7 +85,12 @@ const ProductsPage = () => {
     let result = [...products];
 
     if (selectedCategory !== 'Todas') {
-      result = result.filter(p => p.category === selectedCategory);
+      const targetLower = selectedCategory.toLowerCase();
+      result = result.filter(p => {
+        if (!p.category) return false;
+        const catLower = p.category.toLowerCase();
+        return catLower === targetLower || catLower.includes(targetLower) || targetLower.includes(catLower);
+      });
     }
 
     switch (sortBy) {
@@ -104,6 +112,12 @@ const ProductsPage = () => {
 
     return result;
   }, [products, selectedCategory, sortBy]);
+
+  const totalPages = Math.ceil(filteredAndSortedProducts.length / itemsPerPage);
+  const paginatedProducts = useMemo(() => {
+    const startIndex = (currentPage - 1) * itemsPerPage;
+    return filteredAndSortedProducts.slice(startIndex, startIndex + itemsPerPage);
+  }, [filteredAndSortedProducts, currentPage]);
 
   if (loading) {
     return (
@@ -134,7 +148,7 @@ const ProductsPage = () => {
         <div className="flex flex-col md:flex-row justify-between items-center md:items-center text-center md:text-left gap-6 border-b border-white/10 pb-8">
           <div className="flex flex-col items-center md:items-start w-full md:w-auto">
             <h1 className="text-4xl md:text-5xl font-black text-white uppercase italic tracking-tighter">
-              {selectedCategory === 'Todas' ? 'Catálogo' : selectedCategory}
+              {selectedCategory === 'Todas' ? 'Catálogo' : categoryOptions.find(c => c.value === selectedCategory)?.label || selectedCategory}
             </h1>
             <p className="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mt-2">
               {filteredAndSortedProducts.length} Resultados
@@ -169,15 +183,10 @@ const ProductsPage = () => {
         ) : (
           <div className="relative">
             <div
-              ref={scrollRef}
-              onScroll={(e) => {
-                const target = e.currentTarget;
-                setCanScrollRight(target.scrollLeft + target.clientWidth < target.scrollWidth - 5);
-              }}
-              className="flex overflow-x-auto snap-x snap-mandatory gap-4 md:gap-6 pb-8 md:grid md:grid-cols-2 lg:grid-cols-4 md:gap-x-8 md:gap-y-16 mt-12 md:overflow-x-visible md:pb-0 scrollbar-hide"
+              className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-x-8 md:gap-y-16 mt-12"
             >
-              {filteredAndSortedProducts.map((product) => (
-                <div key={product._id} className="w-[85vw] max-w-[320px] sm:w-[60vw] md:w-auto snap-center shrink-0 h-full">
+              {paginatedProducts.map((product) => (
+                <div key={product._id} className="w-full h-full">
                   <ProductCard
                     id={product._id}
                     {...product}
@@ -189,15 +198,22 @@ const ProductsPage = () => {
                 </div>
               ))}
             </div>
-            {canScrollRight && (
-              <div className="absolute -right-6 top-[35%] -translate-y-1/2 pointer-events-none md:hidden flex justify-end items-center z-10">
-                <motion.div
-                  animate={{ x: [0, 5, 0] }}
-                  transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                  className="text-[#CAA959]"
-                >
-                  <ChevronRight size={36} strokeWidth={2.5} />
-                </motion.div>
+            
+            {/* Pagination Controls */}
+            {totalPages > 1 && (
+              <div className="flex justify-center items-center mt-16 gap-2">
+                {Array.from({ length: totalPages }, (_, i) => i + 1).map((page) => (
+                  <button
+                    key={page}
+                    onClick={() => {
+                      setCurrentPage(page);
+                      window.scrollTo(0, 0);
+                    }}
+                    className={`w-10 h-10 rounded-full font-black text-sm transition-all ${currentPage === page ? 'bg-[#CAA959] text-white shadow-lg scale-110' : 'bg-white/10 text-gray-400 hover:bg-white/20'}`}
+                  >
+                    {page}
+                  </button>
+                ))}
               </div>
             )}
           </div>

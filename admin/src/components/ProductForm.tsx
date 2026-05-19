@@ -56,41 +56,36 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
     const file = e.target.files?.[0];
     if (!file) return;
 
-    const formDataFile = new FormData();
-    formDataFile.append('image', file);
-
     setUploadingImageIndex(index);
     try {
-      const backendUrl = import.meta.env.VITE_API_URL?.replace('/api', '') || 'http://localhost:5000';
-      const apiUrl = `${backendUrl}/api/upload`;
-
-      const response = await fetch(apiUrl, {
-        method: 'POST',
-        body: formDataFile,
-      });
-
-      if (!response.ok) {
-        const errorData = await response.json();
-        throw new Error(errorData.message || 'Error al subir la imagen');
-      }
-
-      const data = await response.json();
-      const fullUrl = `${backendUrl}${data.url}`;
-
-      if (typeof index === 'string' && index.startsWith('variant_')) {
-        const varIndex = parseInt(index.split('_')[1]);
-        const newVariants = [...formData.variants];
-        newVariants[varIndex] = { ...newVariants[varIndex], image: fullUrl };
-        setFormData({ ...formData, variants: newVariants });
-      } else {
-        handleImageChange(index as number, fullUrl);
-      }
-      toast.success('Imagen subida correctamente 📸');
+      // Convert file to Base64 string to store directly in the database
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        const base64String = reader.result as string;
+        
+        if (typeof index === 'string' && index.startsWith('variant_')) {
+          const varIndex = parseInt(index.split('_')[1]);
+          const newVariants = [...formData.variants];
+          newVariants[varIndex] = { ...newVariants[varIndex], image: base64String };
+          setFormData({ ...formData, variants: newVariants });
+        } else {
+          handleImageChange(index as number, base64String);
+        }
+        setUploadingImageIndex(null);
+        toast.success('Imagen cargada correctamente 📸');
+      };
+      
+      reader.onerror = () => {
+        toast.error('Error al procesar la imagen');
+        setUploadingImageIndex(null);
+      };
+      
+      reader.readAsDataURL(file);
     } catch (err: any) {
-      toast.error(err.response?.data?.message || 'Error al subir la imagen');
-    } finally {
+      toast.error('Error al procesar la imagen');
       setUploadingImageIndex(null);
-      // Reset input value to allow uploading the same file again if needed
+    } finally {
+      // Reset input value
       e.target.value = '';
     }
   };
