@@ -6,7 +6,7 @@ import apiClient from '../../api/apiClient';
 import CustomSelect from '../ui/CustomSelect';
 
 const sortOptions = [
-  { value: 'featured', label: 'Filtrar' },
+  { value: 'featured', label: 'Ordenar' },
   { value: 'price_asc', label: 'Menor a mayor ($)' },
   { value: 'price_desc', label: 'Mayor a menor ($)' },
   { value: 'name_asc', label: 'A - Z' },
