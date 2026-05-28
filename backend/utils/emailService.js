@@ -1,3 +1,5 @@
+const SENDER_EMAIL = process.env.SENDER_EMAIL || 'newavesuple2026@gmail.com';
+
 export const sendOrderConfirmationEmail = async (order) => {
   try {
     if (!process.env.BREVO_API_KEY) {
@@ -68,7 +70,7 @@ export const sendOrderConfirmationEmail = async (order) => {
       body: JSON.stringify({
         sender: {
           name: 'Newave Store',
-          email: 'newavesuplementos2026@gmail.com'
+          email: SENDER_EMAIL
         },
         to: [{ email: order.guestInfo.email, name: order.guestInfo.fullName }],
         subject: '¡Tu pedido de Newave está confirmado! 🌊',
@@ -140,9 +142,9 @@ export const sendNewOrderNotificationToSeller = async (order) => {
       body: JSON.stringify({
         sender: {
           name: 'Newave Store',
-          email: 'newavesuplementos2026@gmail.com'
+          email: SENDER_EMAIL
         },
-        to: [{ email: 'newavesuplementos2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
+        to: [{ email: process.env.ADMIN_EMAIL || 'newavesuplementos2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
         subject: '¡Nueva Venta en Newave! 💰',
         htmlContent: htmlContent
       })
@@ -211,7 +213,7 @@ export const sendOrderDispatchedEmail = async (order) => {
       body: JSON.stringify({
         sender: {
           name: 'Newave Store',
-          email: 'newavesuplementos2026@gmail.com'
+          email: SENDER_EMAIL
         },
         to: [{ email: order.guestInfo.email, name: order.guestInfo.fullName }],
         subject: '¡Tu pedido de Newave ya está en camino! 🚚',
@@ -284,7 +286,7 @@ export const sendOrderDeliveredEmail = async (order) => {
       body: JSON.stringify({
         sender: {
           name: 'Newave Store',
-          email: 'newavesuplementos2026@gmail.com'
+          email: SENDER_EMAIL
         },
         to: [{ email: order.guestInfo.email, name: order.guestInfo.fullName }],
         subject: '¡Tu paquete de Newave ha sido entregado! 🎉',
@@ -341,7 +343,7 @@ export const sendWelcomeEmail = async (user) => {
       body: JSON.stringify({
         sender: {
           name: 'Newave Store',
-          email: 'newavesuplementos2026@gmail.com'
+          email: SENDER_EMAIL
         },
         to: [{ email: user.email, name: user.name }],
         subject: '¡Bienvenido a Newave Suplementos! 💪',
@@ -394,7 +396,7 @@ export const sendVerificationEmail = async (email, code) => {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        sender: { name: 'Newave Store', email: 'newavesuplementos2026@gmail.com' },
+        sender: { name: 'Newave Store', email: SENDER_EMAIL },
         to: [{ email: email, name: 'Nuevo Usuario' }],
         subject: 'Código de verificación - Newave',
         htmlContent: htmlContent
@@ -442,7 +444,7 @@ export const sendPasswordResetEmail = async (email, code) => {
         'content-type': 'application/json'
       },
       body: JSON.stringify({
-        sender: { name: 'Newave Store', email: 'newavesuplementos2026@gmail.com' },
+        sender: { name: 'Newave Store', email: SENDER_EMAIL },
         to: [{ email: email, name: 'Usuario' }],
         subject: 'Recuperar Contraseña - Newave',
         htmlContent: htmlContent

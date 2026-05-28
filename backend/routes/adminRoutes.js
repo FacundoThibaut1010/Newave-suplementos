@@ -11,10 +11,11 @@ const router = express.Router();
 // Obtener todos los productos
 router.get('/products', async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 });
+    const products = await Product.find().sort({ createdAt: -1 }).allowDiskUse(true);
     res.json(products);
   } catch (error) {
-    res.status(500).json({ message: 'Error al obtener productos' });
+    console.error('❌ Error en GET /products:', error);
+    res.status(500).json({ message: 'Error al obtener productos', error: error.message });
   }
 });
 
@@ -64,7 +65,7 @@ router.delete('/products/:id', async (req, res) => {
 // Obtener configuración global
 router.get('/config', async (req, res) => {
   try {
-    let config = await StoreConfig.findOne().populate('bestSellers');
+    let config = await StoreConfig.findOne().populate('bestSellers', 'name price image category countInStock');
     if (!config) {
       // Si no existe, creamos una con valores por defecto cálidos
       config = await StoreConfig.create({
@@ -122,7 +123,7 @@ router.put('/config', async (req, res) => {
 // --- ORDERS (VENTAS) ---
 router.get('/orders', async (req, res) => {
   try {
-    const orders = await Order.find({ isPaid: true }).sort({ createdAt: -1 });
+    const orders = await Order.find({ isPaid: true }).sort({ createdAt: -1 }).allowDiskUse(true);
     res.json(orders);
   } catch (error) {
     console.error('❌ Error en GET /orders:', error.message);
@@ -216,7 +217,7 @@ router.delete('/orders/:id', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     // 1. Alertas de Stock (Productos o Sabores con menos de 5 unidades)
-    const allProducts = await Product.find({}, 'name countInStock image images variants');
+    const allProducts = await Product.find({}, 'name countInStock image variants');
     const lowStockProducts = [];
 
     allProducts.forEach(product => {
