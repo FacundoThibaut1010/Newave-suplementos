@@ -18,10 +18,10 @@ const CartItem = ({ item }: { item: CartItemType }) => {
         <img src={item.image} alt={item.name} className="w-full h-full object-cover" />
       </div>
       
-      <div className="flex-grow">
-        <div className="flex justify-between items-start mb-1">
-          <h4 className="font-bold text-[#1A1A1A] text-sm tracking-tight">{item.name}</h4>
-          <span className="font-bold text-sm text-black">${Number(item.price * item.quantity).toLocaleString('es-AR')}</span>
+      <div className="flex-grow min-w-0">
+        <div className="flex justify-between items-start mb-1 gap-2">
+          <h4 className="font-bold text-[#1A1A1A] text-sm tracking-tight break-words flex-1">{item.name}</h4>
+          <span className="font-bold text-sm text-black shrink-0 whitespace-nowrap">${Number(item.price * item.quantity).toLocaleString('es-AR')}</span>
         </div>
         
         <p className="text-xs text-gray-400 mb-4">${Number(item.price).toLocaleString('es-AR')}</p>
