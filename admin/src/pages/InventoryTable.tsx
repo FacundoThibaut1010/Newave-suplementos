@@ -12,26 +12,15 @@ import { toast } from 'sonner';
 import apiClient from '../api/apiClient';
 import ProductForm from '../components/ProductForm';
 import ConfirmModal from '../components/ConfirmModal';
+import { useAdminStore } from '../store/useAdminStore';
 
 const InventoryTable = () => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { products, loadingProducts: loading, fetchProducts } = useAdminStore();
   const [showModal, setShowModal] = useState(false);
   const [editingProduct, setEditingProduct] = useState<any>(null);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
-
-  const fetchProducts = async () => {
-    try {
-      const { data } = await apiClient.get('/admin/products');
-      setProducts(data);
-    } catch (err) {
-      toast.error('No se pudo cargar el inventario');
-    } finally {
-      setLoading(false);
-    }
-  };
 
   useEffect(() => {
     fetchProducts();
@@ -47,7 +36,7 @@ const InventoryTable = () => {
     try {
       await apiClient.delete(`/admin/products/${productToDelete}`);
       toast.success('¡Excelente! Inventario actualizado.');
-      fetchProducts();
+      fetchProducts(true);
     } catch (err) {
       toast.error('Hubo un problema al eliminar.');
     } finally {
@@ -71,7 +60,7 @@ const InventoryTable = () => {
           <ProductForm 
             initialData={editingProduct}
             onClose={() => { setShowModal(false); setEditingProduct(null); }}
-            onSuccess={fetchProducts}
+            onSuccess={() => fetchProducts(true)}
           />
         )}
       </AnimatePresence>

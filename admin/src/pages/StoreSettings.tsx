@@ -4,12 +4,13 @@ import { Save, Sparkles, Megaphone, ArrowLeft, Image as ImageIcon, Type, RotateC
 import { useNavigate } from 'react-router-dom';
 import { toast } from 'sonner';
 import apiClient from '../api/apiClient';
+import { useAdminStore } from '../store/useAdminStore';
 
 const StoreSettings = () => {
+  const { products, config: storeConfig, loadingProducts, loadingConfig, fetchProducts, fetchConfig } = useAdminStore();
   const [config, setConfig] = useState<any>(null);
   const [originalConfig, setOriginalConfig] = useState<any>(null);
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
+  const loading = loadingProducts || loadingConfig || !config;
   const [openSections, setOpenSections] = useState<Record<string, boolean>>({
     announcements: false,
     categories: false,
@@ -22,28 +23,22 @@ const StoreSettings = () => {
   };
 
   useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const [configRes, productsRes] = await Promise.all([
-          apiClient.get('/admin/config'),
-          apiClient.get('/admin/products')
-        ]);
-        setConfig(configRes.data);
-        setOriginalConfig(configRes.data);
-        setProducts(productsRes.data);
-      } catch (err) {
-        toast.error('No pudimos cargar la configuración actual. 🔄');
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchData();
+    fetchProducts();
+    fetchConfig();
   }, []);
+
+  useEffect(() => {
+    if (storeConfig) {
+      setConfig(storeConfig);
+      setOriginalConfig(storeConfig);
+    }
+  }, [storeConfig]);
 
   const handleSave = async () => {
     try {
       await apiClient.put('/admin/config', config);
       setOriginalConfig(config); // Update original config to the newly saved one
+      fetchConfig(true); // force refresh store config
       toast.success('¡Excelente! Tu tienda acaba de actualizarse con los nuevos cambios.');
     } catch (err) {
       toast.error('Hubo un problema al guardar los cambios.');
