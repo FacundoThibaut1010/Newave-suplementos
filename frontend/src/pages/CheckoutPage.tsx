@@ -402,7 +402,7 @@ const CheckoutPage = () => {
                         </div>
                       </div>
                       <div className="flex-1 min-w-0 pr-2">
-                        <h4 className="text-sm md:text-base font-black uppercase italic leading-tight truncate">{item.name}</h4>
+                        <h4 className="text-sm md:text-base font-black uppercase italic leading-tight break-words">{item.name}</h4>
                         {item.id.includes('-') && (
                           <p className="text-xs text-gray-400 font-bold uppercase mt-1">{item.id.split('-').slice(1).join('-')}</p>
                         )}
