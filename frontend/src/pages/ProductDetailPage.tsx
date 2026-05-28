@@ -7,10 +7,12 @@ import { useAuthStore } from '../store/useAuthStore';
 import apiClient from '../api/apiClient';
 import { toast } from 'sonner';
 import ProductCard from '../components/home/ProductCard';
+import { useProductStore } from '../store/useProductStore';
 
 const ProductDetailPage = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
+  const { products, loading: storeLoading, fetchProducts, getProductById } = useProductStore();
   const [product, setProduct] = useState<any>(null);
   const [selectedVariant, setSelectedVariant] = useState<any>(null);
   const [loading, setLoading] = useState(true);
@@ -31,30 +33,32 @@ const ProductDetailPage = () => {
 
   useEffect(() => {
     window.scrollTo(0, 0);
-    const fetchProduct = async () => {
-      try {
-        const { data } = await apiClient.get(`/products/${id}`);
-        setProduct(data.product);
-        if (data.product.variants && data.product.variants.length > 0) {
-          setSelectedVariant(data.product.variants[0]);
-        }
-      } catch (error) {
-        toast.error('Producto no encontrado');
-      } finally {
-        setLoading(false);
-      }
+    const loadData = async () => {
+      setLoading(true);
+      await fetchProducts();
     };
-    const fetchRelated = async () => {
-      try {
-        const { data } = await apiClient.get('/products');
-        const related = data.products.filter((p: any) => p._id !== id);
-        // Shuffle to show random related
-        setRelatedProducts(related.sort(() => 0.5 - Math.random()).slice(0, 8));
-      } catch (err) {}
-    };
-    fetchProduct();
-    fetchRelated();
+    loadData();
   }, [id]);
+
+  useEffect(() => {
+    if (products.length > 0 && id) {
+      const p = getProductById(id);
+      if (p) {
+        setProduct(p);
+        if (p.variants && p.variants.length > 0) {
+          setSelectedVariant(p.variants[0]);
+        }
+        
+        const related = products.filter((prod: any) => prod._id !== id);
+        setRelatedProducts(related.sort(() => 0.5 - Math.random()).slice(0, 8));
+      } else {
+        toast.error('Producto no encontrado');
+      }
+      setLoading(false);
+    } else if (!storeLoading && products.length === 0) {
+      setLoading(false);
+    }
+  }, [id, products, storeLoading]);
 
   useEffect(() => {
     let animationId: number;

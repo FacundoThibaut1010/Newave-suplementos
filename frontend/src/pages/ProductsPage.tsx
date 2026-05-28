@@ -5,6 +5,7 @@ import { ChevronRight, ListFilter, ArrowUpDown } from 'lucide-react';
 import ProductCard from '../components/home/ProductCard';
 import apiClient from '../api/apiClient';
 import CustomSelect from '../components/ui/CustomSelect';
+import { useProductStore } from '../store/useProductStore';
 
 // Options will be fetched dynamically
 
@@ -18,27 +19,17 @@ const sortOptions = [
 
 const ProductsPage = () => {
   const { category } = useParams();
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { products, categories: categoryOptions, loading, error, fetchProducts, hasFetched } = useProductStore();
   const [currentPage, setCurrentPage] = useState<number>(1);
   const itemsPerPage = 8;
 
   const [selectedCategory, setSelectedCategory] = useState<string>(category || 'Todas');
   const [sortBy, setSortBy] = useState<string>('featured');
-  const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([{ value: 'Todas', label: 'Todos' }]);
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
   useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await apiClient.get('/products/active-categories');
-        const dynamicOptions = data.map((c: any) => ({ value: c.slug, label: c.name }));
-        setCategoryOptions([{ value: 'Todas', label: 'Todos' }, ...dynamicOptions]);
-      } catch (err) {}
-    };
-    fetchCategories();
+    fetchProducts();
   }, []);
 
   useEffect(() => {
@@ -65,20 +56,6 @@ const ProductsPage = () => {
   useEffect(() => {
     // Scroll to top on mount
     window.scrollTo(0, 0);
-
-    const fetchProducts = async () => {
-      setLoading(true);
-      try {
-        const { data } = await apiClient.get('/products');
-        setProducts(data.products);
-      } catch (err: any) {
-        setError(err.response?.data?.friendlyMessage || 'Error al cargar los productos.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchProducts();
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {

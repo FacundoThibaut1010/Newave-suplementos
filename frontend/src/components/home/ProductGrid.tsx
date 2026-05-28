@@ -4,6 +4,7 @@ import { ChevronRight, ListFilter } from 'lucide-react';
 import ProductCard from './ProductCard';
 import apiClient from '../../api/apiClient';
 import CustomSelect from '../ui/CustomSelect';
+import { useProductStore } from '../../store/useProductStore';
 
 const sortOptions = [
   { value: 'featured', label: 'Ordenar' },
@@ -14,9 +15,8 @@ const sortOptions = [
 ];
 
 const ProductGrid = () => {
-  const [products, setProducts] = useState<any[]>([]);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { products: storeProducts, loading: storeLoading, error: storeError, fetchProducts } = useProductStore();
+  const [combos, setCombos] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState<string>('featured');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(false);
@@ -31,32 +31,21 @@ const ProductGrid = () => {
     checkScroll();
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
-  }, [products]);
+  }, [combos]);
 
   useEffect(() => {
-    const fetchProducts = async () => {
-      console.log('--- API: Iniciando carga de productos... 🛒 ---');
-      setLoading(true);
-      try {
-        const { data } = await apiClient.get('/products');
-        // Filtrar solo los productos marcados como 'Combo'
-        const combos = data.products.filter((p: any) => p.displaySection === 'Combo');
-
-        console.log('--- API: Éxito! Recibimos:', data.products.length, 'productos en total, de los cuales', combos.length, 'son Combos ✨ ---');
-        setProducts(combos);
-      } catch (err: any) {
-        console.error('--- API: ¡Ups! Error al cargar productos:', err.message, '---');
-        setError(err.response?.data?.friendlyMessage || 'No pudimos encontrar los productos.');
-      } finally {
-        setLoading(false);
-      }
-    };
-
     fetchProducts();
   }, []);
 
+  useEffect(() => {
+    if (storeProducts.length > 0) {
+      const comboProducts = storeProducts.filter((p: any) => p.displaySection === 'Combo');
+      setCombos(comboProducts);
+    }
+  }, [storeProducts]);
+
   const sortedProducts = useMemo(() => {
-    let result = [...products];
+    let result = [...combos];
     switch (sortBy) {
       case 'price_asc':
         result.sort((a, b) => a.price - b.price);
@@ -74,9 +63,9 @@ const ProductGrid = () => {
         break;
     }
     return result;
-  }, [products, sortBy]);
+  }, [combos, sortBy]);
 
-  if (loading) {
+  if (storeLoading && storeProducts.length === 0) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-32 text-center flex justify-center">
         <motion.div
@@ -88,16 +77,16 @@ const ProductGrid = () => {
     );
   }
 
-  if (error) {
+  if (storeError) {
     return (
       <div className="max-w-7xl mx-auto px-4 py-32 text-center">
-        <p className="text-red-500 font-bold">{error}</p>
+        <p className="text-red-500 font-bold">{storeError}</p>
         <button onClick={() => window.location.reload()} className="mt-4 text-blue-600 underline font-bold">Reintentar</button>
       </div>
     );
   }
 
-  if (products.length === 0) {
+  if (!storeLoading && combos.length === 0) {
     return null; // Ocultar la sección si no hay Combos
   }
 
