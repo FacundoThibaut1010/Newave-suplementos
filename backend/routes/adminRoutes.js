@@ -65,7 +65,7 @@ router.delete('/products/:id', async (req, res) => {
 // Obtener configuración global
 router.get('/config', async (req, res) => {
   try {
-    let config = await StoreConfig.findOne().populate('bestSellers', 'name price image category countInStock');
+    let config = await StoreConfig.findOne().populate('bestSellers', 'name price images category countInStock');
     if (!config) {
       // Si no existe, creamos una con valores por defecto cálidos
       config = await StoreConfig.create({
@@ -217,7 +217,7 @@ router.delete('/orders/:id', async (req, res) => {
 router.get('/dashboard', async (req, res) => {
   try {
     // 1. Alertas de Stock (Productos o Sabores con menos de 5 unidades)
-    const allProducts = await Product.find({}, 'name countInStock image variants');
+    const allProducts = await Product.find({}, 'name countInStock images variants');
     const lowStockProducts = [];
 
     allProducts.forEach(product => {

@@ -140,3 +140,15 @@ body::-webkit-scrollbar {
   backface-visibility: hidden;
   -webkit-backface-visibility: hidden;
 }
+
+/* Prevenir arrastrar y guardar imágenes en toda la web */
+img {
+  -webkit-touch-callout: none; /* iOS Safari */
+  -webkit-user-select: none;   /* Safari */
+  -khtml-user-select: none;     /* Konqueror HTML */
+  -moz-user-select: none;       /* Firefox */
+  -ms-user-select: none;        /* Internet Explorer/Edge */
+  user-select: none;            /* General */
+  -webkit-user-drag: none;      /* Chrome, Safari, Edge */
+  user-drag: none;
+}

@@ -115,14 +115,16 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
           <img
             src={images?.length && images[0] ? images[0] : image}
             alt={name}
-            className={`w-full h-full object-contain p-4 absolute inset-0 transition-opacity duration-500 ${(images && images.length > 1 && images[hoverImageIndex] && images[hoverImageIndex].trim() !== '') ? 'group-hover/image:opacity-0' : ''}`}
+            draggable={false}
+            className={`w-full h-full object-contain p-4 absolute inset-0 transition-opacity duration-500 pointer-events-none select-none ${(images && images.length > 1 && images[hoverImageIndex] && images[hoverImageIndex].trim() !== '') ? 'group-hover/image:opacity-0' : ''}`}
           />
           {/* Hover Image */}
           {(images && images.length > 1 && images[hoverImageIndex] && images[hoverImageIndex].trim() !== '') && (
             <img
               src={images[hoverImageIndex]}
               alt={`${name} alt`}
-              className="w-full h-full object-contain p-4 absolute inset-0 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500"
+              draggable={false}
+              className="w-full h-full object-contain p-4 absolute inset-0 opacity-0 group-hover/image:opacity-100 transition-opacity duration-500 pointer-events-none select-none"
             />
           )}
         </Link>
