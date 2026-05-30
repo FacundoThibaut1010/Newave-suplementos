@@ -144,7 +144,7 @@ export const sendNewOrderNotificationToSeller = async (order) => {
           name: 'Newave Store',
           email: SENDER_EMAIL
         },
-        to: [{ email: process.env.ADMIN_EMAIL || 'newavesuplementos2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
+        to: [{ email: process.env.ADMIN_EMAIL || 'newavesuple2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
         subject: '¡Nueva Venta en Newave! 💰',
         htmlContent: htmlContent
       })

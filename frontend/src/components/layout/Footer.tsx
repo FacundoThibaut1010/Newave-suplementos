@@ -46,7 +46,7 @@ const Footer = () => {
 
               {/* MAIL USANDO LUCIDE-REACT */}
               <a
-                href="mailto:hola@newave.com"
+                href="mailto:newavesuple2026@gmail.com"
                 className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center text-gray-400 hover:bg-[#CAA959] hover:text-white hover:border-[#CAA959] transition-all"
               >
                 <Mail size={18} />
@@ -92,7 +92,7 @@ const Footer = () => {
                           </a>
                         </li>
                         <li>
-                          <a href="mailto:hola@newave.com" className="flex items-center gap-2 hover:text-[#CAA959] transition-colors">
+                          <a href="mailto:newavesuple2026@gmail.com" className="flex items-center gap-2 hover:text-[#CAA959] transition-colors">
                             <Mail size={14} /> Correo
                           </a>
                         </li>
