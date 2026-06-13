@@ -82,6 +82,81 @@ router.post('/compress-all-images', async (req, res) => {
   }
 });
 
+// Ruta temporal para intentar quitar fondos negros
+const removeBlackBg = async (base64String) => {
+  if (!base64String || !base64String.startsWith('data:image/')) return base64String;
+  try {
+    const buffer = Buffer.from(base64String.split(',')[1], 'base64');
+    const image = await Jimp.read(buffer);
+    
+    // Configurar imagen para soportar transparencia
+    image.rgba(true);
+    
+    // Escanear píxeles
+    image.scan(0, 0, image.bitmap.width, image.bitmap.height, function(x, y, idx) {
+      const r = this.bitmap.data[idx + 0];
+      const g = this.bitmap.data[idx + 1];
+      const b = this.bitmap.data[idx + 2];
+      
+      // Si el píxel es muy cercano a negro (artefactos de JPEG)
+      if (r < 25 && g < 25 && b < 25) {
+        this.bitmap.data[idx + 3] = 0; // Hacer totalmente transparente
+      }
+    });
+    
+    const webpBuffer = await image.getBuffer('image/png'); 
+    // Usamos PNG temporalmente porque Jimp nativo no soporta exportar a WEBP con transparencia fácilmente sin plugins extra en algunas versiones.
+    return `data:image/png;base64,${webpBuffer.toString('base64')}`;
+  } catch (err) {
+    console.error('Error quitando fondo negro:', err.message);
+    return base64String;
+  }
+};
+
+router.post('/remove-black-bg', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    let modifiedCount = 0;
+    
+    for (const product of products) {
+      let modified = false;
+
+      if (product.images && product.images.length > 0) {
+        for (let i = 0; i < product.images.length; i++) {
+          if (product.images[i] && product.images[i].includes('image/jpeg')) {
+            product.images[i] = await removeBlackBg(product.images[i]);
+            modified = true;
+          }
+        }
+      }
+
+      if (product.image && product.image.includes('image/jpeg')) {
+        product.image = await removeBlackBg(product.image);
+        modified = true;
+      }
+
+      if (product.variants && product.variants.length > 0) {
+        for (let i = 0; i < product.variants.length; i++) {
+          if (product.variants[i].image && product.variants[i].image.includes('image/jpeg')) {
+            product.variants[i].image = await removeBlackBg(product.variants[i].image);
+            modified = true;
+          }
+        }
+      }
+
+      if (modified) {
+        await product.save();
+        modifiedCount++;
+      }
+    }
+
+    res.json({ message: `¡Proceso completado! Se intentó quitar el fondo negro en ${modifiedCount} productos.` });
+  } catch (error) {
+    console.error('Error quitando fondo negro:', error);
+    res.status(500).json({ message: 'Error quitando fondo', error: error.message });
+  }
+});
+
 // Crear producto
 router.post('/products', async (req, res) => {
   try {

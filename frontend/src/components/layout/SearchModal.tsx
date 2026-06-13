@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, X, Loader2, ArrowRight } from 'lucide-react';
 import { Link } from 'react-router-dom';
-import apiClient from '../../api/apiClient';
+import { useProductStore } from '../../store/useProductStore';
 
 interface SearchModalProps {
   isOpen: boolean;
@@ -13,6 +13,8 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
   const [query, setQuery] = useState('');
   const [results, setResults] = useState<any[]>([]);
   const [isSearching, setIsSearching] = useState(false);
+
+  const { products } = useProductStore();
 
   useEffect(() => {
     if (isOpen) {
@@ -31,24 +33,31 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
   }, [isOpen]);
 
   useEffect(() => {
-    const delayDebounceFn = setTimeout(async () => {
-      if (query.trim().length > 1) {
-        setIsSearching(true);
-        try {
-          const { data } = await apiClient.get(`/products?search=${query}`);
-          setResults(data.products || []);
-        } catch (error) {
-          console.error('Error en búsqueda', error);
-        } finally {
-          setIsSearching(false);
-        }
-      } else {
-        setResults([]);
-      }
-    }, 400);
+    if (query.trim().length > 1) {
+      setIsSearching(true);
+      const searchLower = query.toLowerCase().trim();
+      
+      const filtered = products.filter(p => {
+        const nameMatch = p.name?.toLowerCase().includes(searchLower);
+        const catMatch = p.category?.toLowerCase().includes(searchLower);
+        return nameMatch || catMatch;
+      });
 
-    return () => clearTimeout(delayDebounceFn);
-  }, [query]);
+      // Ordenar para priorizar los que empiezan con la palabra clave exacta
+      filtered.sort((a, b) => {
+        const aName = a.name?.toLowerCase() || '';
+        const bName = b.name?.toLowerCase() || '';
+        if (aName.startsWith(searchLower) && !bName.startsWith(searchLower)) return -1;
+        if (bName.startsWith(searchLower) && !aName.startsWith(searchLower)) return 1;
+        return 0;
+      });
+
+      setResults(filtered);
+      setIsSearching(false);
+    } else {
+      setResults([]);
+    }
+  }, [query, products]);
 
   return (
     <AnimatePresence>

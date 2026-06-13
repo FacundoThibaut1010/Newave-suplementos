@@ -49,8 +49,12 @@ const ProductsPage = () => {
     } else {
       setSelectedCategory('Todas');
     }
-    setCurrentPage(1); // Reset page on category change
+    setCurrentPage(1); // Reset page on category change from URL
   }, [category]);
+
+  useEffect(() => {
+    setCurrentPage(1); // Reset page when dropdown filters change
+  }, [selectedCategory, sortBy]);
 
   useEffect(() => {
     // Scroll to top on mount
