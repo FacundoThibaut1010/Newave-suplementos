@@ -3,8 +3,26 @@ import Product from '../models/Product.js';
 import StoreConfig from '../models/StoreConfig.js';
 import Order from '../models/Order.js';
 import { sendOrderDispatchedEmail, sendOrderDeliveredEmail } from '../utils/emailService.js';
+import { Jimp } from 'jimp';
 
 const router = express.Router();
+
+// --- IMAGE COMPRESSION HELPER ---
+const compressBase64Image = async (base64String) => {
+  if (!base64String || !base64String.startsWith('data:image/')) return base64String;
+  try {
+    const buffer = Buffer.from(base64String.split(',')[1], 'base64');
+    const image = await Jimp.read(buffer);
+    if (image.bitmap.width > 800) {
+      image.resize({ w: 800 });
+    }
+    const compressedBuffer = await image.getBuffer('image/jpeg', { quality: 70 });
+    return `data:image/jpeg;base64,${compressedBuffer.toString('base64')}`;
+  } catch (err) {
+    console.error('Error compressing image:', err.message);
+    return base64String;
+  }
+};
 
 // --- PRODUCT CRUD ---
 
@@ -16,6 +34,51 @@ router.get('/products', async (req, res) => {
   } catch (error) {
     console.error('❌ Error en GET /products:', error);
     res.status(500).json({ message: 'Error al obtener productos', error: error.message });
+  }
+});
+
+// Ruta temporal para comprimir imágenes existentes
+router.post('/compress-all-images', async (req, res) => {
+  try {
+    const products = await Product.find({});
+    let compressedCount = 0;
+    
+    for (const product of products) {
+      let modified = false;
+
+      if (product.images && product.images.length > 0) {
+        for (let i = 0; i < product.images.length; i++) {
+          if (product.images[i] && product.images[i].length > 150000) {
+            product.images[i] = await compressBase64Image(product.images[i]);
+            modified = true;
+          }
+        }
+      }
+
+      if (product.image && product.image.length > 150000) {
+        product.image = await compressBase64Image(product.image);
+        modified = true;
+      }
+
+      if (product.variants && product.variants.length > 0) {
+        for (let i = 0; i < product.variants.length; i++) {
+          if (product.variants[i].image && product.variants[i].image.length > 150000) {
+            product.variants[i].image = await compressBase64Image(product.variants[i].image);
+            modified = true;
+          }
+        }
+      }
+
+      if (modified) {
+        await product.save();
+        compressedCount++;
+      }
+    }
+
+    res.json({ message: `¡Proceso completado! Se comprimieron imágenes en ${compressedCount} productos.` });
+  } catch (error) {
+    console.error('Error comprimiendo:', error);
+    res.status(500).json({ message: 'Error comprimiendo imágenes', error: error.message });
   }
 });
 

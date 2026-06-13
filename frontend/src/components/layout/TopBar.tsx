@@ -12,7 +12,7 @@ const defaultMessages = [
 
 const TopBar = () => {
   const [index, setIndex] = useState(0);
-  const [messages, setMessages] = useState<string[]>([]);
+  const [messages, setMessages] = useState<string[]>(defaultMessages);
   const [isVisible, setIsVisible] = useState(true);
 
   useEffect(() => {
