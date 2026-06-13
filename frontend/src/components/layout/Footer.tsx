@@ -2,22 +2,12 @@
 import { Mail, Phone, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Link } from 'react-router-dom';
-import { useState, useEffect } from 'react';
-import apiClient from '../../api/apiClient';
+import { useState } from 'react';
+import { useProductStore } from '../../store/useProductStore';
 
 const Footer = () => {
-  const [categories, setCategories] = useState<any[]>([]);
+  const activeCategories = useProductStore((state) => state.activeCategories);
   const [isContactOpen, setIsContactOpen] = useState(false);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await apiClient.get('/products/active-categories');
-        setCategories(data);
-      } catch (err) {}
-    };
-    fetchCategories();
-  }, []);
   return (
     <footer id="contacto" className="bg-white border-t border-gray-100 py-12">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -58,7 +48,7 @@ const Footer = () => {
             <h3 className="text-xs font-black text-[#202A36] uppercase tracking-[0.2em] mb-6">Productos</h3>
             <ul className="space-y-4 text-sm text-gray-500 font-medium">
               <li><Link to="/productos" className="hover:text-[#CAA959] transition-colors">Ver Todo</Link></li>
-              {categories.map((cat, idx) => (
+              {activeCategories.map((cat, idx) => (
                 <li key={idx}>
                   <Link to={`/productos/${cat.slug}`} className="hover:text-[#CAA959] transition-colors">{cat.name}</Link>
                 </li>

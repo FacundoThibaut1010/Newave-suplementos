@@ -5,9 +5,10 @@ import { useCartStore } from '../../store/useCartStore';
 import { useUIStore } from '../../store/useUIStore';
 import { useAuthStore } from '../../store/useAuthStore';
 import { Link, useNavigate } from 'react-router-dom';
-import apiClient from '../../api/apiClient';
 import AuthModal from '../auth/AuthModal';
 import SearchModal from './SearchModal';
+import { useProductStore } from '../../store/useProductStore';
+import { useStoreConfigStore } from '../../store/useStoreConfigStore';
 
 const Navbar = () => {
   const totalItems = useCartStore((state) => state.totalItems());
@@ -16,23 +17,17 @@ const Navbar = () => {
   const navigate = useNavigate();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isProductsOpen, setIsProductsOpen] = useState(false);
-  const [hasCombos, setHasCombos] = useState(true);
-  const [hasBestSellers, setHasBestSellers] = useState(true);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
   const [isSearchModalOpen, setIsSearchModalOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [categories, setCategories] = useState<any[]>([]);
+  const activeCategories = useProductStore((state) => state.activeCategories);
+  const productsFetched = useProductStore((state) => state.hasFetched);
+  const hasCombos = useProductStore((state) => state.hasCombos());
+  const showCombos = !productsFetched || hasCombos;
+  const configFetched = useStoreConfigStore((state) => state.hasFetched);
+  const bestSellers = useStoreConfigStore((state) => state.bestSellers);
+  const showBestSellers = !configFetched || bestSellers.length > 0;
   const userMenuRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const fetchCategories = async () => {
-      try {
-        const { data } = await apiClient.get('/products/active-categories');
-        setCategories(data);
-      } catch (err) {}
-    };
-    fetchCategories();
-  }, []);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -48,22 +43,6 @@ const Navbar = () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
   }, [isUserMenuOpen]);
-
-  useEffect(() => {
-    const checkSections = async () => {
-      try {
-        const { data } = await apiClient.get('/products');
-        const combos = data.products.filter((p: any) => p.displaySection === 'Combo');
-        setHasCombos(combos.length > 0);
-        
-        const { data: configData } = await apiClient.get('/admin/config');
-        setHasBestSellers(configData?.bestSellers?.length > 0);
-      } catch (err) {
-        console.error('Error fetching sections for navbar', err);
-      }
-    };
-    checkSections();
-  }, []);
 
   useEffect(() => {
     if (isMenuOpen) {
@@ -206,7 +185,7 @@ const Navbar = () => {
                                 className="overflow-hidden rounded-xl mx-2 mt-1"
                               >
                                 <div className="flex flex-col py-2">
-                                  {categories.map((cat: any, i: number) => (
+                                  {activeCategories.map((cat: any, i: number) => (
                                     <Link key={i} onClick={() => setIsMenuOpen(false)} to={`/productos/${cat.slug}`} className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">{cat.name}</Link>
                                   ))}
                                   <Link onClick={() => setIsMenuOpen(false)} to="/productos" className="px-6 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#CAA959] hover:text-white transition-colors">Ver todos</Link>
@@ -216,7 +195,7 @@ const Navbar = () => {
                           </AnimatePresence>
                         </div>
 
-                        {hasCombos && (
+                        {showCombos && (
                           <a
                             onClick={(e) => handleScrollTo(e, 'combos')}
                             href="/#combos"
@@ -230,7 +209,7 @@ const Navbar = () => {
                           </a>
                         )}
 
-                        {hasBestSellers && (
+                        {showBestSellers && (
                           <a
                             onClick={(e) => handleScrollTo(e, 'mas-vendidos')}
                             href="/#mas-vendidos"

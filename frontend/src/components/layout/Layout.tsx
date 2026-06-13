@@ -3,6 +3,9 @@ import Footer from './Footer';
 import TopBar from './TopBar';
 import CartDrawer from '../cart/CartDrawer';
 import { useUIStore } from '../../store/useUIStore';
+import { useEffect } from 'react';
+import { useProductStore } from '../../store/useProductStore';
+import { useStoreConfigStore } from '../../store/useStoreConfigStore';
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -10,6 +13,11 @@ interface LayoutProps {
 
 const Layout = ({ children }: LayoutProps) => {
   const { isCartOpen, closeCart } = useUIStore();
+
+  useEffect(() => {
+    useProductStore.getState().fetchProducts();
+    useStoreConfigStore.getState().fetchConfig();
+  }, []);
 
   return (
     <div className="min-h-screen flex flex-col bg-[#0A0A0B] overflow-x-hidden">

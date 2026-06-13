@@ -1,9 +1,8 @@
 import { useEffect, useState, useMemo, useRef } from 'react';
 import { useParams } from 'react-router-dom';
-import { motion } from 'framer-motion';
-import { ChevronRight, ListFilter, ArrowUpDown } from 'lucide-react';
+import { ListFilter, ArrowUpDown } from 'lucide-react';
 import ProductCard from '../components/home/ProductCard';
-import apiClient from '../api/apiClient';
+import ProductCardSkeleton from '../components/home/ProductCardSkeleton';
 import CustomSelect from '../components/ui/CustomSelect';
 import { useProductStore } from '../store/useProductStore';
 
@@ -96,14 +95,27 @@ const ProductsPage = () => {
     return filteredAndSortedProducts.slice(startIndex, startIndex + itemsPerPage);
   }, [filteredAndSortedProducts, currentPage]);
 
-  if (loading) {
+  if (loading && !hasFetched) {
     return (
-      <div className="pt-32 pb-16 min-h-[60vh] flex flex-col items-center justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-8 h-8 border-4 border-[#202A36]/20 border-t-[#202A36] rounded-full"
-        />
+      <div className="pt-40 md:pt-32 pb-24 bg-[#0A0A0B] min-h-screen">
+        <div className="max-w-7xl mx-auto px-6 mb-16">
+          <div className="flex flex-col md:flex-row justify-between items-center md:items-center text-center md:text-left gap-6 border-b border-white/10 pb-8">
+            <div className="flex flex-col items-center md:items-start w-full md:w-auto">
+              <div className="h-10 md:h-12 w-48 bg-white/10 rounded animate-pulse" />
+              <div className="h-3 w-32 bg-white/5 rounded mt-3 animate-pulse" />
+            </div>
+            <div className="flex flex-col sm:flex-row w-full md:w-auto gap-4 items-center">
+              <div className="h-11 w-full sm:w-44 bg-white/10 rounded animate-pulse" />
+              <div className="h-11 w-full sm:w-44 bg-white/10 rounded animate-pulse" />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 md:gap-x-8 md:gap-y-16 mt-12">
+            {Array.from({ length: 8 }).map((_, i) => (
+              <ProductCardSkeleton key={i} darkTheme />
+            ))}
+          </div>
+        </div>
       </div>
     );
   }

@@ -2,9 +2,9 @@ import React, { useEffect, useState, useMemo, useRef } from 'react';
 import { motion } from 'framer-motion';
 import { ChevronRight, ListFilter } from 'lucide-react';
 import ProductCard from './ProductCard';
-import apiClient from '../../api/apiClient';
 import CustomSelect from '../ui/CustomSelect';
 import { useProductStore } from '../../store/useProductStore';
+import ProductCardSkeleton from './ProductCardSkeleton';
 
 const sortOptions = [
   { value: 'featured', label: 'Ordenar' },
@@ -15,7 +15,7 @@ const sortOptions = [
 ];
 
 const ProductGrid = () => {
-  const { products: storeProducts, loading: storeLoading, error: storeError, fetchProducts } = useProductStore();
+  const { products: storeProducts, loading: storeLoading, error: storeError } = useProductStore();
   const [combos, setCombos] = useState<any[]>([]);
   const [sortBy, setSortBy] = useState<string>('featured');
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -32,10 +32,6 @@ const ProductGrid = () => {
     window.addEventListener('resize', checkScroll);
     return () => window.removeEventListener('resize', checkScroll);
   }, [combos]);
-
-  useEffect(() => {
-    fetchProducts();
-  }, []);
 
   useEffect(() => {
     if (storeProducts.length > 0) {
@@ -67,13 +63,21 @@ const ProductGrid = () => {
 
   if (storeLoading && storeProducts.length === 0) {
     return (
-      <div className="max-w-7xl mx-auto px-4 py-32 text-center flex justify-center">
-        <motion.div
-          animate={{ rotate: 360 }}
-          transition={{ duration: 1, repeat: Infinity, ease: 'linear' }}
-          className="w-8 h-8 border-4 border-[#CAA959]/20 border-t-[#CAA959] rounded-full"
-        />
-      </div>
+      <section id="combos" className="py-16 bg-[#0A0A0B] scroll-mt-[120px]">
+        <div className="max-w-7xl mx-auto px-6 mb-12">
+          <div className="flex flex-col md:flex-row justify-between items-center text-center md:text-left gap-6 mb-8">
+            <div className="w-full flex flex-col items-center md:items-start">
+              <h3 className="text-3xl font-black text-white uppercase italic tracking-tighter">Combos</h3>
+              <p className="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mt-2">Nuestros combos especiales</p>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 md:gap-8">
+            {Array.from({ length: 4 }).map((_, i) => (
+              <ProductCardSkeleton key={i} darkTheme />
+            ))}
+          </div>
+        </div>
+      </section>
     );
   }
 
