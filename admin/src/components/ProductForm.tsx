@@ -58,10 +58,36 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
     setUploadingImageIndex(index);
     try {
-      // Convert file to Base64 string to store directly in the database
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const base64String = reader.result as string;
+      const compressImage = (file: File): Promise<string> => {
+        return new Promise((resolve) => {
+          const reader = new FileReader();
+          reader.readAsDataURL(file);
+          reader.onload = (event) => {
+            const img = new window.Image();
+            img.src = event.target?.result as string;
+            img.onload = () => {
+              const canvas = document.createElement('canvas');
+              const MAX_WIDTH = 800;
+              let width = img.width;
+              let height = img.height;
+              
+              if (width > MAX_WIDTH) {
+                height = Math.round((height * MAX_WIDTH) / width);
+                width = MAX_WIDTH;
+              }
+              
+              canvas.width = width;
+              canvas.height = height;
+              const ctx = canvas.getContext('2d');
+              ctx?.drawImage(img, 0, 0, width, height);
+              const compressedBase64 = canvas.toDataURL('image/jpeg', 0.7);
+              resolve(compressedBase64);
+            };
+          };
+        });
+      };
+
+      compressImage(file).then((base64String) => {
         
         if (typeof index === 'string' && index.startsWith('variant_')) {
           const varIndex = parseInt(index.split('_')[1]);
@@ -73,14 +99,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         }
         setUploadingImageIndex(null);
         toast.success('Imagen cargada correctamente 📸');
-      };
-      
-      reader.onerror = () => {
-        toast.error('Error al procesar la imagen');
-        setUploadingImageIndex(null);
-      };
-      
-      reader.readAsDataURL(file);
+      });
     } catch (err: any) {
       toast.error('Error al procesar la imagen');
       setUploadingImageIndex(null);
