@@ -58,7 +58,7 @@ const CategoryScroll = () => {
       <div className="w-full relative bg-white pt-0 pb-12">
         <div
           ref={scrollRef}
-          className="flex gap-6 overflow-x-auto px-6 pt-6 pb-8 cursor-grab active:cursor-grabbing [&::-webkit-scrollbar]:h-0 md:[&::-webkit-scrollbar]:h-1.5 [&::-webkit-scrollbar-track]:bg-transparent [&::-webkit-scrollbar-thumb]:bg-black/10 hover:[&::-webkit-scrollbar-thumb]:bg-[#CAA959]/50 [&::-webkit-scrollbar-thumb]:rounded-full select-none"
+          className="flex gap-6 overflow-x-auto px-6 pt-6 pb-8 cursor-grab active:cursor-grabbing [&::-webkit-scrollbar]:h-0 md:[&::-webkit-scrollbar]:h-3 [&::-webkit-scrollbar-track]:bg-black/5 [&::-webkit-scrollbar-thumb]:bg-black/20 hover:[&::-webkit-scrollbar-thumb]:bg-[#CAA959]/70 [&::-webkit-scrollbar-thumb]:rounded-full select-none"
           onMouseEnter={() => setIsHovered(true)}
           onMouseLeave={onMouseLeave}
           onMouseDown={onMouseDown}
