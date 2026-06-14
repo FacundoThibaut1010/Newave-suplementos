@@ -19,11 +19,23 @@ const sortOptions = [
 const ProductsPage = () => {
   const { category } = useParams();
   const { products, categories: categoryOptions, loading, error, fetchProducts, hasFetched } = useProductStore();
-  const [currentPage, setCurrentPage] = useState<number>(1);
+  const [selectedCategory, setSelectedCategory] = useState<string>(() => {
+    const savedCat = sessionStorage.getItem('catalogCategory');
+    if (category) return category;
+    if (savedCat) return savedCat;
+    return 'Todas';
+  });
+  const [sortBy, setSortBy] = useState<string>(() => sessionStorage.getItem('catalogSort') || 'featured');
+  const [currentPage, setCurrentPage] = useState<number>(() => {
+    const savedCat = sessionStorage.getItem('catalogCategory');
+    const savedPage = sessionStorage.getItem('catalogPage');
+    // If the category matches what was saved, restore the page. Otherwise, start at 1.
+    if (savedCat === (category || 'Todas') && savedPage) {
+      return parseInt(savedPage);
+    }
+    return 1;
+  });
   const itemsPerPage = 8;
-
-  const [selectedCategory, setSelectedCategory] = useState<string>(category || 'Todas');
-  const [sortBy, setSortBy] = useState<string>('featured');
   const scrollRef = useRef<HTMLDivElement>(null);
   const [canScrollRight, setCanScrollRight] = useState(false);
 
@@ -44,21 +56,42 @@ const ProductsPage = () => {
   }, [products, selectedCategory, sortBy]);
 
   useEffect(() => {
+    sessionStorage.setItem('catalogPage', currentPage.toString());
+    sessionStorage.setItem('catalogCategory', selectedCategory);
+    sessionStorage.setItem('catalogSort', sortBy);
+  }, [currentPage, selectedCategory, sortBy]);
+
+  const isInitialMount = useRef(true);
+
+  useEffect(() => {
+    if (isInitialMount.current) {
+      if (category && category !== selectedCategory) {
+        setSelectedCategory(category);
+        setCurrentPage(1);
+      }
+      return;
+    }
+    
     if (category) {
       setSelectedCategory(category);
     } else {
       setSelectedCategory('Todas');
     }
-    setCurrentPage(1); // Reset page on category change from URL
+    setCurrentPage(1);
   }, [category]);
 
   useEffect(() => {
-    setCurrentPage(1); // Reset page when dropdown filters change
+    if (isInitialMount.current) {
+      isInitialMount.current = false;
+      return;
+    }
+    setCurrentPage(1);
   }, [selectedCategory, sortBy]);
 
   useEffect(() => {
-    // Scroll to top on mount
-    window.scrollTo(0, 0);
+    // Only scroll to top if we didn't restore a specific page (page > 1 usually means they were scrolling)
+    // Actually, it's better to always scroll to top on mount unless we implement full scroll restoration.
+    // window.scrollTo(0, 0);
   }, []);
 
   const filteredAndSortedProducts = useMemo(() => {

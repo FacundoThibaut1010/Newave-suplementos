@@ -35,6 +35,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [uploadingImageIndex, setUploadingImageIndex] = useState<number | string | null>(null);
   const [categoryOptions, setCategoryOptions] = useState<{value: string, label: string}[]>([]);
+  const [fullScreenImage, setFullScreenImage] = useState<string | null>(null);
 
   React.useEffect(() => {
     const fetchConfig = async () => {
@@ -394,17 +395,28 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                       value={variant.image}
                       onChange={(e) => updateVariant(index, 'image', e.target.value)}
                       placeholder="URL Imagen Específica (Opcional)"
-                      className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-3 pr-10 py-2 text-xs font-bold text-black"
+                      className="w-full bg-gray-50 border border-gray-200 rounded-lg pl-3 pr-20 py-2 text-xs font-bold text-black"
                     />
-                    <label className="absolute right-2 top-1/2 -translate-y-1/2 cursor-pointer p-1 text-gray-400 hover:text-[#CAA959]">
-                      {uploadingImageIndex === `variant_${index}` ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />}
-                      <input
-                        type="file"
-                        accept="image/*"
-                        className="hidden"
-                        onChange={(e) => handleFileUpload(`variant_${index}` as unknown as number, e)}
-                      />
-                    </label>
+                    <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center gap-2 bg-gray-50">
+                      {variant.image && (
+                        <button
+                          type="button"
+                          onClick={() => setFullScreenImage(variant.image)}
+                          className="text-[10px] text-[#CAA959] font-bold uppercase tracking-widest hover:underline px-1"
+                        >
+                          Ver Foto
+                        </button>
+                      )}
+                      <label className="cursor-pointer p-1 text-gray-400 hover:text-[#CAA959]">
+                        {uploadingImageIndex === `variant_${index}` ? <Loader2 size={14} className="animate-spin" /> : <UploadCloud size={14} />}
+                        <input
+                          type="file"
+                          accept="image/*"
+                          className="hidden"
+                          onChange={(e) => handleFileUpload(`variant_${index}` as unknown as number, e)}
+                        />
+                      </label>
+                    </div>
                   </div>
                 </div>
               ))}
@@ -461,9 +473,12 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
             <div className="pt-2">
               <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Vista Previa</label>
-              <div className="aspect-[16/9] bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 flex items-center justify-center relative">
+              <div 
+                className={`aspect-[16/9] bg-gray-50 rounded-3xl overflow-hidden border border-gray-100 flex items-center justify-center relative ${formData.images[0] ? 'cursor-pointer hover:opacity-90 transition-opacity' : ''}`}
+                onClick={() => formData.images[0] && setFullScreenImage(formData.images[0])}
+              >
                 {formData.images[0] ? (
-                  <img src={formData.images[0]} className="w-full h-full object-cover" alt="Preview" />
+                  <img src={formData.images[0]} className="w-full h-full object-contain p-4" alt="Preview" />
                 ) : (
                   <div className="flex flex-col items-center gap-2 text-gray-300">
                     <ImageIcon size={32} strokeWidth={1} />
@@ -474,7 +489,13 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               {formData.images.filter((img: string) => img.trim() !== '').length > 1 && (
                 <div className="flex gap-2 mt-2 overflow-x-auto pb-2">
                   {formData.images.filter((img: string) => img.trim() !== '').slice(1).map((img: string, idx: number) => (
-                    <img key={idx} src={img} className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0" alt={`Thumb ${idx}`} />
+                    <img 
+                      key={idx} 
+                      src={img} 
+                      onClick={() => setFullScreenImage(img)}
+                      className="w-12 h-12 rounded-lg object-cover border border-gray-200 flex-shrink-0 cursor-pointer hover:opacity-80 transition-opacity" 
+                      alt={`Thumb ${idx}`} 
+                    />
                   ))}
                 </div>
               )}
@@ -497,6 +518,31 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
           </div>
         </form>
       </motion.div>
+
+      <AnimatePresence>
+        {fullScreenImage && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setFullScreenImage(null)}
+            className="fixed inset-0 z-[200] bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4"
+          >
+            <button 
+              onClick={() => setFullScreenImage(null)} 
+              className="absolute top-6 right-6 p-3 bg-white/10 hover:bg-white/20 text-white rounded-full transition-colors"
+            >
+              <X size={24} />
+            </button>
+            <img 
+              src={fullScreenImage} 
+              className="max-w-full max-h-[85vh] object-contain select-none" 
+              alt="Full screen preview" 
+              onClick={(e) => e.stopPropagation()}
+            />
+          </motion.div>
+        )}
+      </AnimatePresence>
     </div>
   );
 };
