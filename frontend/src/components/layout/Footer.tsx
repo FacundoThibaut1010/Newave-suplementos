@@ -77,7 +77,7 @@ const Footer = () => {
                     >
                       <ul className="pt-4 space-y-4 pl-4 border-l-2 border-gray-100 mt-2 font-bold text-xs uppercase tracking-widest text-gray-400">
                         <li>
-                          <a href="tel:+5491112345678" className="flex items-center gap-2 hover:text-[#CAA959] transition-colors">
+                          <a href="https://wa.me/5491165392403" target="_blank" rel="noreferrer" className="flex items-center gap-2 hover:text-[#CAA959] transition-colors">
                             <Phone size={14} /> WhatsApp
                           </a>
                         </li>

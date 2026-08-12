@@ -1,4 +1,9 @@
-const SENDER_EMAIL = process.env.SENDER_EMAIL || 'newavesuple2026@gmail.com';
+// Debe coincidir con un remitente validado en Brevo, si no la API rechaza el envío con 400.
+const SENDER_EMAIL = process.env.SENDER_EMAIL || 'newavesuplementos2026@gmail.com';
+
+// Casilla real que lee el equipo. El remitente de Brevo y esta dirección son distintas,
+// así que las respuestas de los clientes se redirigen acá.
+const REPLY_TO = { name: 'Newave', email: process.env.ADMIN_EMAIL || 'newavesuple2026@gmail.com' };
 
 export const sendOrderConfirmationEmail = async (order) => {
   try {
@@ -73,6 +78,7 @@ export const sendOrderConfirmationEmail = async (order) => {
           email: SENDER_EMAIL
         },
         to: [{ email: order.guestInfo.email, name: order.guestInfo.fullName }],
+        replyTo: REPLY_TO,
         subject: '¡Tu pedido de Newave está confirmado! 🌊',
         htmlContent: htmlContent
       })
@@ -144,7 +150,7 @@ export const sendNewOrderNotificationToSeller = async (order) => {
           name: 'Newave Store',
           email: SENDER_EMAIL
         },
-        to: [{ email: process.env.ADMIN_EMAIL || 'newavesuple2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
+        to: [{ email: process.env.ADMIN_EMAIL || 'newavesuplementos2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
         subject: '¡Nueva Venta en Newave! 💰',
         htmlContent: htmlContent
       })
@@ -216,6 +222,7 @@ export const sendOrderDispatchedEmail = async (order) => {
           email: SENDER_EMAIL
         },
         to: [{ email: order.guestInfo.email, name: order.guestInfo.fullName }],
+        replyTo: REPLY_TO,
         subject: '¡Tu pedido de Newave ya está en camino! 🚚',
         htmlContent: htmlContent
       })
@@ -289,6 +296,7 @@ export const sendOrderDeliveredEmail = async (order) => {
           email: SENDER_EMAIL
         },
         to: [{ email: order.guestInfo.email, name: order.guestInfo.fullName }],
+        replyTo: REPLY_TO,
         subject: '¡Tu paquete de Newave ha sido entregado! 🎉',
         htmlContent: htmlContent
       })
@@ -346,6 +354,7 @@ export const sendWelcomeEmail = async (user) => {
           email: SENDER_EMAIL
         },
         to: [{ email: user.email, name: user.name }],
+        replyTo: REPLY_TO,
         subject: '¡Bienvenido a Newave Suplementos! 💪',
         htmlContent: htmlContent
       })
@@ -398,6 +407,7 @@ export const sendVerificationEmail = async (email, code) => {
       body: JSON.stringify({
         sender: { name: 'Newave Store', email: SENDER_EMAIL },
         to: [{ email: email, name: 'Nuevo Usuario' }],
+        replyTo: REPLY_TO,
         subject: 'Código de verificación - Newave',
         htmlContent: htmlContent
       })
@@ -446,6 +456,7 @@ export const sendPasswordResetEmail = async (email, code) => {
       body: JSON.stringify({
         sender: { name: 'Newave Store', email: SENDER_EMAIL },
         to: [{ email: email, name: 'Usuario' }],
+        replyTo: REPLY_TO,
         subject: 'Recuperar Contraseña - Newave',
         htmlContent: htmlContent
       })
