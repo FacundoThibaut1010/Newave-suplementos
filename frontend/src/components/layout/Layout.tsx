@@ -20,7 +20,7 @@ const Layout = ({ children }: LayoutProps) => {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#0A0A0B] overflow-x-hidden">
+    <div className="min-h-screen flex flex-col bg-[#0A0A0B] overflow-x-clip">
       <TopBar />
       <Navbar />
       {/* <FloatingMenu /> */}

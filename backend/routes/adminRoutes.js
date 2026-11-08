@@ -172,15 +172,17 @@ router.post('/products', async (req, res) => {
 // Actualizar producto
 router.put('/products/:id', async (req, res) => {
   try {
-    const updatedProduct = await Product.findByIdAndUpdate(
-      req.params.id, 
-      req.body, 
-      { new: true, runValidators: true }
-    );
+    const product = await Product.findById(req.params.id);
+    if (!product) {
+      return res.status(404).json({ message: 'Producto no encontrado' });
+    }
+
+    Object.assign(product, req.body);
+    const updatedProduct = await product.save();
     res.json(updatedProduct);
   } catch (error) {
     console.error('❌ Error en PUT /products:', error.message);
-    res.status(400).json({ message: 'No pudimos actualizar el producto', error: error.message });
+    res.status(400).json({ message: error.message || 'No pudimos actualizar el producto', error: error.message });
   }
 });
 
@@ -361,7 +363,7 @@ router.get('/dashboard', async (req, res) => {
     allProducts.forEach(product => {
       if (product.variants && product.variants.length > 0) {
         product.variants.forEach(v => {
-            if (v.countInStock < 5) {
+            if (v.countInStock > 0 && v.countInStock < 5) {
               lowStockProducts.push({
                 _id: `${product._id}-${v.flavor}`,
                 name: `${product.name} - ${v.flavor}`,
@@ -372,7 +374,7 @@ router.get('/dashboard', async (req, res) => {
         });
       } else {
         // Revisar producto general
-        if (product.countInStock < 5) {
+        if (product.countInStock > 0 && product.countInStock < 5) {
           lowStockProducts.push({
             _id: product._id,
             name: product.name,

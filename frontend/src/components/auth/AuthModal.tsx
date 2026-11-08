@@ -70,8 +70,12 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
     setIsLoading(true);
     try {
-      await apiClient.post('/users/forgot-password', { email: resetEmail });
+      const { data } = await apiClient.post('/users/forgot-password', { email: resetEmail });
       toast.success('Código de recuperación enviado');
+      if (data?.devCode) {
+        toast.info(`Código Dev: ${data.devCode}`, { duration: 8000 });
+        setResetCode(data.devCode);
+      }
       setFrontView('forgot_code');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Error al enviar código');
@@ -130,8 +134,12 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
     setIsLoading(true);
     try {
-      await apiClient.post('/users/send-verification-code', { email: regEmail });
+      const { data } = await apiClient.post('/users/send-verification-code', { email: regEmail });
       toast.success('Código de verificación enviado');
+      if (data?.devCode) {
+        toast.info(`Código Dev: ${data.devCode}`, { duration: 8000 });
+        setVerificationCode(data.devCode);
+      }
       setStep('verification');
     } catch (error: any) {
       toast.error(error.response?.data?.message || 'Error al enviar código');

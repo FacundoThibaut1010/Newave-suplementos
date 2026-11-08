@@ -125,8 +125,8 @@ const Dashboard = () => {
                   <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover bg-white" />
                   <div className="flex-1">
                     <p className="text-sm font-black text-gray-800 leading-tight">{product.name}</p>
-                    <p className="text-[10px] font-black uppercase tracking-widest text-red-500 mt-1">
-                      {product.countInStock === 0 ? 'SIN STOCK' : `Solo ${product.countInStock} disponibles`}
+                    <p className="text-[10px] font-black uppercase tracking-widest text-amber-600 mt-1">
+                      {`Últimas ${product.countInStock} unidades disponibles`}
                     </p>
                   </div>
                 </div>

@@ -3,9 +3,9 @@ import { motion } from 'framer-motion';
 import { Lock, User, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
 
-// Define tus credenciales de acceso aquí:
-const ADMIN_USER = 'admin';
-const ADMIN_PASS = 'Agusnacho2123';
+// Credenciales de acceso administrativo (configurables vía variable de entorno)
+const ADMIN_USER = import.meta.env.VITE_ADMIN_USER || 'admin';
+const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS || 'admin';
 
 const Login = () => {
   const [username, setUsername] = useState('');

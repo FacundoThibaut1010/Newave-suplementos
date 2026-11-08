@@ -36,7 +36,10 @@ router.post('/send-verification-code', async (req, res) => {
 
     await sendVerificationEmail(email, code);
 
-    res.json({ message: 'Código enviado con éxito' });
+    res.json({
+      message: 'Código enviado con éxito',
+      devCode: process.env.NODE_ENV !== 'production' ? code : undefined
+    });
   } catch (error) {
     console.error('Error sending code:', error);
     res.status(500).json({ message: 'Error al enviar el código de verificación' });
@@ -199,7 +202,10 @@ router.post('/forgot-password', async (req, res) => {
 
     await sendPasswordResetEmail(email, code);
 
-    res.json({ message: 'Código de recuperación enviado con éxito' });
+    res.json({
+      message: 'Código de recuperación enviado con éxito',
+      devCode: process.env.NODE_ENV !== 'production' ? code : undefined
+    });
   } catch (error) {
     console.error('Error sending reset code:', error);
     res.status(500).json({ message: 'Error al enviar el código de recuperación' });

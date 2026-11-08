@@ -1,5 +1,5 @@
+import 'dotenv/config';
 import express from 'express';
-import dotenv from 'dotenv';
 import colors from 'colors';
 import cors from 'cors';
 import compression from 'compression';
@@ -9,10 +9,10 @@ import orderRoutes from './routes/orderRoutes.js';
 import adminRoutes from './routes/adminRoutes.js';
 import userRoutes from './routes/userRoutes.js';
 import uploadRoutes from './routes/uploadRoutes.js';
+import shippingRoutes from './routes/shippingRoutes.js';
+import paymentRoutes from './routes/paymentRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
 import path from 'path';
-
-dotenv.config();
 
 // Conectamos a la base de datos
 connectDB();
@@ -21,16 +21,18 @@ const app = express();
 
 // --- CONFIGURACIÓN DE CORS MULTI-ORIGEN ---
 const allowedOrigins = [
-  'http://localhost:5173', // Tu Tienda
-  'http://localhost:5174', // Tu Admin Dashboard
-  process.env.FRONTEND_URL, // URL de producción de la Tienda
-  process.env.ADMIN_URL     // URL de producción del Admin
-];
+  'http://localhost:5173',
+  'http://localhost:5174',
+  'http://localhost:5175',
+  'http://localhost:5176',
+  process.env.FRONTEND_URL,
+  process.env.ADMIN_URL
+].filter(Boolean);
 
 app.use(cors({
   origin: function (origin, callback) {
-    // Permitimos peticiones sin origen (como Postman) o si están en nuestra lista
-    if (!origin || allowedOrigins.indexOf(origin) !== -1) {
+    // Permitimos peticiones sin origen (como Postman) o si coinciden con localhost o lista permitida
+    if (!origin || allowedOrigins.indexOf(origin) !== -1 || /^http:\/\/localhost:\d+$/.test(origin)) {
       callback(null, true);
     } else {
       callback(new Error('Bloqueado por CORS: Este origen no tiene permiso.'));
@@ -55,6 +57,8 @@ app.use('/api/orders', orderRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
+app.use('/api/shipping', shippingRoutes);
+app.use('/api/payments', paymentRoutes);
 
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));

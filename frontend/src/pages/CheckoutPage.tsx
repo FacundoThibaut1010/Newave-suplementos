@@ -1,3 +1,4 @@
+
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -10,6 +11,9 @@ import { useState, useEffect } from 'react';
 import apiClient from '../api/apiClient';
 import AuthModal from '../components/auth/AuthModal';
 import { toast } from 'sonner';
+import { useShippingQuote } from '../hooks/useShippingQuote';
+import type { Rate } from '../types/shipping';
+import CardPaymentSection from '../components/checkout/CardPaymentSection';
 
 const checkoutSchema = z.object({
   fullName: z.string().min(3, { message: 'Nombre requerido' }),
@@ -74,11 +78,27 @@ const CheckoutPage = () => {
   const [isSuccess, setIsSuccess] = useState(false);
   const [isAuthModalOpen, setIsAuthModalOpen] = useState(false);
 
+  // Estado para la opción de envío seleccionada
+  const [selectedShipping, setSelectedShipping] = useState<Rate | null>(null);
+
+  // Modo de pago: tarjeta dentro de la web (Brick) o redirección a Mercado Pago (Checkout Pro)
+  const [paymentMode, setPaymentMode] = useState<'card' | 'mercadopago'>('card');
+
+  // Hook personalizado para obtener la cotización de envíos de Correo Argentino
+  const {
+    loading: shippingLoading,
+    error: shippingError,
+    homeOptions,
+    branchOptions,
+    fetchQuote,
+    clearQuote
+  } = useShippingQuote(items);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
 
-  const { register, handleSubmit, setValue, formState: { errors, isValid } } = useForm<CheckoutFormData>({
+  const { register, handleSubmit, setValue, watch, formState: { errors, isValid } } = useForm<CheckoutFormData>({
     resolver: zodResolver(checkoutSchema),
     mode: 'onChange',
     defaultValues: {
@@ -92,6 +112,18 @@ const CheckoutPage = () => {
     }
   });
 
+  const postalCode = watch('postalCode');
+
+  // Efecto reactivo para disparar la cotización de envíos al escribir el código postal
+  useEffect(() => {
+    setSelectedShipping(null); // Limpiar selección previa cuando cambia el CP
+    if (postalCode && postalCode.trim().length >= 4) {
+      fetchQuote(postalCode.trim());
+    } else {
+      clearQuote();
+    }
+  }, [postalCode, fetchQuote, clearQuote]);
+
   useEffect(() => {
     if (user) {
       setValue('email', user.email || '');
@@ -104,28 +136,9 @@ const CheckoutPage = () => {
     }
   }, [user, setValue]);
 
-  // Base de datos de prueba para códigos postales
-  const cpDatabase: Record<string, { city: string; state: string }> = {
-    '1714': { city: 'Ituzaingó', state: 'Buenos Aires' },
-    '1708': { city: 'Morón', state: 'Buenos Aires' },
-    '1704': { city: 'Ramos Mejía', state: 'Buenos Aires' },
-    '1706': { city: 'Haedo', state: 'Buenos Aires' },
-    '1712': { city: 'Castelar', state: 'Buenos Aires' },
-    '1722': { city: 'Merlo', state: 'Buenos Aires' },
-    '1425': { city: 'Palermo', state: 'CABA' },
-    '1414': { city: 'Villa Crespo', state: 'CABA' },
-    // Puedes agregar más aquí o conectarlo a una API
-  };
-
   const handlePostalCodeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const cp = e.target.value;
     setValue('postalCode', cp, { shouldValidate: true });
-
-    if (cpDatabase[cp]) {
-      setValue('city', cpDatabase[cp].city, { shouldValidate: true });
-      setValue('state', cpDatabase[cp].state, { shouldValidate: true });
-      toast.success(`Ubicación detectada: ${cpDatabase[cp].city}`);
-    }
   };
 
   const onFormError = (errors: any) => {
@@ -134,6 +147,12 @@ const CheckoutPage = () => {
   };
 
   const onSubmit = async (data: CheckoutFormData) => {
+    // Validar que se haya seleccionado un método de envío si hay código postal ingresado
+    if (postalCode && postalCode.trim().length >= 4 && !selectedShipping) {
+      toast.error('Por favor, selecciona una opción de envío para continuar.');
+      return;
+    }
+
     setIsSubmitting(true);
 
     try {
@@ -142,7 +161,7 @@ const CheckoutPage = () => {
           const isVariant = item.id.includes('-');
           const productId = isVariant ? item.id.split('-')[0] : item.id;
           const variantFlavor = isVariant ? item.id.split('-').slice(1).join('-') : undefined;
-          
+
           return {
             product: productId,
             variant: variantFlavor,
@@ -163,8 +182,12 @@ const CheckoutPage = () => {
           postalCode: data.postalCode,
           state: data.state,
           addressLine2: data.addressLine2
+            ? `${data.addressLine2} - Envío: ${selectedShipping?.productName}`
+            : (selectedShipping ? `Envío: ${selectedShipping.productName}` : undefined)
         },
-        totalPrice: totalPrice(),
+        shippingPrice: selectedShipping ? selectedShipping.price : 0,
+        shippingOption: selectedShipping || undefined,
+        totalPrice: totalPrice() + (selectedShipping ? selectedShipping.price : 0),
         paymentMethod: 'Mercado Pago',
         user: user?._id
       };
@@ -226,7 +249,7 @@ const CheckoutPage = () => {
             <div className="lg:col-span-7 bg-white rounded-[2rem] md:rounded-[3.5rem] p-6 md:p-10 shadow-sm border border-gray-100 w-full overflow-hidden">
               <h1 className="text-3xl md:text-5xl font-black uppercase italic tracking-tighter mb-10 md:mb-14 text-center md:text-left">Finalizar compra</h1>
 
-              <form onSubmit={handleSubmit(onSubmit, onFormError)} className="space-y-16" noValidate>
+              <form onSubmit={handleSubmit(onSubmit, onFormError)} className="space-y-16" noValidate autoComplete="off">
 
                 {/* 01. DATOS PERSONALES */}
                 <section className="space-y-8">
@@ -359,37 +382,206 @@ const CheckoutPage = () => {
                       {errors.state && <span className="text-red-500 text-xs mt-1 block font-bold">{errors.state.message}</span>}
                     </div>
 
-
-
-                  </div>
-                </section>
-
-                <section className="space-y-8">
-                  <div className="flex items-center gap-3">
-                    <Wallet size={26} className="text-black-300" />
-                    <h3 className="text-[14px] font-black uppercase tracking-[0.2em] text-black-400">3. Pago</h3>
                   </div>
 
-                  <div className="w-full">
-                    {/* MERCADO PAGO CON ABANICO */}
-                    <div className="p-10 rounded-[3rem] border-2 border-[#009EE3] bg-blue-50/40 shadow-xl shadow-blue-100 flex flex-col items-center gap-4">
-                      <img src="/mercadopago.BK20nVmQ.svg" alt="MP" className="h-10 object-contain" />
-                      <span className="text-[10px] font-black uppercase tracking-widest text-[#009EE3] text-center">Mercado pago</span>
-                      <span className="text-[8px] font-black uppercase tracking-widest text-[#009EE3] text-center">Paga con Mercado Pago de forma 100% segura</span>
-                      <CardHoverStack />
+                  {/* SECCIÓN DE ENVÍOS */}
+                  {(postalCode && postalCode.trim().length >= 4) && (
+                    <div className="mt-12 border-t pt-8 border-gray-100 space-y-6">
+                      <div className="flex items-center gap-3">
+                        <Truck size={20} className="text-black" />
+                        <h4 className="text-xs font-black uppercase tracking-widest text-black">Envío a domicilio</h4>
+                      </div>
+
+                      {shippingLoading && (
+                        <div className="p-8 rounded-[2rem] bg-gray-50 border border-gray-100 flex flex-col items-center justify-center gap-3">
+                          <div className="w-8 h-8 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+                          <p className="text-xs font-black uppercase tracking-widest text-gray-400">Calculando costos de envío...</p>
+                        </div>
+                      )}
+
+                      {/* Opciones de Envío */}
+
+                      {!shippingLoading && (
+                        <div className="space-y-6">
+                          {/* Opciones a Domicilio (Clásico / Fast) */}
+                          {homeOptions.length > 0 && (
+                            <div className="grid sm:grid-cols-2 gap-4">
+                              {homeOptions.map((option) => {
+                                const isFast = option.productType === 'EP' || option.productName.toLowerCase().includes('expreso');
+                                const displayTitle = isFast ? 'Envío Fast' : 'Envío clásico';
+                                const isSelected = selectedShipping?.productName === option.productName && selectedShipping?.deliveredType === option.deliveredType;
+
+                                return (
+                                  <button
+                                    type="button"
+                                    key={`${option.productName}-${option.deliveredType}`}
+                                    onClick={() => setSelectedShipping(option)}
+                                    className={`p-6 rounded-[2rem] text-left border-2 transition-all flex flex-col justify-between h-36 ${isSelected ? 'border-black bg-gray-50 shadow-md scale-[1.01]' : 'border-gray-100 hover:border-gray-300 bg-white'
+                                      }`}
+                                  >
+                                    <div className="w-full">
+                                      <div className="flex justify-between items-start w-full">
+                                        <div className="flex flex-col">
+                                          <span className="text-sm font-black uppercase italic leading-tight text-black">{displayTitle}</span>
+                                          <span className="text-[10px] text-gray-400 font-bold uppercase mt-0.5">Correo Argentino</span>
+                                        </div>
+                                        {isSelected && <CheckCircle2 size={18} className="text-black flex-shrink-0" />}
+                                      </div>
+                                      <p className="text-[10px] font-bold text-gray-500 uppercase mt-2">
+                                        Llega en {option.deliveryTimeMin === option.deliveryTimeMax ? option.deliveryTimeMin : `${option.deliveryTimeMin} a ${option.deliveryTimeMax}`} días hábiles
+                                      </p>
+                                    </div>
+                                    <div className="text-lg font-black italic tracking-tighter mt-4">${option.price.toLocaleString('es-AR')}</div>
+                                  </button>
+                                );
+                              })}
+                            </div>
+                          )}
+
+                          {/* Retiro en Sucursal / Local (En negro, una sola opción, $0 gratis) */}
+                          <div className="pt-2">
+                            <button
+                              type="button"
+                              onClick={() => setSelectedShipping({
+                                productName: 'Retiro en Sucursal (Gratis)',
+                                price: 0,
+                                deliveredType: 'S',
+                                productType: 'RETIRO',
+                                deliveryTimeMin: '1',
+                                deliveryTimeMax: '2'
+                              })}
+                              className={`w-full p-6 rounded-[2rem] text-left transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-2 ${selectedShipping?.deliveredType === 'S'
+                                ? 'bg-black text-white border-black shadow-xl ring-2 ring-black/20 scale-[1.01]'
+                                : 'bg-[#121214] text-white border-neutral-800 hover:bg-black hover:border-black'
+                                }`}
+                            >
+                              <div className="flex items-start gap-4">
+                                <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
+                                  <MapPin size={20} className="text-[#CAA959]" />
+                                </div>
+                                <div>
+                                  <div className="flex items-center gap-2">
+                                    <span className="text-sm font-black uppercase italic tracking-wide text-white">Retiro en Sucursal</span>
+                                    <span className="bg-[#CAA959] text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
+                                      Gratis
+                                    </span>
+                                  </div>
+                                  <p className="text-xs text-gray-300 font-medium mt-1">
+                                    Punto de entrega en Ituzaingó • Listo para retirar en 24hs hábiles
+                                  </p>
+                                  <p className="text-[10px] text-gray-400 mt-0.5">
+                                    Al confirmar la compra recibirás un email con la dirección exacta e indicaciones para retirar.
+                                  </p>
+                                </div>
+                              </div>
+                              <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
+                                <span className="text-xl font-black italic tracking-tighter text-[#CAA959]">GRATIS</span>
+                                <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${selectedShipping?.deliveredType === 'S' ? 'bg-[#CAA959] text-black border-[#CAA959]' : 'border-gray-500'
+                                  }`}>
+                                  {selectedShipping?.deliveredType === 'S' && <CheckCircle2 size={16} />}
+                                </div>
+                              </div>
+                            </button>
+                          </div>
+                        </div>
+                      )}
                     </div>
-                  </div>
+                  )}
                 </section>
 
-                <button disabled={isSubmitting} type="submit"
-                  className="w-full py-8 rounded-full text-[11px] font-black uppercase tracking-[0.4em] transition-all shadow-2xl bg-[#009EE3] text-white hover:scale-[1.01]">
-                  {isSubmitting ? "Procesando..." : `Pagar con Mercado Pago $${totalPrice().toLocaleString('es-AR')}`}
-                </button>
+                {/* 03. PAGO */}
+                <section className="space-y-6">
+                  <div className="flex items-center gap-3">
+                    <Wallet size={26} className="text-black" />
+                    <h3 className="text-[14px] font-black uppercase tracking-[0.2em] text-black-400">3. Método de Pago</h3>
+                  </div>
+
+                  {/* Selector entre Card Payment Brick y Checkout Pro */}
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 p-1.5 bg-[#F4F4F5] rounded-2xl border border-gray-200">
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMode('card')}
+                      className={`py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2.5 ${paymentMode === 'card'
+                        ? 'bg-black text-white shadow-md'
+                        : 'text-gray-500 hover:text-black bg-transparent'
+                        }`}
+                    >
+                      <CreditCard size={18} />
+                      <span>Pagar con tarjeta acá</span>
+                    </button>
+                    <button
+                      type="button"
+                      onClick={() => setPaymentMode('mercadopago')}
+                      className={`py-3.5 px-4 rounded-xl text-xs font-black uppercase tracking-wider transition-all flex items-center justify-center gap-2.5 ${paymentMode === 'mercadopago'
+                        ? 'bg-[#009EE3] text-white shadow-md'
+                        : 'text-gray-500 hover:text-black bg-transparent'
+                        }`}
+                    >
+                      <div className="w-6 h-4 bg-white rounded flex items-center justify-center p-0.5 shadow-sm shrink-0">
+                        <img
+                          src="/mercadopago.BK20nVmQ.svg"
+                          alt="Mercado Pago"
+                          className="h-full w-full object-contain"
+                        />
+                      </div>
+                      <span>Pagar con Mercado Pago</span>
+                    </button>
+                  </div>
+
+                  {/* OPCIÓN 1: CARD PAYMENT BRICK (DENTRO DE LA WEB) */}
+                  {paymentMode === 'card' && (
+                    <div className="pt-2">
+                      <CardPaymentSection
+                        amount={totalPrice() + (selectedShipping ? selectedShipping.price : 0)}
+                        payerEmail={watch('email')}
+                        orderItems={items}
+                        guestInfo={{
+                          fullName: watch('fullName'),
+                          email: watch('email'),
+                          phone: watch('phone'),
+                        }}
+                        shippingAddress={{
+                          address: watch('address'),
+                          city: watch('city'),
+                          state: watch('state'),
+                          postalCode: watch('postalCode'),
+                          addressLine2: watch('addressLine2'),
+                        }}
+                        shippingOption={selectedShipping}
+                        userId={user?._id}
+                      />
+                    </div>
+                  )}
+
+                  {/* OPCIÓN 2: CHECKOUT PRO (REDIRECCIÓN A MERCADO PAGO) */}
+                  {paymentMode === 'mercadopago' && (
+                    <div className="space-y-6 pt-2">
+                      <div className="p-10 rounded-[3rem] border-2 border-[#009EE3] bg-blue-50/40 shadow-xl shadow-blue-100 flex flex-col items-center gap-4">
+                        <div className="w-16 h-10 bg-white rounded-xl flex items-center justify-center p-1.5 shadow-md border border-blue-100">
+                          <img src="/mercadopago.BK20nVmQ.svg" alt="Mercado Pago" className="h-full w-full object-contain" />
+                        </div>
+                        <span className="text-[11px] font-black uppercase tracking-widest text-[#009EE3] text-center">Checkout Pro</span>
+                        <span className="text-[9px] font-bold text-gray-500 text-center max-w-sm">Paga en la plataforma de Mercado Pago con dinero en cuenta, tarjetas o débito</span>
+                        <CardHoverStack />
+                      </div>
+
+                      <button
+                        disabled={isSubmitting}
+                        type="submit"
+                        className="w-full py-8 rounded-full text-[11px] font-black uppercase tracking-[0.4em] transition-all shadow-2xl bg-[#009EE3] text-white hover:scale-[1.01]"
+                      >
+                        {isSubmitting
+                          ? "Procesando..."
+                          : `Pagar con Mercado Pago $${(totalPrice() + (selectedShipping ? selectedShipping.price : 0)).toLocaleString('es-AR')}`}
+                      </button>
+                    </div>
+                  )}
+                </section>
               </form>
             </div>
 
             {/* COLUMNA DERECHA: RESUMEN STICKY SIEMPRE VISIBLE */}
-            <div className="lg:col-span-5 sticky top-32 w-full">
+            <div className="lg:col-span-5 lg:sticky lg:top-28 w-full self-start transition-all duration-300">
               <div className="bg-white rounded-[2rem] md:rounded-[3.5rem] p-6 md:p-10 shadow-lg border border-gray-100">
                 <h3 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter mb-8 border-b-2 border-gray-50 pb-6 text-center">Tu Pedido</h3>
                 <div className="space-y-4">
@@ -411,9 +603,25 @@ const CheckoutPage = () => {
                     </div>
                   ))}
                 </div>
-                <div className="pt-8 border-t-2 border-dashed border-gray-100 mt-8 flex justify-between items-center px-2">
-                  <span className="text-xl md:text-3xl font-black uppercase italic tracking-tighter">TOTAL</span>
-                  <span className="text-2xl md:text-3xl font-black italic tracking-tighter">${totalPrice().toLocaleString('es-AR')}</span>
+                <div className="pt-6 border-t border-gray-100 mt-6 space-y-3 px-2">
+                  <div className="flex justify-between items-center text-sm font-bold text-gray-500">
+                    <span>Subtotal</span>
+                    <span>${totalPrice().toLocaleString('es-AR')}</span>
+                  </div>
+                  {selectedShipping && (
+                    <div className="flex justify-between items-center text-sm font-bold text-gray-500">
+                      <span>Envío ({selectedShipping.productName})</span>
+                      <span className={selectedShipping.price === 0 ? "text-emerald-600 font-black uppercase" : "text-black"}>
+                        {selectedShipping.price === 0 ? "GRATIS" : `$${selectedShipping.price.toLocaleString('es-AR')}`}
+                      </span>
+                    </div>
+                  )}
+                  <div className="pt-4 border-t-2 border-dashed border-gray-100 flex justify-between items-center">
+                    <span className="text-xl md:text-3xl font-black uppercase italic tracking-tighter">TOTAL</span>
+                    <span className="text-2xl md:text-3xl font-black italic tracking-tighter">
+                      ${(totalPrice() + (selectedShipping ? selectedShipping.price : 0)).toLocaleString('es-AR')}
+                    </span>
+                  </div>
                 </div>
               </div>
             </div>

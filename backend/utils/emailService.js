@@ -51,12 +51,27 @@ export const sendOrderConfirmationEmail = async (order) => {
           </tfoot>
         </table>
 
-        <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Datos de Entrega</h3>
-        <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; color: #555; line-height: 1.6;">
-          <strong>${order.guestInfo.fullName}</strong><br>
-          ${order.shippingAddress.address} ${order.shippingAddress.addressLine2 ? `(${order.shippingAddress.addressLine2})` : ''}<br>
-          ${order.shippingAddress.city}, ${order.shippingAddress.state} CP: ${order.shippingAddress.postalCode}
-        </div>
+        ${(order.shippingPrice === 0 || String(order.shippingAddress?.addressLine2).toLowerCase().includes('retiro') || String(order.shippingAddress?.addressLine2).toLowerCase().includes('sucursal')) ? `
+          <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">📍 Retiro en Sucursal / Local</h3>
+          <div style="background: #111113; color: #ffffff; padding: 20px; border-radius: 14px; line-height: 1.6; border: 1px solid #333;">
+            <p style="margin: 0 0 10px 0; color: #CAA959; font-weight: bold; font-size: 15px; text-transform: uppercase;">
+              ¡Tu pedido estará listo para retirar en nuestro punto oficial!
+            </p>
+            <div style="background: rgba(255,255,255,0.06); padding: 14px; border-radius: 10px; font-size: 13px; color: #eee; line-height: 1.6;">
+              <strong style="color: #CAA959;">Lugar:</strong> Showroom / Local Newave<br>
+              <strong>Dirección de retiro:</strong> José María Paz 1714, Ituzaingó, Provincia de Buenos Aires (CP 1714)<br>
+              <strong>Horarios de atención:</strong> Lunes a Viernes de 10:00 a 19:00 hs | Sábados de 10:00 a 14:00 hs<br>
+              <strong>Requisitos:</strong> Presentar DNI del comprador y número de orden <strong>#${order._id.toString().slice(-6).toUpperCase()}</strong>.
+            </div>
+          </div>
+        ` : `
+          <h3 style="color: #202A36; text-transform: uppercase; font-size: 14px; letter-spacing: 1px;">Datos de Entrega a Domicilio</h3>
+          <div style="background: #F9F9F9; padding: 15px; border-radius: 12px; color: #555; line-height: 1.6;">
+            <strong>${order.guestInfo.fullName}</strong><br>
+            ${order.shippingAddress.address} ${order.shippingAddress.addressLine2 ? `(${order.shippingAddress.addressLine2})` : ''}<br>
+            ${order.shippingAddress.city}, ${order.shippingAddress.state} CP: ${order.shippingAddress.postalCode}
+          </div>
+        `}
 
         <div style="text-align: center; margin-top: 40px; color: #aaa; font-size: 12px;">
           <p>Si tienes alguna pregunta, responde a este correo.</p>
@@ -373,6 +388,12 @@ export const sendWelcomeEmail = async (user) => {
 };
 
 export const sendVerificationEmail = async (email, code) => {
+  console.log(`\n========================================`);
+  console.log(`🔑 CÓDIGO DE VERIFICACIÓN (Registro)`);
+  console.log(`📧 Destinatario: ${email}`);
+  console.log(`🔢 Código: ${code}`);
+  console.log(`========================================\n`);
+
   try {
     if (!process.env.BREVO_API_KEY) {
       console.warn('⚠️ BREVO_API_KEY no configurada. Código simulado para', email, ':', code);
@@ -413,15 +434,29 @@ export const sendVerificationEmail = async (email, code) => {
       })
     });
 
-    if (!response.ok) throw new Error(await response.text());
-    console.log(`✉️ Email de verificación enviado a ${email}`);
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('❌ Brevo API rechazó el envío de verificación:', errText);
+      throw new Error(errText);
+    }
+    console.log(`✉️ Email de verificación enviado a ${email} vía Brevo`);
   } catch (error) {
     console.error('❌ Error enviando email de verificación:', error.message);
-    throw new Error('No se pudo enviar el correo de verificación');
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('No se pudo enviar el correo de verificación');
+    } else {
+      console.warn('⚠️ En modo desarrollo se permite continuar con el código de consola.');
+    }
   }
 };
 
 export const sendPasswordResetEmail = async (email, code) => {
+  console.log(`\n========================================`);
+  console.log(`🔑 CÓDIGO DE RECUPERACIÓN (Password Reset)`);
+  console.log(`📧 Destinatario: ${email}`);
+  console.log(`🔢 Código: ${code}`);
+  console.log(`========================================\n`);
+
   try {
     if (!process.env.BREVO_API_KEY) {
       console.warn('⚠️ BREVO_API_KEY no configurada. Código de reseteo simulado para', email, ':', code);
@@ -462,11 +497,19 @@ export const sendPasswordResetEmail = async (email, code) => {
       })
     });
 
-    if (!response.ok) throw new Error(await response.text());
-    console.log(`✉️ Email de recuperación enviado a ${email}`);
+    if (!response.ok) {
+      const errText = await response.text();
+      console.error('❌ Brevo API rechazó el envío de recuperación:', errText);
+      throw new Error(errText);
+    }
+    console.log(`✉️ Email de recuperación enviado a ${email} vía Brevo`);
   } catch (error) {
     console.error('❌ Error enviando email de recuperación:', error.message);
-    throw new Error('No se pudo enviar el correo de recuperación');
+    if (process.env.NODE_ENV === 'production') {
+      throw new Error('No se pudo enviar el correo de recuperación');
+    } else {
+      console.warn('⚠️ En modo desarrollo se permite continuar con el código de consola.');
+    }
   }
 };
 

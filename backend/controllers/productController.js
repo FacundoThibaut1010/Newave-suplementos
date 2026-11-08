@@ -6,7 +6,8 @@ import Product from '../models/Product.js';
 export const getProducts = async (req, res) => {
   try {
     const { category, search } = req.query;
-    const query = {};
+    // Solo mostrar productos activos en la tienda pública
+    const query = { isActive: { $ne: false } };
     if (category) query.category = category;
     if (search) {
       query.$or = [
@@ -59,14 +60,14 @@ export const getProductById = async (req, res) => {
   try {
     const product = await Product.findById(req.params.id).populate('category', 'name');
     
-    if (product) {
+    if (product && product.isActive !== false) {
       res.json({
         message: '¡Excelente elección! Aquí tienes los detalles del producto ✨',
         product
       });
     } else {
       res.status(404);
-      throw new Error('¡Uy! No pudimos encontrar ese producto. Puede que ya no esté disponible 💔');
+      throw new Error('¡Uy! No pudimos encontrar ese producto. Puede que ya no esté disponible o esté inactivo 💔');
     }
   } catch (error) {
     if (error.kind === 'ObjectId') {

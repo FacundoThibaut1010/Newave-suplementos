@@ -27,6 +27,11 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
     images: initialData?.images?.length ? initialData.images : (initialData?.image ? [initialData.image] : ['']),
     category: initialData?.category || '',
     weight: initialData?.weight || '',
+    weightInGrams: initialData?.weightInGrams ?? 500,
+    height: initialData?.height ?? 15,
+    width: initialData?.width ?? 15,
+    length: initialData?.length ?? 15,
+    isActive: initialData?.isActive !== undefined ? initialData.isActive : true,
     servings: initialData?.servings || '',
     displaySection: initialData?.displaySection || 'Producto',
     variants: initialData?.variants || []
@@ -160,22 +165,58 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
       return;
     }
 
+    const totalStock = (formData.variants && formData.variants.length > 0)
+      ? formData.variants.reduce((acc: number, v: any) => acc + (Number(v.countInStock) || 0), 0)
+      : (Number(formData.countInStock) || 0);
+
+    const weightGrams = Number(formData.weightInGrams) || 0;
+    const heightCm = Number(formData.height) || 0;
+    const widthCm = Number(formData.width) || 0;
+    const lengthCm = Number(formData.length) || 0;
+    const sumSides = heightCm + widthCm + lengthCm;
+
+    if (formData.isActive) {
+      if (totalStock <= 0) {
+        toast.error('No se puede activar el producto sin stock disponible.');
+        return;
+      }
+      if (weightGrams < 1 || weightGrams > 50000) {
+        toast.error('El peso debe estar entre 1g y 50.000g para poder activar el producto.');
+        return;
+      }
+      if (heightCm < 1 || heightCm > 200 || widthCm < 1 || widthCm > 200 || lengthCm < 1 || lengthCm > 200) {
+        toast.error('Cada dimensión (alto, ancho, largo) debe medir entre 1cm y 200cm.');
+        return;
+      }
+      if (sumSides > 300) {
+        toast.error(`La sumatoria de los lados (${sumSides}cm) no puede superar 300cm (normativa Correo Argentino).`);
+        return;
+      }
+    }
+
     setIsSubmitting(true);
+    let success = false;
     try {
       // Construimos el payload exacto para el Backend
       const payload = {
         name: formData.name,
-        price: Number(String(formData.price).replace(/\./g, '')),
-        oldPrice: formData.oldPrice ? Number(String(formData.oldPrice).replace(/\./g, '')) : 0,
+        price: Number(String(formData.price).replace(/\D/g, '')),
+        oldPrice: formData.oldPrice ? Number(String(formData.oldPrice).replace(/\D/g, '')) : 0,
         countInStock: Number(formData.countInStock) || 0,
         description: formData.description || 'Nueva pieza de la colección.',
         weight: formData.weight,
+        weightInGrams: weightGrams,
+        height: heightCm,
+        width: widthCm,
+        length: lengthCm,
+        isActive: formData.isActive,
+        hasCustomDimensions: true,
         servings: formData.servings,
         images: validImages, // El modelo espera un array
         brand: 'Genérica',
         category: formData.displaySection === 'Combo' ? formData.category : (formData.category || 'Proteína'),
         displaySection: formData.displaySection,
-        variants: formData.variants.filter((v: any) => v.flavor.trim() !== '')
+        variants: (formData.variants || []).filter((v: any) => v && typeof v.flavor === 'string' && v.flavor.trim() !== '')
       };
 
       if (initialData) {
@@ -186,13 +227,16 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         toast.success('¡Hecho! El producto ya está en línea.');
       }
 
-      onSuccess();
-      onClose();
+      success = true;
     } catch (err: any) {
       const errorMsg = err.response?.data?.message || 'Error al conectar 🔄';
       toast.error(errorMsg);
-    } finally {
       setIsSubmitting(false);
+    }
+
+    if (success) {
+      onSuccess();
+      onClose();
     }
   };
 
@@ -237,9 +281,9 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               />
             </div>
 
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio ($)</label>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 items-end">
+              <div className="flex flex-col justify-end">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1 min-h-[22px] flex items-end">Precio ($)</label>
                 <input
                   type="text"
                   value={formData.price}
@@ -251,8 +295,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                 />
               </div>
-              <div>
-                <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Precio Anterior</label>
+              <div className="flex flex-col justify-end">
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1 min-h-[22px] flex items-end">Precio Anterior</label>
                 <input
                   type="text"
                   value={formData.oldPrice}
@@ -266,8 +310,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 />
               </div>
               {(!formData.variants || formData.variants.length === 0) && (
-                <div>
-                  <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1">Stock General</label>
+                <div className="flex flex-col justify-end">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1 min-h-[22px] flex items-end">Stock General</label>
                   <input
                     type="number"
                     value={formData.countInStock}
@@ -280,7 +324,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="flex flex-col justify-end">
-                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1 min-h-[20px] flex items-end">Gramaje / Peso</label>
+                <label className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2 ml-1 min-h-[20px] flex items-end">Gramaje Comercial (etiqueta)</label>
                 <input
                   type="text"
                   value={formData.weight}
@@ -298,6 +342,101 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-bold !text-black placeholder:text-gray-400 focus:outline-none focus:ring-2 focus:ring-black/5"
                   placeholder="Ej: 30 servicios"
                 />
+              </div>
+            </div>
+
+            {/* Estado del Producto */}
+            <div className="p-4 rounded-2xl bg-gray-50 border border-gray-100 flex items-center justify-between">
+              <div>
+                <span className="text-xs font-black uppercase tracking-wider text-black block">Estado del Producto</span>
+                <span className="text-[11px] text-gray-400 font-medium">
+                  {formData.isActive ? 'Visible en tienda y habilitado para compras' : 'Oculto en tienda y compras deshabilitadas'}
+                </span>
+              </div>
+              <button
+                type="button"
+                onClick={() => setFormData(prev => ({ ...prev, isActive: !prev.isActive }))}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                  formData.isActive ? 'bg-emerald-500' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    formData.isActive ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* Medidas y Peso para Correo Argentino */}
+            <div className="p-5 rounded-2xl bg-[#FBFBFA] border border-gray-200 space-y-4">
+              <div className="flex items-center justify-between">
+                <span className="text-xs font-black uppercase tracking-wider text-black flex items-center gap-1.5">
+                  📦 Logística y Cotización (Correo Argentino)
+                </span>
+              </div>
+
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3 items-end">
+                <div className="flex flex-col justify-end">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5 min-h-[24px] flex items-end">
+                    Peso (g) *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="50000"
+                    value={formData.weightInGrams}
+                    onChange={(e) => setFormData({ ...formData, weightInGrams: Number(e.target.value) })}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-black"
+                    placeholder="500"
+                  />
+                  <span className="text-[9px] text-gray-400 mt-1 block">1g a 50kg</span>
+                </div>
+                <div className="flex flex-col justify-end">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5 min-h-[24px] flex items-end">
+                    Alto (cm) *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="200"
+                    value={formData.height}
+                    onChange={(e) => setFormData({ ...formData, height: Number(e.target.value) })}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-black"
+                    placeholder="15"
+                  />
+                  <span className="text-[9px] text-gray-400 mt-1 block">Máx 200cm</span>
+                </div>
+                <div className="flex flex-col justify-end">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5 min-h-[24px] flex items-end">
+                    Ancho (cm) *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="200"
+                    value={formData.width}
+                    onChange={(e) => setFormData({ ...formData, width: Number(e.target.value) })}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-black"
+                    placeholder="15"
+                  />
+                  <span className="text-[9px] text-gray-400 mt-1 block">Máx 200cm</span>
+                </div>
+                <div className="flex flex-col justify-end">
+                  <label className="text-[10px] font-black uppercase tracking-widest text-gray-500 mb-1.5 min-h-[24px] flex items-end">
+                    Largo (cm) *
+                  </label>
+                  <input
+                    type="number"
+                    min="1"
+                    max="200"
+                    value={formData.length}
+                    onChange={(e) => setFormData({ ...formData, length: Number(e.target.value) })}
+                    className="w-full bg-white border border-gray-200 rounded-xl px-3 py-2.5 text-xs font-bold text-black"
+                    placeholder="15"
+                  />
+                  <span className="text-[9px] text-gray-400 mt-1 block">Máx 200cm</span>
+                </div>
               </div>
             </div>
 
@@ -508,11 +647,13 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
               disabled={isSubmitting}
               className="w-full btn-admin-primary justify-center shadow-black/10 py-5 text-lg"
             >
-              {isSubmitting ? 'Guardando...' : (
-                <>
+              {isSubmitting ? (
+                <span>Guardando...</span>
+              ) : (
+                <span className="flex items-center gap-2">
                   <Save size={20} />
-                  {initialData ? 'Guardar Cambios' : 'Lanzar Producto'}
-                </>
+                  <span>{initialData ? 'Guardar Cambios' : 'Lanzar Producto'}</span>
+                </span>
               )}
             </button>
           </div>

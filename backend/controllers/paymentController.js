@@ -2,6 +2,7 @@ import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import { sendOrderConfirmationEmail, sendNewOrderNotificationToSeller } from '../utils/emailService.js';
+import correoArgentinoService from '../services/correoArgentinoService.js';
 import dotenv from 'dotenv';
 dotenv.config(); // Cargar variables de entorno AHORA para asegurar que el token exista
 
@@ -12,40 +13,149 @@ const client = new MercadoPagoConfig({
 
 // @desc    Crear preferencia de pago y guardar orden inicial
 // @route   POST /api/orders/create_preference
+// @desc    Crear preferencia de pago y guardar orden inicial
+// @route   POST /api/orders/create_preference
 // @access  Public (Guest) o Private
 export const createPreference = async (req, res) => {
   try {
-    const { orderItems, guestInfo, shippingAddress, totalPrice, user } = req.body;
+    const { orderItems, guestInfo, shippingAddress, shippingPrice, shippingOption, user } = req.body;
 
     if (!orderItems || orderItems.length === 0) {
       return res.status(400).json({ message: 'El carrito está vacío' });
     }
 
-    // 1. Guardar la orden en la BD con estado "isPaid: false"
+    // 1. Validar productos en la Base de Datos, verificar que estén ACTIVOS y calcular precios reales
+    const verifiedOrderItems = [];
+    const itemsForShipping = [];
+    let calculatedSubtotal = 0;
+
+    for (const item of orderItems) {
+      const rawId = item.product || item.id || item._id;
+      const productId = typeof rawId === 'string' && rawId.includes('-') ? rawId.split('-')[0] : rawId;
+      const product = await Product.findById(productId);
+
+      if (!product) {
+        return res.status(404).json({ message: `El producto "${item.name}" ya no existe en el catálogo.` });
+      }
+
+      if (product.isActive === false) {
+        return res.status(400).json({
+          message: `El producto "${product.name}" está inactivo y no se puede comprar.`
+        });
+      }
+
+      const qty = Math.max(1, Number(item.qty || item.quantity) || 1);
+
+      // Verificar stock
+      if (item.variant && product.variants?.length > 0) {
+        const v = product.variants.find((vr) => vr.flavor === item.variant);
+        if (v && v.countInStock < qty) {
+          return res.status(400).json({ message: `Stock insuficiente para ${product.name} (${item.variant}). Disponibles: ${v.countInStock}` });
+        }
+      } else if (product.countInStock < qty) {
+        return res.status(400).json({ message: `Stock insuficiente para ${product.name}. Disponibles: ${product.countInStock}` });
+      }
+
+      const realPrice = Number(product.price);
+      calculatedSubtotal += realPrice * qty;
+
+      verifiedOrderItems.push({
+        name: product.name,
+        qty,
+        image: item.image || product.images?.[0] || '',
+        price: realPrice,
+        product: product._id,
+        variant: item.variant || ''
+      });
+
+      itemsForShipping.push({
+        quantity: qty,
+        weight: product.weightInGrams || 500,
+        height: product.height || 15,
+        width: product.width || 15,
+        length: product.length || 15
+      });
+    }
+
+    // 2. Validar y recalcular el costo de envío con Correo Argentino en el Backend (no confiar en el frontend)
+    let finalShippingPrice = 0;
+    let shippingLabel = 'Envío';
+
+    if (shippingOption && (shippingOption.deliveredType === 'S' || String(shippingOption.productName).toLowerCase().includes('retiro') || String(shippingOption.productName).toLowerCase().includes('sucursal'))) {
+      // Retiro en sucursal / local oficial: $0 (Gratis)
+      finalShippingPrice = 0;
+      shippingLabel = 'Retiro en Sucursal (Gratis)';
+    } else if (shippingAddress?.postalCode) {
+      try {
+        const rates = await correoArgentinoService.quoteRates(shippingAddress.postalCode, itemsForShipping);
+        
+        // Buscar la tarifa seleccionada por el cliente (por tipo de entrega o precio)
+        if (shippingOption) {
+          const matched = rates.find(
+            (r) => r.deliveredType === shippingOption.deliveredType && r.productType === shippingOption.productType
+          ) || rates.find((r) => r.deliveredType === shippingOption.deliveredType);
+
+          if (matched) {
+            finalShippingPrice = matched.price;
+            shippingLabel = `${matched.productName} (A Domicilio)`;
+          } else {
+            finalShippingPrice = rates[0]?.price || Number(shippingPrice) || 0;
+            shippingLabel = rates[0]?.productName || 'Correo Argentino';
+          }
+        } else if (shippingPrice && Number(shippingPrice) > 0) {
+          // Si mandó un precio, verificar si coincide con alguna opción oficial de Correo
+          const matchedPrice = rates.find((r) => Math.abs(r.price - Number(shippingPrice)) < 5);
+          finalShippingPrice = matchedPrice ? matchedPrice.price : rates[0]?.price || Number(shippingPrice);
+          shippingLabel = matchedPrice?.productName || 'Correo Argentino';
+        } else {
+          finalShippingPrice = rates[0]?.price || 0;
+          shippingLabel = rates[0]?.productName || 'Correo Argentino';
+        }
+      } catch (shipErr) {
+        console.warn('⚠️ No se pudo recalcular envío con Correo Argentino, usando respaldo:', shipErr.message);
+        finalShippingPrice = Number(shippingPrice) || (process.env.CORREO_ENVIO_RESPALDO ? Number(process.env.CORREO_ENVIO_RESPALDO) : 0);
+        shippingLabel = 'Envío Estándar (Tarifa plana)';
+      }
+    }
+
+    const calculatedTotalPrice = calculatedSubtotal + finalShippingPrice;
+
+    // 3. Guardar la orden en la BD con estado "isPaid: false"
     const order = new Order({
       user,
-      orderItems,
+      orderItems: verifiedOrderItems,
       guestInfo,
       shippingAddress,
       paymentMethod: 'Mercado Pago',
-      totalPrice,
+      shippingPrice: finalShippingPrice,
+      totalPrice: calculatedTotalPrice,
       isPaid: false,
     });
 
     const createdOrder = await order.save();
 
-    // 2. Crear preferencia en Mercado Pago
+    // 4. Crear preferencia en Mercado Pago
     const preference = new Preference(client);
 
-    // Convertir orderItems al formato de Mercado Pago
-    const items = orderItems.map((item) => ({
+    const items = verifiedOrderItems.map((item) => ({
       id: String(item.product),
-      title: item.name,
+      title: item.name + (item.variant ? ` (${item.variant})` : ''),
       quantity: Number(item.qty),
       unit_price: Number(item.price),
       currency_id: 'ARS',
       picture_url: item.image,
     }));
+
+    // Si hay costo de envío calculado, se añade como ítem de Mercado Pago
+    if (finalShippingPrice > 0) {
+      items.push({
+        id: 'shipping_cost',
+        title: `Costo de Envío: ${shippingLabel}`,
+        quantity: 1,
+        unit_price: Number(finalShippingPrice),
+        currency_id: 'ARS'
+      });
+    }
 
     const response = await preference.create({
       body: {
@@ -55,26 +165,26 @@ export const createPreference = async (req, res) => {
           email: guestInfo.email,
         },
         back_urls: {
-          success: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/checkout/success`,
-          failure: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/checkout`,
-          pending: `${process.env.FRONTEND_URL || 'http://localhost:5173'}/checkout`,
+          success: `${process.env.FRONTEND_URL || 'http://localhost:5175'}/checkout/success`,
+          failure: `${process.env.FRONTEND_URL || 'http://localhost:5175'}/checkout`,
+          pending: `${process.env.FRONTEND_URL || 'http://localhost:5175'}/checkout`,
         },
         ...((process.env.FRONTEND_URL && !process.env.FRONTEND_URL.includes('localhost')) && { auto_return: 'approved' }),
-        external_reference: String(createdOrder._id), // Para asociarlo en el webhook
+        external_reference: String(createdOrder._id),
         ...(process.env.WEBHOOK_URL && { notification_url: `${process.env.WEBHOOK_URL}/api/orders/webhook` })
       }
     });
 
-    // Guardar el preferenceId por las dudas
     createdOrder.paymentResult = {
       mercadoPagoPreferenceId: response.id
     };
     await createdOrder.save();
 
-    // 3. Devolver el init_point (URL para pagar)
     res.json({
       id: response.id,
-      init_point: response.init_point
+      init_point: response.init_point,
+      shippingPrice: finalShippingPrice,
+      totalPrice: calculatedTotalPrice
     });
 
   } catch (error) {
