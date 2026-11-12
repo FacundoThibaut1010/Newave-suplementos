@@ -7,6 +7,7 @@ import { useAuthStore } from '../../store/useAuthStore';
 import { Link, useNavigate } from 'react-router-dom';
 import AuthModal from '../auth/AuthModal';
 import SearchModal from './SearchModal';
+import MobileMenu, { type MobileMenuItem } from './MobileMenu';
 import { useProductStore } from '../../store/useProductStore';
 import { useStoreConfigStore } from '../../store/useStoreConfigStore';
 
@@ -58,6 +59,24 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
     };
   }, [isMenuOpen]);
 
+  // Celular: menú de pantalla completa · Compu: desplegable
+  const [isMobileView, setIsMobileView] = useState(false);
+  const menuButtonRef = useRef<HTMLButtonElement>(null);
+  const [menuOrigin, setMenuOrigin] = useState({ x: 40, y: 90 });
+  useEffect(() => {
+    const mq = window.matchMedia('(max-width: 767px)');
+    const sync = () => setIsMobileView(mq.matches);
+    sync();
+    mq.addEventListener('change', sync);
+    return () => mq.removeEventListener('change', sync);
+  }, []);
+
+  const toggleMenu = () => {
+    const r = menuButtonRef.current?.getBoundingClientRect();
+    if (r) setMenuOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
+    setIsMenuOpen((v) => !v);
+  };
+
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     setIsMenuOpen(false);
     e.preventDefault();
@@ -71,13 +90,28 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
     }
   };
 
+  const mobileItems: MobileMenuItem[] = [
+    { label: 'Inicio', to: '/', onClick: () => { if (window.location.pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+    { label: 'Categorías', href: '/#categorias', onClick: (e) => handleScrollTo(e, 'categorias') },
+    ...(showBestSellers ? [{ label: 'Más vendidos', href: '/#mas-vendidos', onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleScrollTo(e, 'mas-vendidos') }] : []),
+    ...(showCombos ? [{ label: 'Combos', href: '/#combos', onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleScrollTo(e, 'combos') }] : []),
+    { label: 'Contacto', href: '/#contacto', onClick: (e) => handleScrollTo(e, 'contacto') },
+  ];
+
   return (
     <>
+      <MobileMenu
+        open={isMenuOpen && isMobileView}
+        onClose={() => setIsMenuOpen(false)}
+        items={mobileItems}
+        categories={activeCategories}
+        origin={menuOrigin}
+      />
       <AuthModal isOpen={isAuthModalOpen} onClose={() => setIsAuthModalOpen(false)} />
       <SearchModal isOpen={isSearchModalOpen} onClose={() => setIsSearchModalOpen(false)} />
 
       <AnimatePresence>
-        {isMenuOpen && (
+        {isMenuOpen && !isMobileView && (
           <motion.div
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
@@ -100,7 +134,10 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
             <div className="flex-1 flex items-center">
               <div className="relative">
                 <button
-                  onClick={() => setIsMenuOpen(!isMenuOpen)}
+                  ref={menuButtonRef}
+                  aria-label="Abrir menú"
+                  aria-expanded={isMenuOpen}
+                  onClick={toggleMenu}
                   className="flex items-center gap-3 group px-4 py-2 rounded-full transition-all duration-300 focus:outline-none"
                 >
                   <div className="relative">
@@ -113,7 +150,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
 
                 {/* Elite Dropdown Menu */}
                 <AnimatePresence>
-                  {isMenuOpen && (
+                  {isMenuOpen && !isMobileView && (
                     <motion.div
                       initial={{ opacity: 0, y: 15, scale: 0.95 }}
                       animate={{ opacity: 1, y: 0, scale: 1 }}

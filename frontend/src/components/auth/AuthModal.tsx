@@ -308,7 +308,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     <div>
                       <div className="flex justify-between items-center mb-1.5">
                         <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">Contraseña</label>
-                        <button type="button" onClick={() => setFrontView('forgot_email')} className="text-[10px] font-bold text-[#CAA959] hover:underline">
+                        <button type="button" onClick={() => setFrontView('forgot_email')} className="text-xs font-bold text-[#CAA959] hover:underline py-1">
                           ¿La olvidaste?
                         </button>
                       </div>
@@ -317,9 +317,9 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     <button type="submit" disabled={isLoading} className={primaryBtn}>
                       {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Iniciar sesión'}
                     </button>
-                    <p className="text-center text-xs font-medium text-gray-500">
+                    <p className="text-center text-sm font-medium text-gray-500">
                       ¿No tenés cuenta?{' '}
-                      <button type="button" onClick={() => goTab(true)} className="text-[#CAA959] font-black hover:underline">
+                      <button type="button" onClick={() => goTab(true)} className="text-[#CAA959] text-sm font-black hover:underline py-1">
                         Creá una
                       </button>
                     </p>

@@ -5,6 +5,19 @@ const SENDER_EMAIL = process.env.SENDER_EMAIL || 'newavesuplementos2026@gmail.co
 // así que las respuestas de los clientes se redirigen acá.
 const REPLY_TO = { name: 'Newave', email: process.env.ADMIN_EMAIL || 'newavesuple2026@gmail.com' };
 
+// Explica en el log los rechazos más comunes de Brevo
+const brevoHint = (msg = '') => {
+  const m = String(msg).toLowerCase();
+  if (m.includes('unrecognised ip') || m.includes('unrecognized ip') || m.includes('authorised ip') || m.includes('authorized ip'))
+    return '→ Brevo bloqueó la IP del servidor. En Brevo: Configuración → Seguridad → IPs autorizadas → desactivar el bloqueo (Render cambia de IP).';
+  if (m.includes('key not found') || m.includes('unauthorized') || m.includes('api-key'))
+    return '→ La BREVO_API_KEY del servidor es inválida o está mal copiada.';
+  if (m.includes('sender') && (m.includes('not valid') || m.includes('not verified') || m.includes('invalid')))
+    return '→ El remitente (SENDER_EMAIL) no está verificado en Brevo.';
+  if (m.includes('brevo_api_key no configurada')) return '→ Falta cargar BREVO_API_KEY en las variables de entorno del servidor.';
+  return '';
+};
+
 export const sendOrderConfirmationEmail = async (order) => {
   try {
     if (!process.env.BREVO_API_KEY) {
@@ -396,8 +409,9 @@ export const sendVerificationEmail = async (email, code) => {
 
   try {
     if (!process.env.BREVO_API_KEY) {
-      console.warn('⚠️ BREVO_API_KEY no configurada. Código simulado para', email, ':', code);
-      return;
+      console.error('❌ BREVO_API_KEY no configurada en el servidor: el código de verificación NO se envió a', email);
+      if (process.env.ALLOW_FAKE_EMAILS === 'true') return; // solo para pruebas locales
+      throw new Error('BREVO_API_KEY no configurada');
     }
 
     const htmlContent = `
@@ -441,12 +455,8 @@ export const sendVerificationEmail = async (email, code) => {
     }
     console.log(`✉️ Email de verificación enviado a ${email} vía Brevo`);
   } catch (error) {
-    console.error('❌ Error enviando email de verificación:', error.message);
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('No se pudo enviar el correo de verificación');
-    } else {
-      console.warn('⚠️ En modo desarrollo se permite continuar con el código de consola.');
-    }
+    console.error('❌ Error enviando email de verificación:', error.message, brevoHint(error.message));
+    throw new Error('No se pudo enviar el correo de verificación');
   }
 };
 
@@ -459,8 +469,9 @@ export const sendPasswordResetEmail = async (email, code) => {
 
   try {
     if (!process.env.BREVO_API_KEY) {
-      console.warn('⚠️ BREVO_API_KEY no configurada. Código de reseteo simulado para', email, ':', code);
-      return;
+      console.error('❌ BREVO_API_KEY no configurada en el servidor: el código de recuperación NO se envió a', email);
+      if (process.env.ALLOW_FAKE_EMAILS === 'true') return; // solo para pruebas locales
+      throw new Error('BREVO_API_KEY no configurada');
     }
 
     const htmlContent = `
@@ -504,12 +515,8 @@ export const sendPasswordResetEmail = async (email, code) => {
     }
     console.log(`✉️ Email de recuperación enviado a ${email} vía Brevo`);
   } catch (error) {
-    console.error('❌ Error enviando email de recuperación:', error.message);
-    if (process.env.NODE_ENV === 'production') {
-      throw new Error('No se pudo enviar el correo de recuperación');
-    } else {
-      console.warn('⚠️ En modo desarrollo se permite continuar con el código de consola.');
-    }
+    console.error('❌ Error enviando email de recuperación:', error.message, brevoHint(error.message));
+    throw new Error('No se pudo enviar el correo de recuperación');
   }
 };
 
