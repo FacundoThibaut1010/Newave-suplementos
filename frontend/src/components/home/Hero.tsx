@@ -117,7 +117,7 @@ const StudioStage = () => {
   );
 };
 
-/** Hero de la home: estudio claro, productos apoyados con luz y sombras coherentes, tipografía Manrope. */
+/** Hero de la home: estudio claro, productos apoyados con luz y sombras coherentes, tipografía Outfit (la del resto del sitio). */
 const Hero = () => {
   const hero = useStoreConfigStore((state) => state.hero);
   const title = hero.title || "Energía. Fuerza. Resultados.";

@@ -1,5 +1,4 @@
-/* Tipografía de todo el sitio: Manrope (la del Hero) */
-@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -44,7 +43,7 @@ body {
 }
 
 body {
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: 'Outfit', sans-serif;
   color: var(--text-primary);
   background-color: var(--bg-dark);
   -webkit-font-smoothing: antialiased;
@@ -303,10 +302,10 @@ img {
   background: linear-gradient(180deg, #f5f3ef 0%, #ece9e3 100%);
 }
 .studio-light-text {
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: 'Outfit', sans-serif;
 }
 .studio-light-title {
-  font-family: 'Manrope', system-ui, sans-serif;
+  font-family: 'Outfit', sans-serif;
   font-weight: 700;
   letter-spacing: -0.045em; /* tracking negativo: el texto grande se lee mejor más cerrado */
 }
