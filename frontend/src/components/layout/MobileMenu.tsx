@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react';
 import { createPortal } from 'react-dom';
 import { Link } from 'react-router-dom';
-import { X, Plus, Mail } from 'lucide-react';
+import { X, Plus, Mail, Phone } from 'lucide-react';
 
 /**
  * Menú de pantalla completa para celular.
@@ -146,9 +146,14 @@ const MobileMenu = ({ open, onClose, items, categories, origin }: Props) => {
         <a href="https://www.instagram.com/newave.fitness/" target="_blank" rel="noreferrer" className="mmenu-social">
           <img src="/mdi--instagram.svg" alt="" className="w-[18px] h-[18px] invert" /> @newave.fitness
         </a>
-        <a href="mailto:newavesuple2026@gmail.com" className="mmenu-social" aria-label="Enviar mail">
-          <Mail size={18} />
-        </a>
+        <div className="mmenu-social-group">
+          <a href="https://wa.me/5491165392403" target="_blank" rel="noreferrer" className="mmenu-social is-icon" aria-label="Escribinos por WhatsApp">
+            <Phone size={18} />
+          </a>
+          <a href="mailto:newavesuple2026@gmail.com" className="mmenu-social is-icon" aria-label="Enviar mail">
+            <Mail size={18} />
+          </a>
+        </div>
       </div>
     </div>,
     document.body

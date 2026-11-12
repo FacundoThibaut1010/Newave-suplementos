@@ -492,7 +492,8 @@ img {
   padding: 18px 0; text-align: left; -webkit-tap-highlight-color: transparent;
 }
 /* Cada opción sube desde una máscara, en cascada */
-.mmenu-mask { display: block; overflow: hidden; padding-bottom: 4px; }
+/* Aire alrededor del texto: la itálica se inclina hacia la derecha y los acentos suben; sin esto se recortaban */
+.mmenu-mask { display: block; overflow: hidden; padding: 0.12em 0.35em 0.1em 0; margin-right: -0.35em; }
 .mmenu-text {
   display: flex; align-items: flex-start; gap: 12px;
   font-size: clamp(2rem, 10vw, 2.75rem); font-weight: 900; font-style: italic; text-transform: uppercase;
@@ -542,6 +543,8 @@ img {
   border: 1px solid rgba(255, 255, 255, 0.12); font-size: 0.8rem; font-weight: 700; color: #e4e4e7;
 }
 .mmenu-social:active { background: rgba(255, 255, 255, 0.08); }
+.mmenu-social.is-icon { width: 46px; height: 46px; padding: 0; justify-content: center; }
+.mmenu-social-group { display: flex; gap: 10px; }
 
 /* Reducir movimiento: solo fundido, sin círculo ni desplazamientos */
 @media (prefers-reduced-motion: reduce) {
