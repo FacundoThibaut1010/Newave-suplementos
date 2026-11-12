@@ -1,5 +1,5 @@
 // Debe coincidir con un remitente validado en Brevo, si no la API rechaza el envío con 400.
-const SENDER_EMAIL = process.env.SENDER_EMAIL || 'newavesuplementos2026@gmail.com';
+const SENDER_EMAIL = process.env.SENDER_EMAIL || 'newavesuple2026@gmail.com';
 
 // Casilla real que lee el equipo. El remitente de Brevo y esta dirección son distintas,
 // así que las respuestas de los clientes se redirigen acá.
@@ -178,7 +178,7 @@ export const sendNewOrderNotificationToSeller = async (order) => {
           name: 'Newave Store',
           email: SENDER_EMAIL
         },
-        to: [{ email: process.env.ADMIN_EMAIL || 'newavesuplementos2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
+        to: [{ email: process.env.ADMIN_EMAIL || 'newavesuple2026@gmail.com', name: 'Newave Admin' }], // Send to seller email
         subject: '¡Nueva Venta en Newave! 💰',
         htmlContent: htmlContent
       })
