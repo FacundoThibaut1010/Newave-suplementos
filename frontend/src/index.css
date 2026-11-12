@@ -1,4 +1,5 @@
-@import url('https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800;900&display=swap');
+/* Tipografía de todo el sitio: Manrope (la del Hero) */
+@import url('https://fonts.googleapis.com/css2?family=Manrope:wght@300;400;500;600;700;800&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -43,7 +44,7 @@ body {
 }
 
 body {
-  font-family: 'Outfit', sans-serif;
+  font-family: 'Manrope', system-ui, sans-serif;
   color: var(--text-primary);
   background-color: var(--bg-dark);
   -webkit-font-smoothing: antialiased;
@@ -385,4 +386,21 @@ img {
 @media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
   .bs-section { min-height: calc(100svh - 128px); display: flex; }
   .bs-inner { flex: 1; min-width: 0; justify-content: center; } /* min-width: 0 → no se estira al ancho de la fila de productos */
+}
+
+/* ---------- Flechas de filas con scroll (ScrollArrows) ---------- */
+.scroll-arrow {
+  opacity: 0;
+  pointer-events: none;
+  transform: translateY(-50%) scale(0.9);
+  transition: opacity 200ms ease, transform 200ms var(--ease-out), background-color 200ms ease, color 200ms ease;
+}
+.scroll-arrow.is-visible {
+  opacity: 1;
+  pointer-events: auto;
+  transform: translateY(-50%) scale(1);
+}
+.scroll-arrow:active { transform: translateY(-50%) scale(0.94); }
+@media (hover: hover) and (pointer: fine) {
+  .scroll-arrow.is-visible:hover { background-color: #CAA959; color: #fff; }
 }

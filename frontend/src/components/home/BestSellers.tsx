@@ -4,6 +4,7 @@ import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ProductCard from './ProductCard';
 import { useStoreConfigStore } from '../../store/useStoreConfigStore';
 import { useProductStore } from '../../store/useProductStore';
+import ScrollArrows from '../ui/ScrollArrows';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -12,7 +13,7 @@ gsap.registerPlugin(ScrollTrigger);
  * - Celular: la sección se fija en pantalla y el scroll vertical desplaza los productos de costado
  *   (ScrollTrigger con pin + scrub). El producto del centro queda en foco (escala/opacidad) y se ajusta
  *   suavemente a cada tarjeta. Al terminar, la página sigue normal: no hay una caja con scroll propio.
- * - Compu: grilla con todos los productos visibles, sin scroll lateral.
+ * - Compu: fila centrada; si hay más productos de los que entran, se recorre con flechas.
  * - "Reducir movimiento": fila deslizable simple, sin pin ni efectos.
  */
 
@@ -31,6 +32,7 @@ const BestSellers = () => {
 
   const sectionRef = useRef<HTMLElement>(null);
   const trackRef = useRef<HTMLDivElement>(null);
+  const wrapRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
 
@@ -154,15 +156,15 @@ const BestSellers = () => {
         </div>
 
         {/* Celular: pista horizontal movida por el scroll · Compu: grilla */}
-        <div className="bs-track-wrap">
+        <div className="relative">
+        <div ref={wrapRef} className="bs-track-wrap md:overflow-x-auto scrollbar-hide md:-mx-6 md:px-16">
         <div
           ref={trackRef}
-          className="bs-track flex md:grid md:justify-center gap-4 md:gap-6 w-max md:w-auto"
-          // Compu: tantas columnas como productos (hasta 5), centradas y sin huecos
-          style={{ gridTemplateColumns: `repeat(${Math.min(items.length, 5)}, minmax(0, 230px))` }}
+          // w-max + mx-auto: centrada si entra todo; si no, se desplaza con las flechas
+          className="bs-track flex gap-4 md:gap-6 w-max md:mx-auto"
         >
           {items.map((product: any, idx: number) => (
-            <div key={`${product._id}-${idx}`} className="bs-card w-[68vw] max-w-[300px] md:w-auto md:max-w-none shrink-0 will-change-transform">
+            <div key={`${product._id}-${idx}`} className="bs-card w-[68vw] max-w-[300px] md:w-[220px] md:max-w-none shrink-0 will-change-transform">
               <ProductCard
                 id={product._id}
                 {...product}
@@ -174,6 +176,8 @@ const BestSellers = () => {
             </div>
           ))}
         </div>
+        </div>
+        <ScrollArrows targetRef={wrapRef} />
         </div>
       </div>
     </section>

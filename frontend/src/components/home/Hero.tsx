@@ -117,24 +117,9 @@ const StudioStage = () => {
   );
 };
 
-// Fuentes de la versión clara: se cargan solo cuando se muestra esa versión
-const LIGHT_FONTS_HREF =
-  "https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&display=swap";
-
-const useLightFonts = (enabled: boolean) => {
-  useEffect(() => {
-    if (!enabled || document.querySelector(`link[href="${LIGHT_FONTS_HREF}"]`)) return;
-    const link = document.createElement("link");
-    link.rel = "stylesheet";
-    link.href = LIGHT_FONTS_HREF;
-    document.head.appendChild(link);
-  }, [enabled]);
-};
-
 /** Hero de la home: estudio claro, productos apoyados con luz y sombras coherentes, tipografía Manrope. */
 const Hero = () => {
   const hero = useStoreConfigStore((state) => state.hero);
-  useLightFonts(true);
   const title = hero.title || "Energía. Fuerza. Resultados.";
 
   return (

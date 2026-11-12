@@ -7,6 +7,7 @@ import { useAuthStore } from '../store/useAuthStore';
 import apiClient from '../api/apiClient';
 import { toast } from 'sonner';
 import ProductCard from '../components/home/ProductCard';
+import ScrollArrows from '../components/ui/ScrollArrows';
 import { useProductStore } from '../store/useProductStore';
 
 const ProductDetailPage = () => {
@@ -223,11 +224,11 @@ const ProductDetailPage = () => {
                     </span>
                   ))}
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-black italic uppercase leading-[1.1] text-[#202A36] mb-6 break-words">
+                <h1 className="text-3xl sm:text-4xl md:text-[2.4rem] lg:text-[2.75rem] font-black italic uppercase leading-[1.05] text-[#202A36] mb-4 break-words">
                   {product.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 md:gap-4">
-                  <span className="text-2xl sm:text-3xl md:text-4xl font-black italic text-[#202A36] break-words">
+                  <span className="text-2xl sm:text-3xl md:text-[2rem] font-black italic text-[#202A36] break-words">
                     ${Number(product.price).toLocaleString('es-AR')}
                   </span>
                   {!!product.oldPrice && product.oldPrice > product.price && (
@@ -250,7 +251,7 @@ const ProductDetailPage = () => {
               {product.variants && product.variants.length > 0 && (
                 <div className="mt-6">
                   <h3 className="text-sm font-bold text-gray-500 mb-3">Sabor: <span className="text-[#202A36] font-black">{selectedVariant?.flavor || ''}</span></h3>
-                  <div className="grid grid-cols-3 gap-2 sm:gap-3">
+                  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
                     {product.variants.map((v: any, idx: number) => {
                       const variantName = v.flavor;
                       const isSelected = selectedVariant?._id === v._id;
@@ -262,10 +263,10 @@ const ProductDetailPage = () => {
                             setQuantity(1);
                             if (scrollRef.current) scrollRef.current.scrollLeft = 0;
                           }}
-                          className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl text-xs sm:text-sm font-bold border-2 transition-all w-full ${isSelected ? 'border-[#202A36] text-[#202A36] bg-gray-50' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
+                          className={`flex flex-col items-center justify-center gap-1.5 p-2 sm:p-2.5 rounded-xl text-xs font-bold border-2 transition-all w-full ${isSelected ? 'border-[#202A36] text-[#202A36] bg-gray-50' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
                         >
                           {v.image && (
-                            <img loading="lazy" decoding="async" src={v.image} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover bg-white border border-gray-100 shrink-0 shadow-sm" />
+                            <img loading="lazy" decoding="async" src={v.image} className="w-14 h-14 sm:w-12 sm:h-12 rounded-lg object-cover bg-white border border-gray-100 shrink-0 shadow-sm" />
                           )}
                           <span className="truncate w-full text-center leading-tight whitespace-normal">{variantName || `Opción ${idx + 1}`}</span>
                         </button>
@@ -278,7 +279,7 @@ const ProductDetailPage = () => {
               {product.weight && (
                 <div className="mt-6" >
                   <h3 className="text-sm font-bold text-gray-500 mb-2">Formato: <span className="text-[#202A36]">{product.weight}</span></h3>
-                  <div className="w-full bg-white border border-gray-200 rounded-2xl px-6 py-5 text-lg font-black text-[#202A36] shadow-sm">
+                  <div className="w-full bg-white border border-gray-200 rounded-xl px-5 py-3 text-base font-black text-[#202A36] shadow-sm">
                     {product.weight}
                   </div>
                 </div>
@@ -291,7 +292,7 @@ const ProductDetailPage = () => {
                 </div>
               )}
 
-              <div className="h-px w-full bg-gray-100 my-8" />
+              <div className="h-px w-full bg-gray-100 my-6" />
 
               <div className="flex flex-col sm:flex-row gap-4">
                 {/* Quantity Selector */}
@@ -357,7 +358,8 @@ const ProductDetailPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mt-12"
           >
-            <h3 className="text-2xl md:text-3xl font-black uppercase italic tracking-tighter text-[#202A36] mb-8 text-center md:text-left">También te puede interesar</h3>
+            <h3 className="text-2xl md:text-2xl font-black uppercase italic tracking-tighter text-[#202A36] mb-6 text-center md:text-left">También te puede interesar</h3>
+            <div className="relative">
             <div 
               ref={relatedScrollRef}
               onMouseEnter={() => setIsInteractingRelated(true)}
@@ -387,7 +389,7 @@ const ProductDetailPage = () => {
               className={`flex overflow-x-auto gap-4 md:gap-6 pb-8 scrollbar-hide select-none ${isDraggingRelated ? 'cursor-grabbing' : 'cursor-grab'}`}
             >
               {relatedProducts.map((p) => (
-                <div key={p._id} className="w-[280px] sm:w-[300px] md:w-[320px] shrink-0">
+                <div key={p._id} className="w-[240px] sm:w-[240px] md:w-[220px] shrink-0">
                   <ProductCard
                     id={p._id}
                     {...p}
@@ -398,6 +400,8 @@ const ProductDetailPage = () => {
                   />
                 </div>
               ))}
+            </div>
+            <ScrollArrows targetRef={relatedScrollRef} />
             </div>
           </motion.div>
         )}

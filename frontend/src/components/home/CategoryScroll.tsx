@@ -2,11 +2,12 @@ import React, { useRef, useState } from 'react';
 import { motion } from 'framer-motion';
 import { Link } from 'react-router-dom';
 import { useProductStore } from '../../store/useProductStore';
+import ScrollArrows from '../ui/ScrollArrows';
 
 /**
  * "Descubrí tu potencial": categorías con productos a la venta.
  * - Celular: fila deslizable horizontal.
- * - Compu: tarjetas centradas y todas visibles (sin scroll horizontal, nada queda cortado).
+ * - Compu: tarjetas centradas; si hay más de las que entran, la fila se desplaza con flechas (nada queda cortado).
  * Fondo negro para cortar el claro del Hero.
  */
 
@@ -50,15 +51,17 @@ const CategoryScroll = () => {
         </Link>
       </div>
 
-      <div className="w-full relative pb-12 lg:pb-16">
+      <div className="w-full relative pb-12 lg:pb-16 md:max-w-[1280px] mx-auto">
         <div
           ref={scrollRef}
-          className="flex gap-4 lg:gap-5 overflow-x-auto md:overflow-visible md:flex-wrap md:justify-center px-6 pt-4 pb-6 cursor-grab active:cursor-grabbing md:cursor-default scrollbar-hide select-none md:max-w-[1200px] mx-auto"
+          className="overflow-x-auto scrollbar-hide select-none px-6 md:px-16 pt-4 pb-6 cursor-grab active:cursor-grabbing"
           onMouseDown={onMouseDown}
           onMouseUp={stopDragging}
           onMouseLeave={stopDragging}
           onMouseMove={onMouseMove}
         >
+          {/* w-max + mx-auto: centrado si entra todo; si no, se desplaza desde la izquierda */}
+          <div className="flex gap-4 lg:gap-5 w-max mx-auto">
           {showSkeletons
             ? Array.from({ length: 4 }).map((_, i) => <CategorySkeleton key={i} />)
             : activeCategories.map((cat, i) => (
@@ -93,7 +96,9 @@ const CategoryScroll = () => {
                 </motion.div>
               ))}
           <div className="shrink-0 w-px md:hidden" />
+          </div>
         </div>
+        <ScrollArrows targetRef={scrollRef} dark />
       </div>
     </section>
   );

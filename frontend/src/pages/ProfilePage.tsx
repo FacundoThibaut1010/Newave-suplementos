@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { motion } from 'framer-motion';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAuthStore } from '../store/useAuthStore';
 import apiClient from '../api/apiClient';
 import { toast } from 'sonner';
@@ -101,12 +101,25 @@ const ProfilePage = () => {
   }
 
   return (
-    <div className="min-h-screen bg-[#F4F4F4] pt-40 md:pt-48 pb-20">
-      <div className="max-w-3xl mx-auto px-4 sm:px-6">
+    <div className="min-h-screen bg-[#F4F4F4] pt-40 md:pt-40 pb-20">
+      {/* Compu: resumen de la cuenta a la izquierda y formulario ancho a la derecha · Celular: apilado */}
+      <div className="max-w-3xl lg:max-w-[1200px] mx-auto px-4 sm:px-6 lg:grid lg:grid-cols-[300px_minmax(0,1fr)] lg:gap-8 lg:items-start">
+        <aside className="hidden lg:flex flex-col bg-white rounded-[2rem] p-8 shadow-sm border border-gray-100 sticky top-36">
+          <div className="w-16 h-16 rounded-full bg-[#202A36] text-white flex items-center justify-center text-xl font-black mb-4">
+            {(user.name || user.email || '?').split(' ').map((w: string) => w[0]).slice(0, 2).join('').toUpperCase()}
+          </div>
+          <p className="text-lg font-black text-[#202A36] leading-tight break-words">{user.name || 'Mi cuenta'}</p>
+          <p className="text-sm text-gray-500 break-all mt-1">{user.email}</p>
+          <nav className="mt-8 pt-6 border-t border-gray-100 flex flex-col gap-1">
+            <Link to="/perfil/datos" className="px-4 py-3 rounded-xl text-sm font-bold bg-gray-50 text-[#202A36]">Mis datos</Link>
+            <Link to="/perfil/compras" className="px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:text-[#202A36] hover:bg-gray-50 transition-colors">Mis compras</Link>
+            <Link to="/perfil/favoritos" className="px-4 py-3 rounded-xl text-sm font-bold text-gray-500 hover:text-[#202A36] hover:bg-gray-50 transition-colors">Favoritos</Link>
+          </nav>
+        </aside>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="bg-white rounded-[2rem] md:rounded-[3.5rem] p-6 sm:p-10 shadow-sm border border-gray-100"
+          className="bg-white rounded-[2rem] md:rounded-[2.5rem] p-6 sm:p-10 shadow-sm border border-gray-100"
         >
           <div className="mb-10 text-center md:text-left">
             <h1 className="text-3xl sm:text-4xl font-black uppercase italic tracking-tighter text-[#202A36] mb-2">Mi Perfil</h1>
@@ -114,7 +127,8 @@ const ProfilePage = () => {
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">
-            <div className="grid md:grid-cols-2 gap-6">
+            <h3 className="text-sm font-black uppercase tracking-widest text-[#202A36]">Datos personales</h3>
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
               <div>
                 <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Nombre Completo</label>
                 <input
@@ -149,8 +163,8 @@ const ProfilePage = () => {
 
             <div className="pt-6 border-t border-gray-100">
               <h3 className="text-sm font-black uppercase tracking-widest text-[#202A36] mb-6">Dirección de Envío Principal</h3>
-              <div className="grid md:grid-cols-2 gap-6">
-                <div className="md:col-span-2">
+              <div className="grid md:grid-cols-2 lg:grid-cols-5 gap-6">
+                <div className="md:col-span-2 lg:col-span-2">
                   <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Calle y Número</label>
                   <input
                     type="text"

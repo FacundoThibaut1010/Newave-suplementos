@@ -8,7 +8,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        sans: ['"Barlow"', 'sans-serif'],
+        sans: ['Manrope', 'system-ui', 'sans-serif'],
       },
       borderRadius: {
         '4xl': '2rem',
