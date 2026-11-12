@@ -10,7 +10,7 @@ const defaultMessages = [
   "SEGUINOS EN INSTAGRAM COMO @NEWAVE.FITNESS",
 ];
 
-const TopBar = () => {
+const TopBar = ({ hidden = false }: { hidden?: boolean }) => {
   const [index, setIndex] = useState(0);
   const [messages, setMessages] = useState<string[]>(defaultMessages);
   const [isVisible, setIsVisible] = useState(true);
@@ -60,7 +60,11 @@ const TopBar = () => {
   if (!isVisible || messages.length === 0) return null;
 
   return (
-    <div className="bg-black text-white min-h-[3rem] h-12 md:h-10 flex items-center justify-center overflow-hidden fixed top-0 w-full z-[60] px-4 text-center">
+    <div
+      className="bg-black text-white min-h-[3rem] h-12 md:h-10 flex items-center justify-center overflow-hidden fixed top-0 w-full z-[60] px-4 text-center transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)]"
+      style={{ transform: hidden ? 'translateY(-100%)' : 'none' }}
+      aria-hidden={hidden || undefined}
+    >
       <AnimatePresence mode="wait">
         <motion.p
           key={index}

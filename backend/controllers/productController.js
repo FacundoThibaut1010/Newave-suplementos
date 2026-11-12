@@ -1,4 +1,5 @@
 import Product from '../models/Product.js';
+import { withImageUrls } from '../utils/imageUrls.js';
 
 // @desc    Get all products
 // @route   GET /api/products
@@ -17,7 +18,7 @@ export const getProducts = async (req, res) => {
       ];
     }
     
-    let products = await Product.find(query);
+    let products = await Product.find(query).lean();
     
     // Si hay una búsqueda, ordenamos manualmente para poner las coincidencias exactas del nombre primero
     if (search) {
@@ -45,7 +46,7 @@ export const getProducts = async (req, res) => {
     res.json({
       message: '¡Aquí tienes los productos que encontramos para ti! 🎁',
       count: products.length,
-      products
+      products: products.map((p) => withImageUrls(req, p, 'product'))
     });
   } catch (error) {
     res.status(500);
@@ -63,7 +64,7 @@ export const getProductById = async (req, res) => {
     if (product && product.isActive !== false) {
       res.json({
         message: '¡Excelente elección! Aquí tienes los detalles del producto ✨',
-        product
+        product: withImageUrls(req, product, 'product')
       });
     } else {
       res.status(404);
@@ -86,7 +87,8 @@ export const getActiveCategories = async (req, res) => {
   try {
     const StoreConfig = (await import('../models/StoreConfig.js')).default;
     const config = await StoreConfig.findOne();
-    const configCategories = config?.categories || [];
+    // Convertimos las imágenes antes de filtrar para que las rutas (categories.<n>.image) apunten al índice real
+    const configCategories = config ? (withImageUrls(req, config, 'config').categories || []) : [];
 
     // Buscar todas las categorías que tengan al menos un producto
     const activeCategoriesNames = await Product.distinct('category');

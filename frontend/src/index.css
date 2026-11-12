@@ -152,3 +152,201 @@ img {
   -webkit-user-drag: none;      /* Chrome, Safari, Edge */
   user-drag: none;
 }
+:root {
+  --ease-out: cubic-bezier(0.23, 1, 0.32, 1);
+}
+
+/* ---------- Hero: escenario de productos (base) ----------
+   Look de foto de producto: una luz cálida arriba a la izquierda, envases apoyados con sombras coherentes.
+   Animaciones solo con transform/opacity. */
+.studio-stage {
+  position: relative;
+  width: 100%;
+  isolation: isolate;
+}
+
+/* Fondo de estudio: barrido oscuro y cálido */
+.studio-backdrop {
+  position: absolute; inset: 0;
+  background:
+    radial-gradient(110% 85% at 32% 22%, #2b2417 0%, #17140f 38%, #0d0c0b 68%, #0a0a0b 100%);
+}
+
+/* Luz principal (se "prende" al entrar) */
+.studio-key-light {
+  position: absolute; inset: 0 22% 18% 0; /* dentro del escenario: closest-side se apaga antes del borde */
+  background: radial-gradient(closest-side, rgba(232, 196, 120, 0.22), rgba(232, 196, 120, 0.07) 55%, transparent);
+  animation: studio-light-on 1400ms var(--ease-out) 150ms both;
+}
+
+/* Superficie donde apoyan los productos */
+.studio-floor {
+  position: absolute; left: 0; right: 0; top: 60%; bottom: 0;
+  background:
+    radial-gradient(70% 60% at 45% 0%, rgba(255, 228, 170, 0.09), transparent 70%),
+    linear-gradient(to bottom, rgba(255, 240, 210, 0.05), rgba(0, 0, 0, 0) 60%);
+  animation: studio-light-on 1400ms var(--ease-out) 300ms both;
+}
+.studio-floor::before {
+  /* borde suave de la mesa contra el fondo */
+  content: ''; position: absolute; left: 6%; right: 6%; top: 0; height: 1px;
+  background: linear-gradient(90deg, transparent, rgba(202, 169, 89, 0.22) 30%, rgba(202, 169, 89, 0.22) 70%, transparent);
+}
+
+.studio-product {
+  position: absolute;
+}
+
+/* Entrada: el producto baja unos px y se apoya; el piso (sombras) solo aparece */
+.studio-product-enter {
+  animation: studio-place 900ms var(--ease-out) var(--enter-delay, 500ms) both;
+}
+.studio-ground {
+  position: absolute; inset: 0; pointer-events: none;
+  animation: studio-fade 900ms var(--ease-out) var(--enter-delay, 500ms) both;
+}
+
+.studio-body {
+  position: relative;
+  transition: transform 400ms var(--ease-out);
+}
+.studio-img {
+  display: block; width: 100%; height: auto; user-select: none;
+  filter: contrast(1.04) saturate(0.96);
+}
+.studio-product--back .studio-img {
+  filter: brightness(0.78) contrast(1.02) saturate(0.9);
+}
+
+/* Sombreado del lado opuesto a la luz (igual para todos los envases → luz coherente) */
+.studio-shade,
+.studio-rim {
+  position: absolute; inset: 0; pointer-events: none;
+  -webkit-mask-size: 100% 100%; mask-size: 100% 100%;
+  -webkit-mask-repeat: no-repeat; mask-repeat: no-repeat;
+}
+.studio-shade {
+  background: linear-gradient(100deg, rgba(0, 0, 0, 0) 38%, rgba(0, 0, 0, 0.42) 100%);
+}
+/* Luz de borde cálida del lado de la luz */
+.studio-rim {
+  background: linear-gradient(90deg, rgba(255, 214, 140, 0.32) 0%, rgba(255, 214, 140, 0) 16%);
+  mix-blend-mode: screen;
+}
+
+/* Sombra de contacto */
+.studio-contact {
+  position: absolute; left: 6%; right: 2%; bottom: -2.5%; height: 6%;
+  border-radius: 50%;
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.9), rgba(0, 0, 0, 0));
+  transition: transform 400ms var(--ease-out), opacity 400ms var(--ease-out);
+}
+
+/* Sombra proyectada: silueta aplastada sobre el piso, inclinada hacia la derecha (luz desde la izquierda) */
+.studio-cast {
+  position: absolute; left: 0; bottom: 0; width: 100%; height: auto;
+  transform-origin: bottom center;
+  transform: skewX(-52deg) scaleY(0.3);
+  filter: brightness(0) blur(6px);
+  opacity: 0.5;
+}
+
+/* Reflejo tenue: la silueta invertida hacia abajo, que se desvanece enseguida */
+.studio-reflection {
+  position: absolute; left: 0; top: 0; width: 100%; height: auto;
+  transform-origin: bottom center;
+  transform: scaleY(-1);
+  opacity: 0.12;
+  -webkit-mask-image: linear-gradient(to top, #000 0%, transparent 28%);
+  mask-image: linear-gradient(to top, #000 0%, transparent 28%);
+}
+
+@keyframes studio-light-on { from { opacity: 0; } to { opacity: 1; } }
+@keyframes studio-fade { from { opacity: 0; } to { opacity: 1; } }
+@keyframes studio-place {
+  from { opacity: 0; transform: translate3d(0, -18px, 0); }
+  to { opacity: 1; transform: none; }
+}
+
+/* Botón: respuesta inmediata al presionar */
+.studio-cta {
+  transition: background-color 200ms ease, transform 160ms var(--ease-out);
+}
+.studio-cta:active { transform: scale(0.97); }
+.studio-cta-arrow { transition: transform 200ms var(--ease-out); }
+
+@media (hover: hover) and (pointer: fine) {
+  .studio-cta:hover { background-color: #fff; }
+  .studio-cta:hover .studio-cta-arrow { transform: translateX(6px); }
+  /* Al pasar el mouse, el envase se levanta apenas y su sombra de contacto se achica */
+  .studio-product:hover .studio-body { transform: translateY(-6px); }
+  .studio-product:hover .studio-contact { transform: scale(0.88); opacity: 0.7; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .studio-product-enter { animation: studio-fade 400ms ease both; }
+  .studio-key-light, .studio-floor, .studio-ground { animation-duration: 400ms; }
+}
+
+/* El escenario se funde con el fondo de la página: sin bordes rectos visibles */
+.studio-backdrop,
+.studio-floor {
+  /* closest-side: el degradé llega a 0 justo en el borde de la caja → nunca se ve un corte recto */
+  -webkit-mask-image: radial-gradient(closest-side at 50% 50%, #000 40%, transparent 100%);
+  mask-image: radial-gradient(closest-side at 50% 50%, #000 40%, transparent 100%);
+}
+
+/* ---------- Hero: versión clara (la que se usa) ----------
+   Estudio claro, sin dorado, tipografía editorial. Reutiliza el escenario .studio-* con otra luz. */
+.studio-light-section {
+  background: linear-gradient(180deg, #f5f3ef 0%, #ece9e3 100%);
+}
+.studio-light-text {
+  font-family: 'Manrope', system-ui, sans-serif;
+}
+.studio-light-title {
+  font-family: 'Manrope', system-ui, sans-serif;
+  font-weight: 700;
+  letter-spacing: -0.045em; /* tracking negativo: el texto grande se lee mejor más cerrado */
+}
+
+.studio-light-cta {
+  transition: background-color 200ms ease, transform 160ms var(--ease-out);
+}
+.studio-light-cta:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .studio-light-cta:hover { background-color: #3f3f46; }
+  .studio-light-cta:hover .studio-cta-arrow { transform: translateX(5px); }
+}
+
+/* Escenario con luz blanca y sombras neutras */
+.studio-stage--light .studio-backdrop {
+  background: radial-gradient(110% 85% at 38% 28%, #ffffff 0%, #f7f5f1 40%, #ebe8e2 100%);
+}
+.studio-stage--light .studio-key-light {
+  background: radial-gradient(closest-side, rgba(255, 255, 255, 0.75), rgba(255, 255, 255, 0));
+}
+.studio-stage--light .studio-floor {
+  background:
+    radial-gradient(70% 60% at 45% 0%, rgba(255, 255, 255, 0.6), transparent 70%),
+    linear-gradient(to bottom, rgba(0, 0, 0, 0.045), rgba(0, 0, 0, 0) 65%);
+}
+.studio-stage--light .studio-floor::before {
+  background: linear-gradient(90deg, transparent, rgba(0, 0, 0, 0.08) 30%, rgba(0, 0, 0, 0.08) 70%, transparent);
+}
+.studio-stage--light .studio-img { filter: contrast(1.03) saturate(1); }
+.studio-stage--light .studio-product--back .studio-img { filter: brightness(0.93) saturate(0.95); }
+.studio-stage--light .studio-shade {
+  background: linear-gradient(100deg, rgba(0, 0, 0, 0) 42%, rgba(0, 0, 0, 0.2) 100%);
+}
+.studio-stage--light .studio-rim {
+  background: linear-gradient(90deg, rgba(255, 255, 255, 0.4) 0%, rgba(255, 255, 255, 0) 14%);
+}
+.studio-stage--light .studio-contact {
+  background: radial-gradient(closest-side, rgba(0, 0, 0, 0.42), rgba(0, 0, 0, 0));
+}
+.studio-stage--light .studio-cast {
+  filter: brightness(0) blur(9px);
+  opacity: 0.18;
+}
+.studio-stage--light .studio-reflection { opacity: 0.1; }

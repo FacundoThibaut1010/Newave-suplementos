@@ -12,6 +12,7 @@ import uploadRoutes from './routes/uploadRoutes.js';
 import shippingRoutes from './routes/shippingRoutes.js';
 import paymentRoutes from './routes/paymentRoutes.js';
 import { errorHandler } from './middleware/errorMiddleware.js';
+import { serveImage } from './utils/imageUrls.js';
 import path from 'path';
 
 // Conectamos a la base de datos
@@ -59,6 +60,8 @@ app.use('/api/users', userRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/shipping', shippingRoutes);
 app.use('/api/payments', paymentRoutes);
+// Imágenes de productos/config servidas como archivos cacheables (antes viajaban en base64 dentro del JSON)
+app.get('/api/images/:kind/:id/:path', (req, res, next) => serveImage(req, res).catch(next));
 
 const __dirname = path.resolve();
 app.use('/uploads', express.static(path.join(__dirname, '/uploads')));

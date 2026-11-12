@@ -1,6 +1,7 @@
 import express from 'express';
 import multer from 'multer';
 import path from 'path';
+import { requireAdmin } from '../middleware/adminAuth.js';
 
 const router = express.Router();
 
@@ -38,7 +39,7 @@ const upload = multer({
 // @route   POST /api/upload
 // @desc    Upload an image
 // @access  Private/Admin (we'll keep it simple here, accessible if needed)
-router.post('/', upload.single('image'), (req, res) => {
+router.post('/', requireAdmin, upload.single('image'), (req, res) => {
   if (req.file) {
     // Generate the URL based on the server address. For local dev:
     // If FRONTEND_URL is used, we just return the relative path and let the frontend prepend the API URL

@@ -27,7 +27,7 @@ const Footer = () => {
                 rel="noreferrer"
                 className="w-10 h-10 rounded-full bg-gray-50 border border-gray-100 flex items-center justify-center hover:bg-[#CAA959] transition-all group"
               >
-                <img
+                <img loading="lazy" decoding="async"
                   src="/mdi--instagram.svg"
                   alt="Instagram"
                   className="w-[18px] h-[18px] object-contain opacity-40 group-hover:opacity-100 group-hover:brightness-0 group-hover:invert"

@@ -91,7 +91,7 @@ const InventoryTable = () => {
                     <td className="px-8 py-6">
                       <div className="flex items-center gap-4">
                         <div className="w-12 h-12 rounded-xl bg-gray-50 overflow-hidden shrink-0 border border-gray-100">
-                          <img src={p.images?.[0]} alt={p.name} className="w-full h-full object-cover" />
+                          <img loading="lazy" decoding="async" src={p.images?.[0]} alt={p.name} className="w-full h-full object-cover" />
                         </div>
                         <span className="font-bold text-sm text-black">{p.name}</span>
                       </div>

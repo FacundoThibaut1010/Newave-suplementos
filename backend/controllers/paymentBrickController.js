@@ -1,6 +1,7 @@
 import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import correoArgentinoService from '../services/correoArgentinoService.js';
+import { firstProductImageUrl } from '../utils/imageUrls.js';
 import {
   createCardPayment,
   getPayment,
@@ -69,6 +70,10 @@ export const processCardPayment = async (req, res) => {
     for (const item of orderItems) {
       const rawId = item.product || item.id || item._id;
       const productId = typeof rawId === 'string' && rawId.includes('-') ? rawId.split('-')[0] : rawId;
+      // El sabor puede venir en `variant` o dentro del id del carrito ("<productId>-<SABOR>")
+      if (!item.variant && typeof rawId === 'string' && rawId.includes('-')) {
+        item.variant = rawId.split('-').slice(1).join('-');
+      }
       const product = await Product.findById(productId);
 
       if (!product) {
@@ -103,7 +108,10 @@ export const processCardPayment = async (req, res) => {
       verifiedOrderItems.push({
         name: product.name,
         qty,
-        image: item.image || product.images?.[0] || '',
+        // No guardamos imágenes base64 en el pedido (pesan cientos de KB cada una)
+        image: (typeof item.image === 'string' && item.image && !item.image.startsWith('data:'))
+          ? item.image
+          : (firstProductImageUrl(req, product) || 'sin-imagen'),
         price: realPrice,
         product: product._id,
         variant: item.variant || ''
@@ -149,7 +157,8 @@ export const processCardPayment = async (req, res) => {
       }
     }
 
-    const finalTransactionAmount = calculatedSubtotal + finalShippingPrice;
+    // Mercado Pago acepta como máximo 2 decimales
+    const finalTransactionAmount = Math.round((calculatedSubtotal + finalShippingPrice) * 100) / 100;
 
     // 3. Validar POLÍTICA DE PAGO en el Backend
     const currentPolicy = getPaymentPolicy();
@@ -197,10 +206,11 @@ export const processCardPayment = async (req, res) => {
         idempotencyKey
       });
     } catch (mpError) {
-      console.error('❌ Error de Mercado Pago API al procesar tarjeta:', mpError.message || mpError);
-      
+      // El SDK v2 de Mercado Pago trae el motivo real en `cause` (ej: credenciales de prueba mezcladas con producción)
+      console.error('❌ Error de Mercado Pago API al procesar tarjeta:', mpError.message || mpError, JSON.stringify(mpError.cause || mpError.api_response?.data || ''));
+
       const apiResponse = mpError.api_response || mpError.response;
-      const statusDetail = apiResponse?.data?.status_detail || 'unknown_error';
+      const statusDetail = apiResponse?.data?.status_detail || mpError.status_detail || 'unknown_error';
       const friendly = getFriendlyStatusMessage('rejected', statusDetail);
 
       // Guardar el rechazo en la orden

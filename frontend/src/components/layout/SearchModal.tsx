@@ -110,7 +110,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                       className="bg-white p-4 rounded-2xl flex items-center gap-4 hover:shadow-md transition-shadow group border border-gray-100"
                     >
                       <div className="w-16 h-16 bg-[#F8F9FA] rounded-xl flex items-center justify-center shrink-0 overflow-hidden">
-                        <img 
+                        <img loading="lazy" decoding="async"
                           src={product.images?.[0] || product.image} 
                           alt={product.name}
                           className="w-full h-full object-contain"

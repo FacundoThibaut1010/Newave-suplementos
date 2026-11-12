@@ -112,7 +112,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
       >
         <Link to={`/producto/${id}`} className="absolute inset-0 z-10">
           {/* Default Image */}
-          <img
+          <img loading="lazy" decoding="async"
             src={images?.length && images[0] ? images[0] : image}
             alt={name}
             draggable={false}
@@ -120,7 +120,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
           />
           {/* Hover Image */}
           {(images && images.length > 1 && images[hoverImageIndex] && images[hoverImageIndex].trim() !== '') && (
-            <img
+            <img loading="lazy" decoding="async"
               src={images[hoverImageIndex]}
               alt={`${name} alt`}
               draggable={false}

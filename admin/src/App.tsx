@@ -1,12 +1,14 @@
-import React from 'react';
+import React, { lazy } from 'react';
 import { HashRouter as Router, Routes, Route, Link, Navigate } from 'react-router-dom';
 import AdminLayout from './layouts/AdminLayout';
-import InventoryTable from './pages/InventoryTable';
-import StoreSettings from './pages/StoreSettings';
-import OrdersTable from './pages/OrdersTable';
-import Dashboard from './pages/Dashboard';
+const InventoryTable = lazy(() => import('./pages/InventoryTable'));
+const StoreSettings = lazy(() => import('./pages/StoreSettings'));
+const OrdersTable = lazy(() => import('./pages/OrdersTable'));
+const Dashboard = lazy(() => import('./pages/Dashboard'));
 import Login from './pages/Login';
 import { Toaster } from 'sonner';
+import ErrorBoundary from './components/ErrorBoundary';
+import { hasValidAdminToken } from './api/apiClient';
 
 const Placeholder = ({ title }: { title: string }) => (
   <div className="flex flex-col items-center justify-center min-h-[60vh] text-gray-300">
@@ -17,7 +19,8 @@ const Placeholder = ({ title }: { title: string }) => (
 
 // Componente para proteger las rutas
 const ProtectedRoute = ({ children }: { children: React.ReactNode }) => {
-  const isAuthenticated = localStorage.getItem('isAdminAuth') === 'true';
+  // El token lo emite el backend; si no hay o venció, se pide login de nuevo
+  const isAuthenticated = hasValidAdminToken();
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;
   }
@@ -28,6 +31,7 @@ function App() {
   return (
     <>
       <Toaster position="top-right" richColors closeButton />
+      <ErrorBoundary>
       <Router>
       <Routes>
         <Route path="/login" element={<Login />} />
@@ -47,6 +51,7 @@ function App() {
         } />
       </Routes>
     </Router>
+      </ErrorBoundary>
     </>
   );
 }

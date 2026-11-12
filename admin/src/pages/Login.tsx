@@ -2,17 +2,16 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Lock, User, ArrowRight } from 'lucide-react';
 import { toast } from 'sonner';
+import apiClient, { ADMIN_TOKEN_KEY } from '../api/apiClient';
 
-// Credenciales de acceso administrativo (configurables vía variable de entorno)
-const ADMIN_USER = import.meta.env.VITE_ADMIN_USER || 'admin';
-const ADMIN_PASS = import.meta.env.VITE_ADMIN_PASS || 'admin';
+// El usuario y la contraseña se validan en el backend (ADMIN_USER / ADMIN_PASSWORD), nunca acá.
 
 const Login = () => {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
 
     if (!username || !password) {
@@ -22,20 +21,22 @@ const Login = () => {
 
     setLoading(true);
 
-    // Simulamos un pequeño retraso para la animación
-    setTimeout(() => {
-      if (username === ADMIN_USER && password === ADMIN_PASS) {
-        // Guardamos el estado de autenticación en localStorage
-        localStorage.setItem('isAdminAuth', 'true');
-        toast.success('¡Bienvenido de nuevo!');
-        // Redirigimos al panel de control (usando un reload simple para que las rutas actualicen)
-        window.location.href = '/#/admin';
-      } else {
-        toast.error('Credenciales incorrectas. Inténtalo de nuevo.');
-        setPassword('');
-        setLoading(false);
-      }
-    }, 800);
+    try {
+      const { data } = await apiClient.post('/admin/login', { username, password });
+      localStorage.setItem(ADMIN_TOKEN_KEY, data.token);
+      localStorage.removeItem('isAdminAuth'); // marca vieja, ya no se usa
+      toast.success('¡Bienvenido de nuevo!');
+      // Recargamos en la ruta del panel (relativa, funciona aunque el admin esté en una subcarpeta)
+      window.location.hash = '#/admin';
+    } catch (err: any) {
+      const status = err.response?.status;
+      toast.error(
+        status === 401 ? 'Usuario o contraseña incorrectos.'
+          : err.response?.data?.message || 'No se pudo conectar con el servidor.'
+      );
+      setPassword('');
+      setLoading(false);
+    }
   };
 
   return (

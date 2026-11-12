@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -12,6 +12,7 @@ import {
 } from 'lucide-react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { Toaster } from 'sonner';
+import { ADMIN_TOKEN_KEY } from '../api/apiClient';
 
 const AdminLayout = () => {
   const location = useLocation();
@@ -87,8 +88,8 @@ const AdminLayout = () => {
           </a>
           <button 
             onClick={() => {
-              localStorage.removeItem('isAdminAuth');
-              window.location.href = '/#/login';
+              localStorage.removeItem(ADMIN_TOKEN_KEY);
+              window.location.hash = '#/login';
             }}
             className="w-full flex items-center gap-4 px-5 py-4 text-gray-400 hover:text-red-400 transition-colors"
           >
@@ -106,7 +107,10 @@ const AdminLayout = () => {
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
-          <Outlet />
+          {/* Cada sección del panel se descarga recién cuando se abre */}
+          <Suspense fallback={<div className="flex justify-center py-24"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#CAA959]" /></div>}>
+            <Outlet />
+          </Suspense>
         </motion.div>
       </main>
     </div>

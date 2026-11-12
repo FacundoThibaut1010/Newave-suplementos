@@ -10,7 +10,7 @@ import SearchModal from './SearchModal';
 import { useProductStore } from '../../store/useProductStore';
 import { useStoreConfigStore } from '../../store/useStoreConfigStore';
 
-const Navbar = () => {
+const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
   const totalItems = useCartStore((state) => state.totalItems());
   const openCart = useUIStore((state) => state.openCart);
   const { user, logout } = useAuthStore();
@@ -89,7 +89,10 @@ const Navbar = () => {
         )}
       </AnimatePresence>
 
-      <nav className="fixed top-12 md:top-10 left-0 w-full bg-black/40 backdrop-blur-2xl text-white z-[50] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] border-b border-white/10">
+      <nav
+        style={{ transform: hidden ? 'translateY(calc(-100% - 3rem - 48px))' : 'none' }}
+        aria-hidden={hidden || undefined}
+        className="transition-transform duration-300 ease-[cubic-bezier(0.23,1,0.32,1)] fixed top-12 md:top-10 left-0 w-full bg-black/60 md:bg-black/40 backdrop-blur-md md:backdrop-blur-2xl text-white z-[50] shadow-[0_8px_32px_0_rgba(0,0,0,0.8)] border-b border-white/10">
         <div className="mx-auto px-2 sm:px-4 lg:px-10">
           <div className="flex justify-between items-center h-20">
 

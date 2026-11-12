@@ -11,7 +11,12 @@ const Dashboard = () => {
     const fetchStats = async () => {
       try {
         const { data } = await apiClient.get('/admin/dashboard');
-        setStats(data);
+        // Si la API no devuelve el JSON esperado (ej: HTML por una VITE_API_URL mal configurada), no rompemos la pantalla
+        if (data && typeof data === 'object' && !Array.isArray(data)) {
+          setStats(data);
+        } else {
+          console.error('Respuesta inesperada de /admin/dashboard. Revisá VITE_API_URL:', data);
+        }
       } catch (error) {
         console.error('Error fetching dashboard stats:', error);
       } finally {
@@ -29,6 +34,8 @@ const Dashboard = () => {
     );
   }
 
+  const lowStockProducts: any[] = Array.isArray(stats?.lowStockProducts) ? stats.lowStockProducts : [];
+
   return (
     <div className="space-y-8">
       <div>
@@ -44,7 +51,7 @@ const Dashboard = () => {
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Ganancias del Mes</p>
-            <p className="text-2xl font-black text-[#202A36]">${stats?.thisMonthRevenue.toLocaleString('es-AR')}</p>
+            <p className="text-2xl font-black text-[#202A36]">${Number(stats?.thisMonthRevenue ?? 0).toLocaleString('es-AR')}</p>
           </div>
         </div>
 
@@ -54,7 +61,7 @@ const Dashboard = () => {
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Ventas del Mes</p>
-            <p className="text-2xl font-black text-[#202A36]">{stats?.thisMonthSales} pedidos</p>
+            <p className="text-2xl font-black text-[#202A36]">{stats?.thisMonthSales ?? 0} pedidos</p>
           </div>
         </div>
 
@@ -64,7 +71,7 @@ const Dashboard = () => {
           </div>
           <div>
             <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1">Por Despachar</p>
-            <p className="text-2xl font-black text-[#202A36]">{stats?.pendingOrdersCount} pedidos</p>
+            <p className="text-2xl font-black text-[#202A36]">{stats?.pendingOrdersCount ?? 0} pedidos</p>
           </div>
         </div>
       </div>
@@ -79,7 +86,7 @@ const Dashboard = () => {
           </h2>
           <div className="h-[300px] w-full">
             <ResponsiveContainer width="100%" height="100%">
-              <BarChart data={stats?.financialChart}>
+              <BarChart data={Array.isArray(stats?.financialChart) ? stats.financialChart : []}>
                 <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f0f0f0" />
                 <XAxis 
                   dataKey="name" 
@@ -98,7 +105,7 @@ const Dashboard = () => {
                 <Tooltip 
                   cursor={{ fill: '#f9fafb' }}
                   contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
-                  formatter={(value: number) => [`$${value.toLocaleString('es-AR')}`, 'Ganancia']}
+                  formatter={(value: any) => [`$${Number(value ?? 0).toLocaleString('es-AR')}`, 'Ganancia']}
                 />
                 <Bar dataKey="total" fill="#202A36" radius={[4, 4, 0, 0]} barSize={40} />
               </BarChart>
@@ -114,13 +121,13 @@ const Dashboard = () => {
           </h2>
           
           <div className="max-h-[300px] overflow-y-auto custom-scrollbar pr-2 space-y-4">
-            {stats?.lowStockProducts.length === 0 ? (
+            {lowStockProducts.length === 0 ? (
               <div className="flex flex-col items-center justify-center h-full text-center text-gray-400">
                 <Package size={40} className="mb-4 opacity-50" />
                 <p className="text-sm font-medium">Todo tu inventario tiene buen stock.</p>
               </div>
             ) : (
-              stats?.lowStockProducts.map((product: any) => (
+              lowStockProducts.map((product: any) => (
                 <div key={product._id} className="flex items-center gap-4 p-4 rounded-xl border border-red-50 bg-red-50/30">
                   <img src={product.image} alt={product.name} className="w-12 h-12 rounded-lg object-cover bg-white" />
                   <div className="flex-1">

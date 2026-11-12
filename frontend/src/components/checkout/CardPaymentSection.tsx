@@ -89,7 +89,8 @@ export const CardPaymentSection: React.FC<CardPaymentSectionProps> = ({
   }, []);
 
   // Monto inicial estable (mínimo $100 ARS para que Mercado Pago no desactive medios de pago)
-  const [initialAmount] = useState(() => Math.max(100, Math.round(Number(amount) > 0 ? Number(amount) : 1000)));
+  // (el padre remonta este componente con otra `key` cuando cambia el total, así las cuotas se calculan sobre el monto real)
+  const [initialAmount] = useState(() => Math.max(100, Math.round((Number(amount) > 0 ? Number(amount) : 1000) * 100) / 100));
 
   const stableInitialization = useMemo(() => ({
     amount: initialAmount,
@@ -120,10 +121,31 @@ export const CardPaymentSection: React.FC<CardPaymentSectionProps> = ({
     };
   }, [policyConfig.maxInstallments, policyConfig.excludedPaymentTypes?.join(',')]);
 
+  // IMPORTANTE: el <CardPayment> de Mercado Pago destruye y vuelve a crear el formulario cada vez que
+  // cambia la identidad de onSubmit/onError. Como el checkout se re-renderiza con cada tecla, eso hacía
+  // fallar el Brick ("fields_setup_failed_after_3_tries"). Por eso los callbacks son estables y leen
+  // los datos más recientes desde esta ref.
+  const latest = useRef({ orderItems, guestInfo, shippingAddress, shippingOption, userId, payerEmail, onPaymentSuccess });
+  latest.current = { orderItems, guestInfo, shippingAddress, shippingOption, userId, payerEmail, onPaymentSuccess };
+
+  const handleBrickError = useCallback((error: any) => {
+    console.warn('Card Payment Brick:', error);
+    if (error?.type === 'critical') {
+      toast.error('No se pudo cargar el formulario de tarjeta. Recargá la página o pagá con Mercado Pago.');
+    }
+  }, []);
+
   const handleSubmit = useCallback(async (cardFormData: any) => {
-    if (!shippingAddress?.address || !shippingAddress?.postalCode) {
+    const { orderItems, guestInfo, shippingAddress, shippingOption, userId, payerEmail, onPaymentSuccess } = latest.current;
+
+    if (!guestInfo?.fullName || !guestInfo?.email || !guestInfo?.phone) {
+      toast.error('Completá tu nombre, email y teléfono antes de pagar.');
+      // Rechazar la promesa le indica al Brick que el envío no se realizó y deja el formulario habilitado
+      throw new Error('Faltan datos de contacto');
+    }
+    if (!shippingAddress?.address || !shippingAddress?.postalCode || !shippingAddress?.city) {
       toast.error('Por favor completa los datos de entrega antes de pagar.');
-      return;
+      throw new Error('Faltan datos de entrega');
     }
 
     setPaymentStatus('processing');
@@ -181,7 +203,7 @@ export const CardPaymentSection: React.FC<CardPaymentSectionProps> = ({
         'Ocurrió un error al procesar el pago con tu tarjeta. Por favor verificá los datos o intentá nuevamente.'
       );
     }
-  }, [orderItems, guestInfo, shippingAddress, shippingOption, userId, payerEmail, onPaymentSuccess, amount]);
+  }, []);
 
   // Pantalla de resultado Aprobado
   if (paymentStatus === 'approved') {
@@ -337,11 +359,7 @@ export const CardPaymentSection: React.FC<CardPaymentSectionProps> = ({
           initialization={stableInitialization}
           customization={stableCustomization}
           onSubmit={handleSubmit}
-          onError={(error) => {
-            if (error?.type === 'critical') {
-              console.warn('Alerta en Card Payment Brick:', error);
-            }
-          }}
+          onError={handleBrickError}
         />
       </div>
     </div>

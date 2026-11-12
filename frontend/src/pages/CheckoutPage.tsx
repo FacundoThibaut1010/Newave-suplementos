@@ -7,7 +7,7 @@ import { CreditCard, Truck, User, ArrowLeft, CheckCircle2, ShieldCheck, Phone, W
 import { Link, useNavigate } from 'react-router-dom';
 import { useCartStore } from '../store/useCartStore';
 import { useAuthStore } from '../store/useAuthStore';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useMemo } from 'react';
 import apiClient from '../api/apiClient';
 import AuthModal from '../components/auth/AuthModal';
 import { toast } from 'sonner';
@@ -146,6 +146,24 @@ const CheckoutPage = () => {
     toast.error('Faltan datos obligatorios para el envío.');
   };
 
+  // Items del carrito en el formato que espera el backend (producto + sabor separados).
+  // Lo usan tanto el pago con tarjeta (Brick) como Checkout Pro.
+  const orderItemsPayload = useMemo(() => items.map(item => {
+    const isVariant = item.id.includes('-');
+    const productId = isVariant ? item.id.split('-')[0] : item.id;
+    const variantFlavor = isVariant ? item.id.split('-').slice(1).join('-') : undefined;
+
+    return {
+      product: productId,
+      variant: variantFlavor,
+      name: item.name,
+      qty: item.quantity,
+      price: item.price,
+      // Las imágenes en base64 no hacen falta para cobrar y hacen pesadísimo el pedido
+      image: typeof item.image === 'string' && item.image.startsWith('data:') ? '' : item.image
+    };
+  }), [items]);
+
   const onSubmit = async (data: CheckoutFormData) => {
     // Validar que se haya seleccionado un método de envío si hay código postal ingresado
     if (postalCode && postalCode.trim().length >= 4 && !selectedShipping) {
@@ -157,20 +175,7 @@ const CheckoutPage = () => {
 
     try {
       const payload = {
-        orderItems: items.map(item => {
-          const isVariant = item.id.includes('-');
-          const productId = isVariant ? item.id.split('-')[0] : item.id;
-          const variantFlavor = isVariant ? item.id.split('-').slice(1).join('-') : undefined;
-
-          return {
-            product: productId,
-            variant: variantFlavor,
-            name: item.name,
-            qty: item.quantity,
-            price: item.price,
-            image: item.image
-          };
-        }),
+        orderItems: orderItemsPayload,
         guestInfo: {
           fullName: data.fullName,
           email: data.email,
@@ -529,12 +534,24 @@ const CheckoutPage = () => {
                   </div>
 
                   {/* OPCIÓN 1: CARD PAYMENT BRICK (DENTRO DE LA WEB) */}
-                  {paymentMode === 'card' && (
+                  {paymentMode === 'card' && !selectedShipping && (
+                    <div className="pt-2">
+                      <div className="p-6 rounded-[2rem] bg-gray-50 border border-gray-100 text-center">
+                        <p className="text-xs font-black uppercase tracking-widest text-gray-500">
+                          Completá tus datos y elegí una opción de envío para pagar con tarjeta
+                        </p>
+                      </div>
+                    </div>
+                  )}
+
+                  {paymentMode === 'card' && selectedShipping && (
                     <div className="pt-2">
                       <CardPaymentSection
-                        amount={totalPrice() + (selectedShipping ? selectedShipping.price : 0)}
+                        // Si cambia el total (otro envío), se vuelve a montar el formulario con el monto correcto para las cuotas
+                        key={`card-${Math.round(totalPrice() + selectedShipping.price)}`}
+                        amount={totalPrice() + selectedShipping.price}
                         payerEmail={watch('email')}
-                        orderItems={items}
+                        orderItems={orderItemsPayload}
                         guestInfo={{
                           fullName: watch('fullName'),
                           email: watch('email'),
@@ -588,7 +605,7 @@ const CheckoutPage = () => {
                   {items.map((item) => (
                     <div key={item.id} className="flex items-center gap-4 bg-[#F9F9F9] p-3 md:p-4 rounded-[1.5rem] border border-gray-50">
                       <div className="relative w-20 h-20 md:w-24 md:h-24 rounded-2xl bg-white flex-shrink-0 p-2 shadow-sm">
-                        <img src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
+                        <img loading="lazy" decoding="async" src={item.image} alt={item.name} className="w-full h-full object-contain mix-blend-multiply" />
                         <div className="absolute -top-2 -right-2 bg-black text-white w-7 h-7 rounded-full flex items-center justify-center font-black italic text-xs shadow-md">
                           {item.quantity}
                         </div>

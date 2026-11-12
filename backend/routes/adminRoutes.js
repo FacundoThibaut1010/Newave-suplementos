@@ -1,11 +1,32 @@
 import express from 'express';
+import { adminLogin, requireAdmin } from '../middleware/adminAuth.js';
 import Product from '../models/Product.js';
 import StoreConfig from '../models/StoreConfig.js';
 import Order from '../models/Order.js';
 import { sendOrderDispatchedEmail, sendOrderDeliveredEmail } from '../utils/emailService.js';
 import { Jimp } from 'jimp';
+import { withImageUrls, restoreImageUrls } from '../utils/imageUrls.js';
+
+// La config trae los "más vendidos" como productos populados: sus imágenes son de cada producto
+const configWithImageUrls = (req, config) => {
+  if (!config) return config;
+  const converted = withImageUrls(req, config, 'config', { skip: ['bestSellers'] });
+  if (Array.isArray(converted.bestSellers)) {
+    converted.bestSellers = converted.bestSellers.map((p) =>
+      p && typeof p === 'object' && p._id ? withImageUrls(req, p, 'product') : p
+    );
+  }
+  return converted;
+};
 
 const router = express.Router();
+
+// --- SEGURIDAD ---
+// Login del panel (público) y lectura de la config (la usa la tienda). Todo lo demás exige token de admin.
+router.post('/login', adminLogin);
+router.use((req, res, next) =>
+  req.method === 'GET' && req.path === '/config' ? next() : requireAdmin(req, res, next)
+);
 
 // --- IMAGE COMPRESSION HELPER ---
 const compressBase64Image = async (base64String) => {
@@ -29,8 +50,8 @@ const compressBase64Image = async (base64String) => {
 // Obtener todos los productos
 router.get('/products', async (req, res) => {
   try {
-    const products = await Product.find().sort({ createdAt: -1 }).allowDiskUse(true);
-    res.json(products);
+    const products = await Product.find().sort({ createdAt: -1 }).allowDiskUse(true).lean();
+    res.json(products.map((p) => withImageUrls(req, p, 'product')));
   } catch (error) {
     console.error('❌ Error en GET /products:', error);
     res.status(500).json({ message: 'Error al obtener productos', error: error.message });
@@ -160,9 +181,9 @@ router.post('/remove-black-bg', async (req, res) => {
 // Crear producto
 router.post('/products', async (req, res) => {
   try {
-    const product = new Product(req.body);
+    const product = new Product(await restoreImageUrls(req.body));
     const savedProduct = await product.save();
-    res.status(201).json(savedProduct);
+    res.status(201).json(withImageUrls(req, savedProduct, 'product'));
   } catch (error) {
     console.error('❌ Error:', error.message);
     res.status(400).json({ message: 'Error de validación', error: error.message });
@@ -177,9 +198,10 @@ router.put('/products/:id', async (req, res) => {
       return res.status(404).json({ message: 'Producto no encontrado' });
     }
 
-    Object.assign(product, req.body);
+    // Las fotos llegan como URLs /api/images/...: las volvemos al valor original antes de guardar
+    Object.assign(product, await restoreImageUrls(req.body));
     const updatedProduct = await product.save();
-    res.json(updatedProduct);
+    res.json(withImageUrls(req, updatedProduct, 'product'));
   } catch (error) {
     console.error('❌ Error en PUT /products:', error.message);
     res.status(400).json({ message: error.message || 'No pudimos actualizar el producto', error: error.message });
@@ -237,7 +259,7 @@ router.get('/config', async (req, res) => {
       ];
       await config.save();
     }
-    res.json(config);
+    res.json(configWithImageUrls(req, config));
   } catch (error) {
     console.error('❌ Error en GET /config:', error.message);
     res.status(500).json({ message: 'Error al obtener la configuración' });
@@ -249,11 +271,11 @@ router.put('/config', async (req, res) => {
   try {
     // El upsert: true crea el documento si no existe al intentar actualizar
     const config = await StoreConfig.findOneAndUpdate(
-      {}, 
-      req.body, 
+      {},
+      await restoreImageUrls(req.body),
       { new: true, upsert: true, runValidators: true }
-    );
-    res.json(config);
+    ).populate('bestSellers', 'name price images category countInStock');
+    res.json(configWithImageUrls(req, config));
   } catch (error) {
     console.error('❌ Error en PUT /config:', error.message);
     res.status(400).json({ message: 'No pudimos actualizar la configuración', error: error.message });
@@ -263,8 +285,8 @@ router.put('/config', async (req, res) => {
 // --- ORDERS (VENTAS) ---
 router.get('/orders', async (req, res) => {
   try {
-    const orders = await Order.find({ isPaid: true }).sort({ createdAt: -1 }).allowDiskUse(true);
-    res.json(orders);
+    const orders = await Order.find({ isPaid: true }).sort({ createdAt: -1 }).allowDiskUse(true).lean();
+    res.json(orders.map((o) => withImageUrls(req, o, 'order')));
   } catch (error) {
     console.error('❌ Error en GET /orders:', error.message);
     res.status(500).json({ message: 'Error al obtener órdenes' });
@@ -360,7 +382,7 @@ router.get('/dashboard', async (req, res) => {
     const allProducts = await Product.find({}, 'name countInStock images variants');
     const lowStockProducts = [];
 
-    allProducts.forEach(product => {
+    allProducts.map((p) => withImageUrls(req, p, 'product')).forEach(product => {
       if (product.variants && product.variants.length > 0) {
         product.variants.forEach(v => {
             if (v.countInStock > 0 && v.countInStock < 5) {

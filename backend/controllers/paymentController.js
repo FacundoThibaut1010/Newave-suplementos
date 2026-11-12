@@ -3,6 +3,7 @@ import Order from '../models/Order.js';
 import Product from '../models/Product.js';
 import { sendOrderConfirmationEmail, sendNewOrderNotificationToSeller } from '../utils/emailService.js';
 import correoArgentinoService from '../services/correoArgentinoService.js';
+import { firstProductImageUrl } from '../utils/imageUrls.js';
 import dotenv from 'dotenv';
 dotenv.config(); // Cargar variables de entorno AHORA para asegurar que el token exista
 
@@ -62,7 +63,10 @@ export const createPreference = async (req, res) => {
       verifiedOrderItems.push({
         name: product.name,
         qty,
-        image: item.image || product.images?.[0] || '',
+        // URL de la foto (no base64): así Mercado Pago puede mostrarla y el pedido no pesa cientos de KB
+        image: (typeof item.image === 'string' && item.image && !item.image.startsWith('data:'))
+          ? item.image
+          : (firstProductImageUrl(req, product) || 'sin-imagen'),
         price: realPrice,
         product: product._id,
         variant: item.variant || ''

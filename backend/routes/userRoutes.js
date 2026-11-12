@@ -5,6 +5,11 @@ import generateToken from '../utils/generateToken.js';
 import { protect } from '../middleware/authMiddleware.js';
 import admin from '../config/firebaseAdmin.js';
 import { sendWelcomeEmail, sendVerificationEmail, sendPasswordResetEmail } from '../utils/emailService.js';
+import { withImageUrls } from '../utils/imageUrls.js';
+
+// Los favoritos vienen como productos populados: mandamos URLs de imagen en vez de base64
+const favoritesWithUrls = (req, list) =>
+  (list || []).map((p) => (p && typeof p === 'object' && p.name ? withImageUrls(req, p, 'product') : p));
 
 const verificationCodes = new Map();
 
@@ -15,7 +20,7 @@ const router = express.Router();
 router.get('/orders', protect, async (req, res) => {
   try {
     const orders = await Order.find({ user: req.user._id, isPaid: true }).sort({ createdAt: -1 });
-    res.json(orders);
+    res.json(orders.map((o) => withImageUrls(req, o, 'order')));
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener compras' });
   }
@@ -91,7 +96,7 @@ router.post('/register', async (req, res) => {
         dni: user.dni,
         dateOfBirth: user.dateOfBirth,
         address: user.address,
-        favorites: user.favorites,
+        favorites: favoritesWithUrls(req, user.favorites),
         token: generateToken(user._id),
       });
     } else {
@@ -121,7 +126,7 @@ router.post('/login', async (req, res) => {
         dni: user.dni,
         dateOfBirth: user.dateOfBirth,
         address: user.address,
-        favorites: user.favorites,
+        favorites: favoritesWithUrls(req, user.favorites),
         token: generateToken(user._id),
       });
     } else {
@@ -177,7 +182,7 @@ router.post('/google-login', async (req, res) => {
       dni: user.dni,
       dateOfBirth: user.dateOfBirth,
       address: user.address,
-      favorites: user.favorites,
+      favorites: favoritesWithUrls(req, user.favorites),
       token: generateToken(user._id),
     });
 
@@ -286,7 +291,7 @@ router.put('/profile', protect, async (req, res) => {
         dni: populatedUser.dni,
         dateOfBirth: populatedUser.dateOfBirth,
         address: populatedUser.address,
-        favorites: populatedUser.favorites,
+        favorites: favoritesWithUrls(req, populatedUser.favorites),
         token: generateToken(populatedUser._id),
       });
     } else {
@@ -303,7 +308,7 @@ router.put('/profile', protect, async (req, res) => {
 router.get('/favorites', protect, async (req, res) => {
   try {
     const user = await User.findById(req.user._id).populate('favorites');
-    res.json(user.favorites);
+    res.json(favoritesWithUrls(req, user.favorites));
   } catch (error) {
     res.status(500).json({ message: 'Error al obtener favoritos' });
   }

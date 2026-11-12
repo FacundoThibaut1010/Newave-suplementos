@@ -265,7 +265,7 @@ const ProductDetailPage = () => {
                           className={`flex flex-col items-center justify-center gap-2 p-2 sm:p-4 rounded-xl text-xs sm:text-sm font-bold border-2 transition-all w-full ${isSelected ? 'border-[#202A36] text-[#202A36] bg-gray-50' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
                         >
                           {v.image && (
-                            <img src={v.image} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover bg-white border border-gray-100 shrink-0 shadow-sm" />
+                            <img loading="lazy" decoding="async" src={v.image} className="w-14 h-14 sm:w-16 sm:h-16 rounded-xl object-cover bg-white border border-gray-100 shrink-0 shadow-sm" />
                           )}
                           <span className="truncate w-full text-center leading-tight whitespace-normal">{variantName || `Opción ${idx + 1}`}</span>
                         </button>
