@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useReducedMotion } from 'framer-motion';
+
+const EASE_OUT = [0.23, 1, 0.32, 1] as const;
 import { X, Loader2, ArrowRight } from 'lucide-react';
 import { useAuthStore } from '../../store/useAuthStore';
 import apiClient from '../../api/apiClient';
@@ -172,284 +174,223 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
     }
   };
 
+  // Vista actual (determina el contenido y la pestaña activa)
+  const view = isFlipped ? (step === 'form' ? 'register' : 'verify') : frontView;
+  const isRegisterTab = isFlipped;
+  const reduce = useReducedMotion();
+
+  // Cerrar con Escape
+  useEffect(() => {
+    if (!isOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') onClose();
+    };
+    window.addEventListener('keydown', onKey);
+    return () => window.removeEventListener('keydown', onKey);
+  }, [isOpen, onClose]);
+
+  const goTab = (register: boolean) => {
+    setIsFlipped(register);
+    if (!register) setFrontView('login');
+  };
+
+  const inputCls =
+    'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] focus:bg-white transition-colors';
+  const labelCls = 'block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5';
+  const primaryBtn =
+    'auth-btn w-full mt-2 py-3.5 rounded-xl bg-[#202A36] text-white font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 disabled:opacity-50';
+  const linkBtn = 'py-1 text-[10px] font-bold text-gray-400 hover:text-[#202A36] uppercase tracking-widest transition-colors';
+
+  // Entrada: aparece apenas agrandándose y subiendo; la salida es más rápida
+  const card = reduce
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
+    : {
+        initial: { opacity: 0, transform: 'translateY(10px) scale(0.96)' },
+        animate: { opacity: 1, transform: 'translateY(0px) scale(1)', transition: { duration: 0.22, ease: EASE_OUT } },
+        exit: { opacity: 0, transform: 'translateY(6px) scale(0.97)', transition: { duration: 0.15, ease: EASE_OUT } },
+      };
+
+  // Cambio de vista dentro de la tarjeta: fundido corto con un leve desplazamiento
+  const swap = reduce
+    ? { initial: { opacity: 0 }, animate: { opacity: 1 }, exit: { opacity: 0 } }
+    : {
+        initial: { opacity: 0, transform: 'translateY(6px)', filter: 'blur(2px)' },
+        animate: { opacity: 1, transform: 'translateY(0px)', filter: 'blur(0px)', transition: { duration: 0.2, ease: EASE_OUT } },
+        exit: { opacity: 0, transform: 'translateY(-4px)', filter: 'blur(2px)', transition: { duration: 0.12, ease: EASE_OUT } },
+      };
+
+  const titles: Record<string, { title: string; subtitle: string }> = {
+    login: { title: 'Bienvenido', subtitle: 'Ingresá para ver tus compras y favoritos.' },
+    register: { title: 'Crear cuenta', subtitle: 'Sumate a la elite de Newave.' },
+    verify: { title: 'Verificá tu correo', subtitle: `Ingresá el código de 4 dígitos que enviamos a ${regEmail}` },
+    forgot_email: { title: 'Recuperar', subtitle: 'Te enviaremos un código para restablecerla.' },
+    forgot_code: { title: 'Nueva contraseña', subtitle: `Ingresá el código que enviamos a ${resetEmail}` },
+  };
+  const showTabs = view === 'login' || view === 'register';
+
   return (
     <AnimatePresence>
       {isOpen && (
-        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+        <div className="fixed inset-0 z-[100] flex items-center justify-center p-4" role="dialog" aria-modal="true" aria-label={titles[view].title}>
           <motion.div
             initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            animate={{ opacity: 1, transition: { duration: 0.2 } }}
+            exit={{ opacity: 0, transition: { duration: 0.15 } }}
             onClick={onClose}
             className="absolute inset-0 bg-black/60 backdrop-blur-sm"
           />
 
-          <div className="relative w-full max-w-md h-[600px] perspective-[1000px] z-[101]">
-            <motion.div
-              initial={false}
-              animate={{ rotateY: isFlipped ? 180 : 0 }}
-              transition={{ duration: 0.6, type: "spring", stiffness: 200, damping: 20 }}
-              className="w-full h-full relative preserve-3d"
-            >
-              {/* FRONT: LOGIN */}
-              <div
-                className="absolute inset-0 w-full h-full bg-white rounded-[2rem] shadow-2xl backface-hidden overflow-y-auto scrollbar-hide"
-              >
-                <div className="p-8 pb-10 flex flex-col justify-center min-h-full relative">
-                  <button onClick={onClose} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors focus:outline-none">
-                    <X size={20} className="text-gray-400" />
-                  </button>
+          <motion.div
+            {...card}
+            className="relative z-[101] w-full max-w-[420px] max-h-[calc(100svh-2rem)] overflow-y-auto scrollbar-hide bg-white rounded-[1.75rem] shadow-2xl"
+          >
+            {/* El alto de la tarjeta se adapta suavemente al contenido de cada vista */}
+            <motion.div layout={!reduce} transition={{ layout: { duration: 0.25, ease: EASE_OUT } }} className="relative px-7 pt-7 pb-8 sm:px-8">
+              <button onClick={onClose} aria-label="Cerrar" className="auth-close absolute top-4 right-4 p-2 rounded-full focus:outline-none">
+                <X size={18} className="text-gray-400" />
+              </button>
 
-                  {frontView === 'login' ? (
-                    <>
-                      <div className="text-center mt-4 mb-8">
-                        <h2 className="text-3xl font-black uppercase italic tracking-tighter text-[#202A36] mb-2">
-                          Bienvenido
-                        </h2>
-                        <p className="text-gray-500 font-medium text-sm">
-                          Ingresa para ver tus compras y favoritos.
-                        </p>
-                      </div>
+              {/* Pestañas Ingresar / Crear cuenta con indicador que se desliza */}
+              {showTabs && (
+                <motion.div layout="position" className="relative grid grid-cols-2 p-1 bg-gray-100 rounded-xl mb-6 mr-10">
+                  {[
+                    { label: 'Ingresar', active: !isRegisterTab, onClick: () => goTab(false) },
+                    { label: 'Crear cuenta', active: isRegisterTab, onClick: () => goTab(true) },
+                  ].map((tab) => (
+                    <button
+                      key={tab.label}
+                      type="button"
+                      onClick={tab.onClick}
+                      className={`relative z-10 py-2 text-[11px] font-black uppercase tracking-widest rounded-lg transition-colors duration-200 ${
+                        tab.active ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'
+                      }`}
+                    >
+                      {tab.active && (
+                        <motion.span
+                          layoutId="auth-tab-indicator"
+                          className="absolute inset-0 -z-10 bg-white rounded-lg shadow-sm"
+                          transition={{ type: 'spring', bounce: 0, duration: 0.3 }}
+                        />
+                      )}
+                      {tab.label}
+                    </button>
+                  ))}
+                </motion.div>
+              )}
 
-                      <form onSubmit={handleLogin} className="flex flex-col gap-4">
-                        <div>
-                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Correo</label>
-                          <input
-                            type="email"
-                            value={loginEmail}
-                            onChange={(e) => setLoginEmail(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                            placeholder="tu@correo.com"
-                          />
-                        </div>
-                        <div>
-                          <div className="flex justify-between items-center mb-2">
-                            <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">Contraseña</label>
-                            <button type="button" onClick={() => setFrontView('forgot_email')} className="text-[9px] font-bold text-[#CAA959] hover:underline uppercase tracking-widest">
-                              ¿Olvidaste tu contraseña?
-                            </button>
-                          </div>
-                          <input
-                            type="password"
-                            value={loginPassword}
-                            onChange={(e) => setLoginPassword(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                            placeholder="••••••••"
-                          />
-                        </div>
-
-                        <button
-                          type="submit"
-                          disabled={isLoading}
-                          className="w-full mt-4 py-4 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-[#CAA959] transition-all flex items-center justify-center gap-2"
-                        >
-                          {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Iniciar Sesión'}
-                        </button>
-                      </form>
-
-                      <p className="mt-8 text-center text-xs font-medium text-gray-500">
-                        ¿No tienes cuenta?{' '}
-                        <button onClick={() => setIsFlipped(true)} className="text-[#CAA959] font-black uppercase tracking-widest hover:underline ml-1">
-                          Regístrate
-                        </button>
-                      </p>
-                    </>
-                  ) : frontView === 'forgot_email' ? (
-                    <>
-                      <div className="text-center mt-4 mb-8">
-                        <h2 className="text-2xl font-black uppercase italic tracking-tighter text-[#202A36] mb-2">
-                          Recuperar
-                        </h2>
-                        <p className="text-gray-500 font-medium text-xs">
-                          Te enviaremos un código para restablecerla.
-                        </p>
-                      </div>
-
-                      <form onSubmit={handleSendResetCode} className="flex flex-col gap-4">
-                        <div>
-                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Correo Electrónico</label>
-                          <input
-                            type="email"
-                            value={resetEmail}
-                            onChange={(e) => setResetEmail(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                            placeholder="tu@correo.com"
-                          />
-                        </div>
-
-                        <button
-                          type="submit"
-                          disabled={isLoading}
-                          className="w-full mt-4 py-4 bg-[#CAA959] text-white rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-[#202A36] transition-all flex items-center justify-center gap-2"
-                        >
-                          {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Enviar Código'}
-                        </button>
-                      </form>
-                      
-                      <button onClick={() => setFrontView('login')} className="mt-6 text-[10px] font-bold text-gray-400 hover:text-[#202A36] uppercase tracking-widest w-full text-center transition-colors">
-                        Volver a iniciar sesión
-                      </button>
-                    </>
-                  ) : (
-                    <>
-                      <div className="text-center mt-4 mb-8">
-                        <h2 className="text-2xl font-black uppercase italic tracking-tighter text-[#202A36] mb-2">
-                          Nueva Contraseña
-                        </h2>
-                        <p className="text-gray-500 font-medium text-xs">
-                          Ingresa el código que enviamos a {resetEmail}
-                        </p>
-                      </div>
-
-                      <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
-                        <div>
-                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Código de 4 dígitos</label>
-                          <input
-                            type="text"
-                            maxLength={4}
-                            value={resetCode}
-                            onChange={(e) => setResetCode(e.target.value.replace(/\D/g, ''))}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center tracking-[0.5em] font-black text-xl text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                            placeholder="0000"
-                          />
-                        </div>
-                        <div>
-                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Nueva Contraseña</label>
-                          <input
-                            type="password"
-                            value={newPassword}
-                            onChange={(e) => setNewPassword(e.target.value)}
-                            className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                            placeholder="••••••••"
-                          />
-                        </div>
-
-                        <button
-                          type="submit"
-                          disabled={isLoading || resetCode.length !== 4}
-                          className="w-full mt-4 py-4 bg-[#CAA959] text-white rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-[#202A36] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                        >
-                          {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Restablecer Contraseña'}
-                        </button>
-                      </form>
-                      
-                      <button onClick={() => setFrontView('login')} className="mt-6 text-[10px] font-bold text-gray-400 hover:text-[#202A36] uppercase tracking-widest w-full text-center transition-colors">
-                        Cancelar
-                      </button>
-                    </>
-                  )}
-                </div>
-              </div>
-
-              {/* BACK: REGISTER */}
-              <div
-                className="absolute inset-0 w-full h-full bg-white rounded-[2rem] shadow-2xl backface-hidden overflow-y-auto scrollbar-hide"
-                style={{ transform: 'rotateY(180deg)' }}
-              >
-                <div className="p-8 pb-10 flex flex-col justify-center min-h-full relative">
-                  <button onClick={onClose} className="absolute top-6 right-6 p-2 hover:bg-gray-100 rounded-full transition-colors focus:outline-none">
-                    <X size={20} className="text-gray-400" />
-                  </button>
-
-                  <div className="text-center mt-2 mb-6">
-                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-[#202A36] mb-1">
-                      Crear Cuenta
-                    </h2>
-                    <p className="text-gray-500 font-medium text-xs">
-                      Únete a la elite de Newave.
-                    </p>
+              <AnimatePresence mode="wait" initial={false}>
+                <motion.div key={view} {...swap}>
+                  <div className={`mb-6 ${showTabs ? '' : 'mt-2 pr-8'}`}>
+                    <h2 className="text-2xl font-black uppercase italic tracking-tighter text-[#202A36] mb-1">{titles[view].title}</h2>
+                    <p className="text-gray-500 font-medium text-sm break-words">{titles[view].subtitle}</p>
                   </div>
 
-                  {step === 'form' ? (
-                    <form onSubmit={handleSendCode} className="flex flex-col gap-3">
+                  {view === 'login' && (
+                    <form onSubmit={handleLogin} className="flex flex-col gap-4">
                       <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Nombre Completo</label>
-                        <input
-                          type="text"
-                          value={regName}
-                          onChange={(e) => setRegName(e.target.value)}
-                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                          placeholder="Juan Pérez"
-                        />
+                        <label className={labelCls}>Correo</label>
+                        <input type="email" autoComplete="email" value={loginEmail} onChange={(e) => setLoginEmail(e.target.value)} className={inputCls} placeholder="tu@correo.com" />
                       </div>
                       <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Correo Electrónico</label>
-                        <input
-                          type="email"
-                          value={regEmail}
-                          onChange={(e) => setRegEmail(e.target.value)}
-                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                          placeholder="tu@correo.com"
-                        />
+                        <div className="flex justify-between items-center mb-1.5">
+                          <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">Contraseña</label>
+                          <button type="button" onClick={() => setFrontView('forgot_email')} className="text-[10px] font-bold text-[#CAA959] hover:underline">
+                            ¿La olvidaste?
+                          </button>
+                        </div>
+                        <input type="password" autoComplete="current-password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} className={inputCls} placeholder="••••••••" />
                       </div>
-                      <div>
-                        <label className="block text-[9px] font-black uppercase tracking-widest text-gray-400 mb-1">Contraseña</label>
-                        <input
-                          type="password"
-                          value={regPassword}
-                          onChange={(e) => setRegPassword(e.target.value)}
-                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-2.5 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                          placeholder="••••••••"
-                        />
-                      </div>
+                      <button type="submit" disabled={isLoading} className={primaryBtn}>
+                        {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Iniciar sesión'}
+                      </button>
+                    </form>
+                  )}
 
-                      <button
-                        type="submit"
-                        disabled={isLoading}
-                        className="w-full mt-2 py-3.5 bg-[#CAA959] text-white rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-[#202A36] transition-all flex items-center justify-center gap-2"
-                      >
+                  {view === 'register' && (
+                    <form onSubmit={handleSendCode} className="flex flex-col gap-4">
+                      <div>
+                        <label className={labelCls}>Nombre completo</label>
+                        <input type="text" autoComplete="name" value={regName} onChange={(e) => setRegName(e.target.value)} className={inputCls} placeholder="Juan Pérez" />
+                      </div>
+                      <div>
+                        <label className={labelCls}>Correo electrónico</label>
+                        <input type="email" autoComplete="email" value={regEmail} onChange={(e) => setRegEmail(e.target.value)} className={inputCls} placeholder="tu@correo.com" />
+                      </div>
+                      <div>
+                        <label className={labelCls}>Contraseña</label>
+                        <input type="password" autoComplete="new-password" value={regPassword} onChange={(e) => setRegPassword(e.target.value)} className={inputCls} placeholder="••••••••" />
+                      </div>
+                      <button type="submit" disabled={isLoading} className={primaryBtn}>
                         {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Siguiente'}
                       </button>
                     </form>
-                  ) : (
-                    <form onSubmit={handleVerify} className="flex flex-col gap-3">
-                      <p className="text-sm text-gray-600 text-center mb-2">
-                        Ingresa el código de 4 dígitos que enviamos a <strong className="text-[#202A36]">{regEmail}</strong>
-                      </p>
-                      <div className="flex justify-center mt-2">
-                        <input
-                          type="text"
-                          maxLength={4}
-                          value={verificationCode}
-                          onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                          className="w-48 text-center text-3xl tracking-[0.2em] bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-black text-black focus:outline-none focus:border-[#CAA959] transition-colors"
-                          placeholder="0000"
-                        />
-                      </div>
+                  )}
 
-                      <button
-                        type="submit"
-                        disabled={isLoading || verificationCode.length !== 4}
-                        className="w-full mt-6 py-3.5 bg-[#CAA959] text-white rounded-xl font-black uppercase tracking-widest text-[11px] hover:bg-[#202A36] transition-all flex items-center justify-center gap-2 disabled:opacity-50"
-                      >
-                        {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Verificar y Crear Cuenta'}
+                  {view === 'verify' && (
+                    <form onSubmit={handleVerify} className="flex flex-col gap-4">
+                      <input
+                        type="text"
+                        inputMode="numeric"
+                        maxLength={4}
+                        value={verificationCode}
+                        onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
+                        className="w-full text-center text-3xl tracking-[0.4em] bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-black text-black focus:outline-none focus:border-[#CAA959] transition-colors"
+                        placeholder="0000"
+                      />
+                      <button type="submit" disabled={isLoading || verificationCode.length !== 4} className={primaryBtn}>
+                        {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Verificar y crear cuenta'}
                       </button>
-
-                      <button
-                        type="button"
-                        onClick={(e) => {
-                          e.preventDefault();
-                          setStep('form');
-                        }}
-                        className="w-full mt-1 py-2 text-gray-400 text-[10px] font-bold uppercase hover:text-[#202A36] transition-colors"
-                      >
+                      <button type="button" onClick={() => setStep('form')} className={linkBtn}>
                         Volver
                       </button>
                     </form>
                   )}
 
-                  {step === 'form' && (
-                    <p className="mt-3 text-center text-xs font-medium text-gray-500">
-                      ¿Ya tienes cuenta?{' '}
-                      <button type="button" onClick={() => setIsFlipped(false)} className="text-[#202A36] font-black uppercase tracking-widest hover:underline ml-1">
-                        Inicia Sesión
+                  {view === 'forgot_email' && (
+                    <form onSubmit={handleSendResetCode} className="flex flex-col gap-4">
+                      <div>
+                        <label className={labelCls}>Correo electrónico</label>
+                        <input type="email" autoComplete="email" value={resetEmail} onChange={(e) => setResetEmail(e.target.value)} className={inputCls} placeholder="tu@correo.com" />
+                      </div>
+                      <button type="submit" disabled={isLoading} className={primaryBtn}>
+                        {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Enviar código'}
                       </button>
-                    </p>
+                      <button type="button" onClick={() => setFrontView('login')} className={linkBtn}>
+                        Volver a iniciar sesión
+                      </button>
+                    </form>
                   )}
-                </div>
-              </div>
+
+                  {view === 'forgot_code' && (
+                    <form onSubmit={handleResetPassword} className="flex flex-col gap-4">
+                      <div>
+                        <label className={labelCls}>Código de 4 dígitos</label>
+                        <input
+                          type="text"
+                          inputMode="numeric"
+                          maxLength={4}
+                          value={resetCode}
+                          onChange={(e) => setResetCode(e.target.value.replace(/\D/g, ''))}
+                          className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center tracking-[0.5em] font-black text-xl text-black focus:outline-none focus:border-[#CAA959] transition-colors"
+                          placeholder="0000"
+                        />
+                      </div>
+                      <div>
+                        <label className={labelCls}>Nueva contraseña</label>
+                        <input type="password" autoComplete="new-password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} className={inputCls} placeholder="••••••••" />
+                      </div>
+                      <button type="submit" disabled={isLoading || resetCode.length !== 4} className={primaryBtn}>
+                        {isLoading ? <Loader2 size={16} className="animate-spin" /> : 'Restablecer contraseña'}
+                      </button>
+                      <button type="button" onClick={() => setFrontView('login')} className={linkBtn}>
+                        Cancelar
+                      </button>
+                    </form>
+                  )}
+                </motion.div>
+              </AnimatePresence>
             </motion.div>
-          </div>
+          </motion.div>
         </div>
       )}
     </AnimatePresence>

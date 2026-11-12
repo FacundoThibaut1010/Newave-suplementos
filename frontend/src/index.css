@@ -403,3 +403,13 @@ img {
 @media (hover: hover) and (pointer: fine) {
   .scroll-arrow.is-visible:hover { background-color: #CAA959; color: #fff; }
 }
+
+/* ---------- Tarjeta de iniciar sesión ---------- */
+.auth-btn { transition: background-color 200ms ease, transform 160ms var(--ease-out); }
+.auth-btn:not(:disabled):active { transform: scale(0.97); }
+.auth-close { transition: background-color 150ms ease, transform 160ms var(--ease-out); }
+.auth-close:active { transform: scale(0.92); }
+@media (hover: hover) and (pointer: fine) {
+  .auth-btn:not(:disabled):hover { background-color: #CAA959; }
+  .auth-close:hover { background-color: #f3f4f6; }
+}
