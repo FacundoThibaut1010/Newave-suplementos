@@ -1,6 +1,14 @@
 import { create } from 'zustand';
 import apiClient from '../api/apiClient';
 
+// Igual que el filtro del catálogo (ProductsPage): coincide si un nombre contiene al otro ("Proteínas" ~ "Proteína")
+export const categoryMatches = (productCategory?: string, target?: string) => {
+  if (!productCategory || !target) return false;
+  const a = productCategory.toLowerCase().trim();
+  const b = target.toLowerCase().trim();
+  return a === b || a.includes(b) || b.includes(a);
+};
+
 interface ProductStore {
   products: any[];
   categories: { value: string; label: string }[];
@@ -34,7 +42,11 @@ export const useProductStore = create<ProductStore>((set, get) => ({
       ]);
 
       const products = productsRes.data.products || [];
-      const activeCategories = categoriesRes.data || [];
+      // Solo categorías que tengan al menos un producto a la venta: si no hay, desaparecen
+      // de la home, el menú, el footer y el catálogo. Misma regla de coincidencia que el catálogo.
+      const activeCategories = (categoriesRes.data || []).filter((cat: any) =>
+        products.some((p: any) => categoryMatches(p.category, cat.slug) || categoryMatches(p.category, cat.name))
+      );
       const dynamicOptions = activeCategories.map((c: any) => ({ value: c.slug, label: c.name }));
       const categories = [{ value: 'Todas', label: 'Todos' }, ...dynamicOptions];
 

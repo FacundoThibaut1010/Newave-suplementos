@@ -91,7 +91,8 @@ export const getActiveCategories = async (req, res) => {
     const configCategories = config ? (withImageUrls(req, config, 'config').categories || []) : [];
 
     // Buscar todas las categorías que tengan al menos un producto
-    const activeCategoriesNames = await Product.distinct('category');
+    // Solo productos activos: una categoría sin productos a la venta no debe aparecer en la tienda
+    const activeCategoriesNames = await Product.distinct('category', { isActive: { $ne: false } });
     const normalizedActiveNames = [];
     
     activeCategoriesNames.forEach(name => {

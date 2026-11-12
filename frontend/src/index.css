@@ -350,3 +350,39 @@ img {
   opacity: 0.18;
 }
 .studio-stage--light .studio-reflection { opacity: 0.1; }
+
+/* ---------- Categorías (Descubrí tu potencial) ---------- */
+.category-card { transition: transform 400ms var(--ease-out); }
+.category-card-img { transition: transform 700ms var(--ease-out); }
+.category-card-dim { transition: background-color 300ms ease; }
+.category-card-title { transition: color 200ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .category-card:hover { transform: translateY(-6px); }
+  .category-card:hover .category-card-img { transform: scale(1.05); }
+  .category-card:hover .category-card-dim { background-color: rgba(0, 0, 0, 0.35); }
+  .category-card:hover .category-card-title { color: #CAA959; }
+}
+
+/* ---------- Más vendidos ---------- */
+/* Celular con "reducir movimiento": sin pin, fila deslizable a mano */
+@media (max-width: 767px) and (prefers-reduced-motion: reduce) {
+  .bs-track-wrap {
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    margin: 0 -1.5rem;
+    padding: 0 1.5rem 0.5rem;
+    scrollbar-width: none;
+  }
+  .bs-track-wrap::-webkit-scrollbar { display: none; }
+  .bs-card { scroll-snap-align: center; }
+}
+/* Celular con animación: margen lateral para que el primer y el último producto queden centrados */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .bs-track-wrap { margin: 0 -1.5rem; }
+  .bs-track { padding-inline: calc((100vw - min(68vw, 300px)) / 2); }
+}
+/* Celular con animación: mientras está fija, la sección ocupa todo el alto visible (sin franja negra abajo) */
+@media (max-width: 767px) and (prefers-reduced-motion: no-preference) {
+  .bs-section { min-height: calc(100svh - 128px); display: flex; }
+  .bs-inner { flex: 1; min-width: 0; justify-content: center; } /* min-width: 0 → no se estira al ancho de la fila de productos */
+}
