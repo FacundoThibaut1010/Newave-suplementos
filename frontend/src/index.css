@@ -548,7 +548,7 @@ img {
   transform: none;
   transition: transform 650ms var(--ease-out) calc(220ms + var(--i) * 60ms), color 200ms ease;
 }
-.mmenu-num { font-size: 0.75rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.4); margin-top: 4px; }
+.mmenu-num { font-size: 0.75rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; color: #1C86C8; margin-top: 4px; }
 .mmenu-link:active .mmenu-text { color: #fff; transform: translate3d(6px, 0, 0); transition-delay: 0ms; }
 
 /* Líneas divisorias que se dibujan de izquierda a derecha */
