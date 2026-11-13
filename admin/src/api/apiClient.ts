@@ -3,7 +3,8 @@ import axios from 'axios';
 export const ADMIN_TOKEN_KEY = 'newaveAdminToken';
 
 const apiClient = axios.create({
-  baseURL: import.meta.env.VITE_API_URL || 'http://localhost:5000/api',
+  // Publicado sin VITE_API_URL configurada: usar el backend de Render en vez de localhost (que no existe en la compu del cliente)
+  baseURL: import.meta.env.VITE_API_URL || (import.meta.env.PROD ? 'https://newave-suplementosback.onrender.com/api' : 'http://localhost:5000/api'),
   headers: {
     'Content-Type': 'application/json',
   },
