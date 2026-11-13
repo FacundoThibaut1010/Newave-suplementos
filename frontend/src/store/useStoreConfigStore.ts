@@ -2,9 +2,10 @@ import { create } from 'zustand';
 import apiClient from '../api/apiClient';
 
 export const DEFAULT_HERO_CONFIG = {
-  title: 'ENERGÍA. FUERZA. RESULTADOS.',
-  subtitle: 'Dominá tu rendimiento con suplementación de élite diseñada para superar cada límite.',
-  buttonText: 'Comprar ahora',
+  // Vacíos: el Hero usa sus textos de ejemplo hasta que llega la configuración (sin parpadeo de otro texto)
+  title: '',
+  subtitle: '',
+  buttonText: '', // vacío: el Hero muestra "Ver catálogo" hasta que llega la configuración
   image: '',
 };
 

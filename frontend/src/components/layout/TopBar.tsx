@@ -20,6 +20,13 @@ const TopBar = ({ hidden = false }: { hidden?: boolean }) => {
       try {
         const { data } = await apiClient.get('/admin/config');
         if (data.announcement) {
+          // Lista editada en el admin (Identidad → Cinta): se muestra exactamente esa lista
+          if (data.announcement.customized) {
+            const custom = (data.announcement.messages || []).filter((m: string) => m && m.trim() !== '');
+            setMessages(custom.length > 0 ? custom : defaultMessages);
+            setIsVisible(true);
+            return;
+          }
           if (!data.announcement.enabled) {
             setMessages(defaultMessages);
             setIsVisible(true);

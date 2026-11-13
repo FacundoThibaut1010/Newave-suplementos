@@ -112,3 +112,6 @@ html {
   .id-bar-primary:not(:disabled):hover { filter: brightness(1.1); }
   .id-photo:hover img { filter: brightness(0.92); }
 }
+.id-ghost-neutral { transition: background-color 150ms ease, color 150ms ease, transform 160ms cubic-bezier(0.23, 1, 0.32, 1); }
+.id-ghost-neutral:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) { .id-ghost-neutral:hover { background-color: #f3f4f6; color: #202A36; } }

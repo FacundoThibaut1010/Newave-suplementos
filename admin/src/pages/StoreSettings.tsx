@@ -1,16 +1,29 @@
 import { useEffect, useMemo, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { Save, Megaphone, RotateCcw, LayoutGrid, Star, Search, X, UploadCloud, Loader2, Plus, Trash2, Eye, EyeOff } from 'lucide-react';
+import { Save, Megaphone, RotateCcw, LayoutGrid, Star, Search, X, UploadCloud, Loader2, Plus, Trash2, Eye, EyeOff, Home } from 'lucide-react';
 import { toast } from 'sonner';
 import apiClient from '../api/apiClient';
 import { useAdminStore } from '../store/useAdminStore';
 
 /**
- * Identidad: lo que se ve en la tienda, en 3 pestañas (cinta de anuncios, categorías, más vendidos).
+ * Identidad: lo que se ve en la tienda, en 4 pestañas (portada, cinta de anuncios, categorías, más vendidos).
  * Los cambios se acumulan y se publican juntos desde la barra inferior, que solo aparece si hay cambios.
  */
 
-type Tab = 'cinta' | 'categorias' | 'vendidos';
+type Tab = 'portada' | 'cinta' | 'categorias' | 'vendidos';
+
+// Mensajes que la tienda muestra por defecto en la cinta (mismos que frontend/src/components/layout/TopBar.tsx)
+const DEFAULT_MESSAGES = [
+  'ENVÍO GRATIS EN COMPRAS SUPERIORES A $150.000',
+  'NUEVA CREATINA MICRONIZADA - ¡YA DISPONIBLE!',
+  'SUMATE A LA REVOLUCIÓN NEWAVE 🚀',
+  'SEGUINOS EN INSTAGRAM COMO @NEWAVE.FITNESS',
+];
+
+// Las fotos de categorías con ruta relativa (/creatina (1).jpg) viven en la tienda: se cargan desde ahí,
+// así el admin muestra exactamente lo mismo que ve el cliente.
+const STORE_URL = (import.meta.env.VITE_STORE_URL || 'https://newave-suplementos.vercel.app').replace(/\/+$/, '');
+const storeAsset = (src?: string) => (src && src.startsWith('/') ? STORE_URL + encodeURI(src) : src || '');
 
 // Comprime una foto a WebP de hasta 800 px (igual que en el formulario de producto)
 const compressImage = (file: File): Promise<string> =>
@@ -48,7 +61,7 @@ const StoreSettings = () => {
   const { products, config: storeConfig, loadingConfig, fetchProducts, fetchConfig } = useAdminStore();
   const [config, setConfig] = useState<any>(null);
   const [originalConfig, setOriginalConfig] = useState<any>(null);
-  const [tab, setTab] = useState<Tab>('cinta');
+  const [tab, setTab] = useState<Tab>('portada');
   const [saving, setSaving] = useState(false);
   const [uploadingIdx, setUploadingIdx] = useState<number | null>(null);
   const [productSearch, setProductSearch] = useState('');
@@ -91,8 +104,19 @@ const StoreSettings = () => {
 
   // ---------- Cinta de anuncios ----------
   const announcement = config.announcement || { enabled: false, messages: [] };
-  const messages: string[] = announcement.messages || (announcement.text ? [announcement.text] : []);
-  const setMessages = (msgs: string[]) => setConfig({ ...config, announcement: { ...announcement, messages: msgs } });
+  // customized = la lista ya fue editada acá y reemplaza a los mensajes por defecto.
+  // Si no, mostramos lo que la tienda muestra hoy: los mensajes por defecto + los agregados (si la cinta estaba encendida).
+  const messages: string[] = announcement.customized
+    ? announcement.messages || []
+    : [...DEFAULT_MESSAGES, ...(announcement.enabled ? (announcement.messages || []).filter((m: string) => m && m.trim()) : [])];
+  const setMessages = (msgs: string[]) =>
+    setConfig({ ...config, announcement: { ...announcement, customized: true, enabled: true, messages: msgs } });
+  const restoreDefaultMessages = () =>
+    setConfig({ ...config, announcement: { ...announcement, customized: false, enabled: false, messages: [] } });
+
+  // ---------- Portada ----------
+  const hero = config.hero || {};
+  const setHero = (patch: any) => setConfig({ ...config, hero: { ...hero, ...patch } });
 
   // ---------- Categorías ----------
   const categories: any[] = config.categories || [];
@@ -133,10 +157,11 @@ const StoreSettings = () => {
     .filter((p: any) => !productSearch.trim() || `${p.name} ${p.category}`.toLowerCase().includes(productSearch.trim().toLowerCase()))
     .sort((a: any, b: any) => Number(b.isActive !== false) - Number(a.isActive !== false) || a.name.localeCompare(b.name, 'es'));
 
-  const tabs: { key: Tab; label: string; icon: any; badge?: number }[] = [
-    { key: 'cinta', label: 'Cinta de anuncios', icon: Megaphone, badge: announcement.enabled ? messages.length : undefined },
-    { key: 'categorias', label: 'Categorías', icon: LayoutGrid, badge: categories.length },
-    { key: 'vendidos', label: 'Más vendidos', icon: Star, badge: selected.length },
+  const tabs: { key: Tab; label: string; short: string; icon: any; badge?: number }[] = [
+    { key: 'portada', label: 'Portada', short: 'Portada', icon: Home },
+    { key: 'cinta', label: 'Cinta de anuncios', short: 'Cinta', icon: Megaphone, badge: messages.filter((m) => m.trim()).length },
+    { key: 'categorias', label: 'Categorías', short: 'Categorías', icon: LayoutGrid, badge: categories.length },
+    { key: 'vendidos', label: 'Más vendidos', short: 'Destacados', icon: Star, badge: selected.length },
   ];
 
   const labelCls = 'block text-[13px] font-bold text-[#202A36] mb-1.5';
@@ -145,11 +170,11 @@ const StoreSettings = () => {
     <div className="space-y-6 max-w-5xl pb-28">
       <div>
         <h1 className="text-3xl md:text-4xl font-black text-[#202A36] tracking-tighter mb-1">Identidad de la tienda</h1>
-        <p className="text-gray-400 font-medium text-sm">Lo que ven tus clientes en la página: la cinta de arriba, las categorías y los más vendidos.</p>
+        <p className="text-gray-400 font-medium text-sm">Lo que ven tus clientes en la página: la portada, la cinta de arriba, las categorías y los más vendidos.</p>
       </div>
 
       {/* Pestañas */}
-      <div className="flex gap-2 overflow-x-auto scrollbar-hide p-1 bg-gray-100 rounded-2xl">
+      <div className="grid grid-cols-4 gap-1 p-1 bg-gray-100 rounded-2xl">
         {tabs.map((t) => {
           const active = tab === t.key;
           return (
@@ -157,13 +182,14 @@ const StoreSettings = () => {
               key={t.key}
               type="button"
               onClick={() => setTab(t.key)}
-              className={`id-tab relative shrink-0 flex-1 flex items-center justify-center gap-2 px-4 py-3 rounded-xl text-sm font-bold ${active ? 'text-[#202A36]' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`id-tab relative min-w-0 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-1 sm:px-4 py-2.5 sm:py-3 rounded-xl text-[11px] sm:text-sm font-bold ${active ? 'text-[#202A36]' : 'text-gray-500 hover:text-gray-700'}`}
             >
               {active && <motion.span layoutId="id-tab-bg" className="absolute inset-0 bg-white rounded-xl shadow-sm" transition={{ type: 'spring', bounce: 0, duration: 0.3 }} />}
               <t.icon size={17} className="relative" />
-              <span className="relative whitespace-nowrap">{t.label}</span>
+              <span className="relative whitespace-nowrap sm:hidden">{t.short}</span>
+              <span className="relative whitespace-nowrap hidden sm:inline">{t.label}</span>
               {t.badge !== undefined && (
-                <span className={`relative text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-[#202A36] text-white' : 'bg-white text-gray-500'}`}>{t.badge}</span>
+                <span className={`relative hidden sm:inline text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-[#202A36] text-white' : 'bg-white text-gray-500'}`}>{t.badge}</span>
               )}
             </button>
           );
@@ -177,12 +203,82 @@ const StoreSettings = () => {
           animate={{ opacity: 1, transform: 'translateY(0px)', transition: { duration: 0.2, ease: [0.23, 1, 0.32, 1] } }}
           exit={{ opacity: 0, transition: { duration: 0.1 } }}
         >
+          {/* ---------- Portada ---------- */}
+          {tab === 'portada' && (
+            <section className="bg-white rounded-3xl border border-gray-100 p-5 md:p-7 space-y-6">
+              <div>
+                <h2 className="text-lg font-black text-[#202A36]">Lo primero que ve el cliente</h2>
+                <p className="text-[13px] text-gray-500 mt-0.5">El título, el texto y el botón de la portada de la página de inicio. Si dejás un campo vacío se usa el texto de ejemplo.</p>
+              </div>
+
+              {/* Vista previa */}
+              <div>
+                <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Así se ve en la tienda</p>
+                <div className="rounded-2xl border border-gray-100 bg-gradient-to-b from-[#f5f3ef] to-[#ece9e3] p-6 md:p-8">
+                  <p className="text-[10px] uppercase tracking-[0.28em] text-neutral-500 mb-3">Strength &amp; Performance</p>
+                  <p className="text-3xl md:text-4xl font-bold text-neutral-900 leading-[1.02] tracking-tight break-words">
+                    {(hero.title || 'Energía. Fuerza. Resultados.').split(' ').map((w: string, i: number) => (
+                      <span key={i}>
+                        {w} <br className="hidden md:block" />
+                      </span>
+                    ))}
+                  </p>
+                  <p className="text-sm text-neutral-600 mt-3 max-w-md">
+                    {hero.subtitle || 'Descubrí la suplementación premium diseñada para quienes buscan superar cada límite.'}
+                  </p>
+                  <span className="inline-flex mt-5 bg-neutral-900 text-white text-xs font-medium px-6 py-2.5 rounded-full">
+                    {hero.buttonText || 'Ver catálogo'} →
+                  </span>
+                </div>
+              </div>
+
+              <div className="grid gap-4">
+                <div>
+                  <label className={labelCls}>Título</label>
+                  <input
+                    type="text"
+                    value={hero.title || ''}
+                    onChange={(e) => setHero({ title: e.target.value })}
+                    maxLength={60}
+                    placeholder="Energía. Fuerza. Resultados."
+                    className="input-admin text-sm font-bold"
+                  />
+                  <p className="text-xs text-gray-500 mt-1.5">Corto y con fuerza. En la compu cada palabra va en un renglón, por eso funcionan bien 2 o 3 palabras.</p>
+                </div>
+                <div>
+                  <label className={labelCls}>Texto debajo del título</label>
+                  <textarea
+                    value={hero.subtitle || ''}
+                    onChange={(e) => setHero({ subtitle: e.target.value })}
+                    maxLength={160}
+                    rows={3}
+                    placeholder="Descubrí la suplementación premium diseñada para quienes buscan superar cada límite."
+                    className="input-admin text-sm !rounded-2xl resize-none leading-relaxed"
+                  />
+                  <p className="text-xs text-gray-500 mt-1.5">Una o dos oraciones que digan qué ofrece la tienda.</p>
+                </div>
+                <div className="sm:max-w-xs">
+                  <label className={labelCls}>Texto del botón</label>
+                  <input
+                    type="text"
+                    value={hero.buttonText || ''}
+                    onChange={(e) => setHero({ buttonText: e.target.value })}
+                    maxLength={24}
+                    placeholder="Ver catálogo"
+                    className="input-admin text-sm font-bold"
+                  />
+                  <p className="text-xs text-gray-500 mt-1.5">Lleva al catálogo. Ej: "Ver catálogo", "Comprar ahora".</p>
+                </div>
+              </div>
+            </section>
+          )}
+
           {/* ---------- Cinta de anuncios ---------- */}
           {tab === 'cinta' && (
             <section className="bg-white rounded-3xl border border-gray-100 p-5 md:p-7 space-y-6">
               <div>
                 <h2 className="text-lg font-black text-[#202A36]">La franja negra de arriba de todo</h2>
-                <p className="text-[13px] text-gray-500 mt-0.5">Mensajes cortos que van rotando: promociones, envío gratis, novedades.</p>
+                <p className="text-[13px] text-gray-500 mt-0.5">Mensajes cortos que van rotando cada 4 segundos. Lo que está en esta lista es exactamente lo que se muestra.</p>
               </div>
 
               {/* Vista previa */}
@@ -191,48 +287,34 @@ const StoreSettings = () => {
                 <div className="rounded-2xl overflow-hidden border border-gray-100">
                   <div className="bg-black text-white h-11 flex items-center justify-center px-4 text-center">
                     <span className="text-[11px] font-black uppercase tracking-[0.2em] italic truncate">
-                      {announcement.enabled && messages[0]?.trim() ? messages[0] : 'Envío gratis en compras superiores a $150.000'}
+                      {messages.find((m) => m.trim()) || DEFAULT_MESSAGES[0]}
                     </span>
                   </div>
                   <div className="h-10 bg-gradient-to-b from-gray-50 to-white" />
                 </div>
-                <p className="text-xs text-gray-400 mt-2">
-                  {announcement.enabled
-                    ? `Rota entre los mensajes de la tienda y tus ${messages.length} ${messages.length === 1 ? 'mensaje' : 'mensajes'}.`
-                    : 'Con la cinta apagada se muestran solo los mensajes que trae la tienda por defecto.'}
-                </p>
               </div>
 
-              <div className="flex items-center justify-between gap-4 p-4 rounded-2xl bg-gray-50">
-                <div>
-                  <p className="text-sm font-black text-[#202A36]">Mostrar mis mensajes</p>
-                  <p className="text-xs text-gray-500">{announcement.enabled ? 'Encendida: tus mensajes se suman a la cinta.' : 'Apagada: tus mensajes no se muestran.'}</p>
+              <div className="space-y-3">
+                <div className="flex items-center justify-between gap-3">
+                  <span className={labelCls}>Mensajes ({messages.filter((m) => m.trim()).length})</span>
+                  {announcement.customized && (
+                    <button type="button" onClick={restoreDefaultMessages} className="id-ghost-neutral inline-flex items-center gap-1.5 text-xs font-bold text-gray-500 px-3 py-1.5 rounded-lg">
+                      <RotateCcw size={13} /> Volver a los de por defecto
+                    </button>
+                  )}
                 </div>
-                <button
-                  type="button"
-                  role="switch"
-                  aria-checked={!!announcement.enabled}
-                  onClick={() => setConfig({ ...config, announcement: { ...announcement, enabled: !announcement.enabled } })}
-                  className={`relative inline-flex h-7 w-12 shrink-0 items-center rounded-full transition-colors ${announcement.enabled ? 'bg-emerald-500' : 'bg-gray-300'}`}
-                >
-                  <span className={`inline-block h-5 w-5 rounded-full bg-white shadow transition-transform ${announcement.enabled ? 'translate-x-6' : 'translate-x-1'}`} />
-                </button>
-              </div>
-
-              <div className={`space-y-3 transition-opacity ${announcement.enabled ? '' : 'opacity-50 pointer-events-none'}`}>
-                <span className={labelCls}>Tus mensajes</span>
                 {messages.map((msg, idx) => (
-                  <div key={idx} className="flex gap-2 items-center">
-                    <span className="w-7 text-center text-xs font-black text-gray-300">{idx + 1}</span>
+                  <div key={idx} className="flex gap-2 items-center min-w-0">
+                    <span className="w-6 shrink-0 text-center text-xs font-black text-gray-300">{idx + 1}</span>
                     <input
                       type="text"
                       value={msg}
                       onChange={(e) => setMessages(messages.map((m, i) => (i === idx ? e.target.value : m)))}
                       placeholder="Ej: Envío gratis este fin de semana"
                       maxLength={70}
-                      className="input-admin flex-1 uppercase tracking-wider font-bold text-sm"
+                      className="input-admin min-w-0 flex-1 uppercase tracking-wider font-bold text-sm"
                     />
-                    <button type="button" onClick={() => setMessages(messages.filter((_, i) => i !== idx))} aria-label="Quitar mensaje" className="id-icon-btn p-2.5 rounded-xl text-gray-400 hover:text-red-500">
+                    <button type="button" onClick={() => setMessages(messages.filter((_, i) => i !== idx))} aria-label="Quitar mensaje" className="id-icon-btn shrink-0 p-2.5 rounded-xl text-gray-400 hover:text-red-500">
                       <X size={18} />
                     </button>
                   </div>
@@ -240,7 +322,7 @@ const StoreSettings = () => {
                 <button type="button" onClick={() => setMessages([...messages, ''])} className="id-add w-full py-3 rounded-xl border-2 border-dashed border-gray-200 text-sm font-bold text-gray-500">
                   + Agregar mensaje
                 </button>
-                <p className="text-xs text-gray-400">Consejo: menos de 50 letras, para que se lea entero en el celular.</p>
+                <p className="text-xs text-gray-400">Consejo: menos de 50 letras, para que se lea entero en el celular. Si borrás todos, se muestran los de por defecto.</p>
               </div>
             </section>
           )}
@@ -263,7 +345,7 @@ const StoreSettings = () => {
                     <div key={idx} className="rounded-2xl border border-gray-100 bg-[#FAFAFA] overflow-hidden flex flex-col">
                       <label className="id-photo relative block aspect-[4/3] overflow-hidden bg-gray-100 cursor-pointer group">
                         {cat.image ? (
-                          <img src={cat.image} alt="" className="w-full h-full object-cover" />
+                          <img src={storeAsset(cat.image)} alt="" className="w-full h-full object-cover" />
                         ) : (
                           <span className="absolute inset-0 flex flex-col items-center justify-center text-gray-400 gap-1">
                             <UploadCloud size={22} />
@@ -344,9 +426,9 @@ const StoreSettings = () => {
                 {selected.length === 0 ? (
                   <p className="text-sm text-gray-400 p-4 rounded-2xl bg-gray-50 text-center">Todavía no elegiste ninguno. Agregalos desde la lista de abajo.</p>
                 ) : (
-                  <div className="grid sm:grid-cols-2 gap-2">
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
                     {selected.map((p: any, i: number) => (
-                      <div key={p._id} className="flex items-center gap-3 p-2.5 rounded-xl border border-gray-100 bg-[#FAFAFA]">
+                      <div key={p._id} className="min-w-0 flex items-center gap-3 p-2.5 rounded-xl border border-gray-100 bg-[#FAFAFA]">
                         <span className="w-6 text-center text-xs font-black text-gray-300">{i + 1}</span>
                         <img src={p.images?.[0] || p.image} alt="" className="w-11 h-11 rounded-lg object-contain bg-white border border-gray-100 shrink-0" />
                         <div className="min-w-0 flex-1">

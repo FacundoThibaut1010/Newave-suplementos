@@ -147,7 +147,7 @@ const Hero = () => {
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
             <Link to="/productos" className="studio-light-cta w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-neutral-900 text-white px-9 py-4 rounded-full text-sm font-medium tracking-wide">
-              Ver catálogo
+              {hero.buttonText || 'Ver catálogo'}
               <ArrowRight size={16} className="studio-cta-arrow" />
             </Link>
           </div>

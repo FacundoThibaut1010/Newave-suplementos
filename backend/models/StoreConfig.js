@@ -10,7 +10,9 @@ const storeConfigSchema = new mongoose.Schema({
   announcement: {
     text: { type: String, default: '' },
     messages: { type: [String], default: ['Envío premium gratuito en órdenes superiores a $150'] },
-    enabled: { type: Boolean, default: true }
+    enabled: { type: Boolean, default: true },
+    // true = la lista se editó en el admin y reemplaza a los mensajes por defecto de la tienda
+    customized: { type: Boolean, default: false }
   },
   styles: {
     accentColor: { type: String, default: '#000000' }
