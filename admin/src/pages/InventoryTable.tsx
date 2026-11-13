@@ -228,7 +228,8 @@ const InventoryTable = () => {
             </button>
           )}
         </div>
-        <div className="flex gap-2 overflow-x-auto scrollbar-hide -mx-1 px-1 pb-1">
+        {/* Fila deslizable de borde a borde de la tarjeta, con desvanecido que indica que hay más */}
+        <div className="inv-chips flex gap-2 overflow-x-auto scrollbar-hide -mx-4 md:-mx-5 px-4 md:px-5 pb-1">
           {[['Todas', list.length] as const, ...categories].map(([name, n]) => {
             const active = category === name;
             return (

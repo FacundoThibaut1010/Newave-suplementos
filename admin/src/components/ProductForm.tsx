@@ -18,10 +18,10 @@ interface ProductFormProps {
 const Section = ({ n, title, hint, children }: { n: number; title: string; hint: string; children: React.ReactNode }) => (
   <section className="bg-white rounded-2xl border border-gray-100 p-5 md:p-6">
     <div className="flex items-start gap-3 mb-5">
-      <span className="w-7 h-7 rounded-full bg-[#202A36] text-white text-xs font-black flex items-center justify-center shrink-0">{n}</span>
+      <span className="w-8 h-8 rounded-full bg-[#202A36] text-white text-sm font-black flex items-center justify-center shrink-0">{n}</span>
       <div>
-        <h3 className="text-base font-black text-[#202A36] leading-tight">{title}</h3>
-        <p className="text-xs text-gray-400 font-medium mt-0.5">{hint}</p>
+        <h3 className="text-lg font-black text-[#202A36] leading-tight">{title}</h3>
+        <p className="text-[13px] text-gray-500 font-medium mt-0.5">{hint}</p>
       </div>
     </div>
     {children}
@@ -276,8 +276,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
 
   const inputCls =
     'w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-[#202A36] placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:border-[#202A36] focus:ring-4 focus:ring-[#202A36]/5 transition-shadow';
-  const labelCls = 'block text-xs font-bold text-[#202A36] mb-1.5';
-  const hintCls = 'text-[11px] text-gray-400 mt-1.5 leading-snug';
+  const labelCls = 'block text-[13px] font-bold text-[#202A36] mb-1.5';
+  const hintCls = 'text-xs text-gray-500 mt-1.5 leading-snug';
 
   const priceInput = (key: 'price' | 'oldPrice') => (e: React.ChangeEvent<HTMLInputElement>) => {
     const raw = e.target.value.replace(/\D/g, '');

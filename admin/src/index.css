@@ -82,3 +82,12 @@ html {
   .pf-drop:hover, .pf-add:hover { border-color: #CAA959; color: #CAA959; background-color: rgba(202, 169, 89, 0.04); }
   .pf-mini-btn:hover { color: #202A36; }
 }
+/* Fila de categorías: se desliza con el dedo; el desvanecido de los bordes avisa que hay más */
+.inv-chips {
+  -webkit-mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 40px), transparent 100%);
+  mask-image: linear-gradient(to right, transparent 0, #000 16px, #000 calc(100% - 40px), transparent 100%);
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x proximity;
+  -webkit-overflow-scrolling: touch;
+}
+.inv-chips > * { scroll-snap-align: start; scroll-margin-left: 16px; }
