@@ -115,7 +115,7 @@ const AdminLayout = () => {
       </aside>
 
       {/* Main Content */}
-      <main className="flex-grow md:ml-72 p-4 pt-24 md:p-12 w-full overflow-x-hidden">
+      <main className="flex-grow min-w-0 md:ml-72 p-4 pt-24 md:p-12 w-full overflow-x-hidden">
         <motion.div
           key={location.pathname}
           initial={{ opacity: 0, y: 10 }}

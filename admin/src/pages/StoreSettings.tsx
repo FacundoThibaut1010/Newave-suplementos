@@ -57,6 +57,49 @@ const matches = (productCategory?: string, target?: string) => {
 
 const idOf = (b: any) => String(b?._id ?? b);
 
+// Vista previa de la cinta: rota los mensajes cada 4 s igual que en la tienda
+const CintaPreview = ({ messages }: { messages: string[] }) => {
+  const [index, setIndex] = useState(0);
+  const key = messages.join('\u0000');
+  useEffect(() => setIndex(0), [key]);
+  useEffect(() => {
+    if (messages.length <= 1) return;
+    const t = setInterval(() => setIndex((p) => (p + 1) % messages.length), 4000);
+    return () => clearInterval(t);
+  }, [key, messages.length]);
+  const i = index % Math.max(messages.length, 1);
+  return (
+    <div className="rounded-2xl overflow-hidden border border-gray-100">
+      <div className="bg-black text-white h-11 flex items-center justify-center px-4 text-center overflow-hidden">
+        <AnimatePresence mode="wait">
+          <motion.span
+            key={i + ':' + messages[i]}
+            initial={{ y: 20, opacity: 0 }}
+            animate={{ y: 0, opacity: 1 }}
+            exit={{ y: -20, opacity: 0 }}
+            transition={{ duration: 0.5, ease: 'easeInOut' }}
+            className="text-[11px] font-black uppercase tracking-[0.2em] italic truncate"
+          >
+            {messages[i]}
+          </motion.span>
+        </AnimatePresence>
+      </div>
+      <div className="h-10 bg-gradient-to-b from-gray-50 to-white flex items-center justify-center gap-1.5">
+        {messages.length > 1 &&
+          messages.map((_, n) => (
+            <button
+              key={n}
+              type="button"
+              onClick={() => setIndex(n)}
+              aria-label={`Ver mensaje ${n + 1}`}
+              className={`h-1.5 rounded-full transition-all duration-200 ${n === i ? 'w-5 bg-[#202A36]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'}`}
+            />
+          ))}
+      </div>
+    </div>
+  );
+};
+
 const StoreSettings = () => {
   const { products, config: storeConfig, loadingConfig, fetchProducts, fetchConfig } = useAdminStore();
   const [config, setConfig] = useState<any>(null);
@@ -284,14 +327,7 @@ const StoreSettings = () => {
               {/* Vista previa */}
               <div>
                 <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-2">Así se ve en la tienda</p>
-                <div className="rounded-2xl overflow-hidden border border-gray-100">
-                  <div className="bg-black text-white h-11 flex items-center justify-center px-4 text-center">
-                    <span className="text-[11px] font-black uppercase tracking-[0.2em] italic truncate">
-                      {messages.find((m) => m.trim()) || DEFAULT_MESSAGES[0]}
-                    </span>
-                  </div>
-                  <div className="h-10 bg-gradient-to-b from-gray-50 to-white" />
-                </div>
+                <CintaPreview messages={messages.filter((m) => m.trim()).length ? messages.filter((m) => m.trim()) : DEFAULT_MESSAGES} />
               </div>
 
               <div className="space-y-3">

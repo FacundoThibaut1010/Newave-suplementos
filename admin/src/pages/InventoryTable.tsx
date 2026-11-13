@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from 'react';
+import { useEffect, useMemo, useRef, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useSearchParams } from 'react-router-dom';
 import { Plus, Search, Trash2, Edit3, X, Package, CheckCircle2, AlertTriangle, XCircle } from 'lucide-react';
@@ -34,7 +34,53 @@ const stockTone = (units: number) =>
 
 const formatPrice = (n: number) => `$${Number(n || 0).toLocaleString('es-AR')}`;
 
+/** Fila horizontal deslizable: con el dedo (nativo), arrastrando con el mouse o con la rueda. */
+const useDragScroll = () => {
+  const ref = useRef<HTMLDivElement>(null);
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+    let startX = 0, startLeft = 0, down = false, moved = false;
+    const onDown = (e: PointerEvent) => {
+      if (e.pointerType !== 'mouse' || e.button !== 0) return;
+      down = true; moved = false; startX = e.clientX; startLeft = el.scrollLeft;
+    };
+    const onMove = (e: PointerEvent) => {
+      if (!down) return;
+      const dx = e.clientX - startX;
+      if (!moved && Math.abs(dx) > 5) { moved = true; el.style.scrollSnapType = 'none'; el.style.cursor = 'grabbing'; }
+      if (moved) el.scrollLeft = startLeft - dx;
+    };
+    const onUp = () => {
+      if (!down) return;
+      down = false; el.style.scrollSnapType = ''; el.style.cursor = '';
+    };
+    // Si fue un arrastre, que no cuente como clic en una categoría
+    const onClick = (e: MouseEvent) => { if (moved) { e.preventDefault(); e.stopPropagation(); moved = false; } };
+    const onWheel = (e: WheelEvent) => {
+      if (Math.abs(e.deltaY) <= Math.abs(e.deltaX) || el.scrollWidth <= el.clientWidth) return;
+      const max = el.scrollWidth - el.clientWidth;
+      if ((e.deltaY < 0 && el.scrollLeft <= 0) || (e.deltaY > 0 && el.scrollLeft >= max - 1)) return;
+      e.preventDefault(); el.scrollLeft += e.deltaY;
+    };
+    el.addEventListener('pointerdown', onDown);
+    window.addEventListener('pointermove', onMove);
+    window.addEventListener('pointerup', onUp);
+    el.addEventListener('click', onClick, true);
+    el.addEventListener('wheel', onWheel, { passive: false });
+    return () => {
+      el.removeEventListener('pointerdown', onDown);
+      window.removeEventListener('pointermove', onMove);
+      window.removeEventListener('pointerup', onUp);
+      el.removeEventListener('click', onClick, true);
+      el.removeEventListener('wheel', onWheel);
+    };
+  }, []);
+  return ref;
+};
+
 const InventoryTable = () => {
+  const chipsRef = useDragScroll();
   const { products, loadingProducts: loading, fetchProducts } = useAdminStore();
   const [searchParams, setSearchParams] = useSearchParams();
   const [showModal, setShowModal] = useState(false);
@@ -229,7 +275,7 @@ const InventoryTable = () => {
           )}
         </div>
         {/* Fila deslizable de borde a borde de la tarjeta, con desvanecido que indica que hay más */}
-        <div className="inv-chips flex gap-2 overflow-x-auto scrollbar-hide -mx-4 md:-mx-5 px-4 md:px-5 pb-1">
+        <div ref={chipsRef} className="inv-chips flex gap-2 overflow-x-auto scrollbar-hide -mx-4 md:-mx-5 px-4 md:px-5 pb-1">
           {[['Todas', list.length] as const, ...categories].map(([name, n]) => {
             const active = category === name;
             return (
