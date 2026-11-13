@@ -41,7 +41,7 @@ const Dashboard = () => {
 
   const cards = [
     { label: 'Ganancias del mes', value: formatMoney(stats?.thisMonthRevenue), icon: DollarSign, tone: 'bg-emerald-50 text-emerald-600' },
-    { label: 'Ventas del mes', value: `${stats?.thisMonthSales ?? 0} pedidos`, icon: TrendingUp, tone: 'bg-[#CAA959]/10 text-[#CAA959]' },
+    { label: 'Ventas del mes', value: `${stats?.thisMonthSales ?? 0} pedidos`, icon: TrendingUp, tone: 'bg-[#1C86C8]/10 text-[#1C86C8]' },
     { label: 'Por despachar', value: `${stats?.pendingOrdersCount ?? 0} pedidos`, icon: PackageOpen, tone: 'bg-amber-50 text-amber-500' },
   ];
 
@@ -49,7 +49,7 @@ const Dashboard = () => {
     // lg: alto de la pantalla menos el padding del layout (3rem arriba + 3rem abajo)
     <div className="flex flex-col gap-5 lg:h-[calc(100vh-6rem)] lg:min-h-[560px]">
       <div className="shrink-0">
-        <h1 className="text-3xl md:text-4xl font-black text-[#202A36] uppercase italic tracking-tighter">Panel principal</h1>
+        <h1 className="text-3xl md:text-4xl font-black text-[#111214] uppercase italic tracking-tighter">Panel principal</h1>
         <p className="text-xs text-gray-400 font-bold uppercase tracking-widest mt-1">Resumen general de tu tienda</p>
       </div>
 
@@ -61,7 +61,7 @@ const Dashboard = () => {
             </div>
             <div className="min-w-0">
               <p className="text-[10px] font-black uppercase tracking-widest text-gray-400 mb-0.5">{c.label}</p>
-              <p className="text-xl font-black text-[#202A36] truncate">{isLoading ? '…' : c.value}</p>
+              <p className="text-xl font-black text-[#111214] truncate">{isLoading ? '…' : c.value}</p>
             </div>
           </div>
         ))}
@@ -70,8 +70,8 @@ const Dashboard = () => {
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-5 lg:flex-1 lg:min-h-0">
         {/* Finanzas (2 columnas) */}
         <div className="lg:col-span-2 bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col lg:min-h-0">
-          <h2 className="text-lg font-black text-[#202A36] uppercase tracking-tighter mb-4 flex items-center gap-2 shrink-0">
-            <TrendingUp size={18} className="text-[#CAA959]" />
+          <h2 className="text-lg font-black text-[#111214] uppercase tracking-tighter mb-4 flex items-center gap-2 shrink-0">
+            <TrendingUp size={18} className="text-[#1C86C8]" />
             Finanzas (últimos 6 meses)
           </h2>
           <div className="h-[260px] lg:h-auto lg:flex-1 lg:min-h-0 w-full">
@@ -85,7 +85,7 @@ const Dashboard = () => {
                   contentStyle={{ borderRadius: '1rem', border: 'none', boxShadow: '0 4px 6px -1px rgb(0 0 0 / 0.1)' }}
                   formatter={(value: any) => [formatMoney(value), 'Ganancia']}
                 />
-                <Bar dataKey="total" fill="#202A36" radius={[4, 4, 0, 0]} barSize={40} />
+                <Bar dataKey="total" fill="#111214" radius={[4, 4, 0, 0]} barSize={40} />
               </BarChart>
             </ResponsiveContainer>
           </div>
@@ -93,7 +93,7 @@ const Dashboard = () => {
 
         {/* Alertas de stock: cada una abre la edición del producto */}
         <div className="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex flex-col lg:min-h-0">
-          <h2 className="text-lg font-black text-[#202A36] uppercase tracking-tighter mb-1 flex items-center gap-2 shrink-0">
+          <h2 className="text-lg font-black text-[#111214] uppercase tracking-tighter mb-1 flex items-center gap-2 shrink-0">
             <AlertTriangle size={18} className="text-red-500" />
             Alertas de stock
             {lowStockProducts.length > 0 && (

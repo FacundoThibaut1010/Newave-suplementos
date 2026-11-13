@@ -18,9 +18,9 @@ interface ProductFormProps {
 const Section = ({ n, title, hint, children }: { n: number; title: string; hint: string; children: React.ReactNode }) => (
   <section className="bg-white rounded-2xl border border-gray-100 p-5 md:p-6">
     <div className="flex items-start gap-3 mb-5">
-      <span className="w-8 h-8 rounded-full bg-[#202A36] text-white text-sm font-black flex items-center justify-center shrink-0">{n}</span>
+      <span className="w-8 h-8 rounded-full bg-[#111214] text-white text-sm font-black flex items-center justify-center shrink-0">{n}</span>
       <div>
-        <h3 className="text-lg font-black text-[#202A36] leading-tight">{title}</h3>
+        <h3 className="text-lg font-black text-[#111214] leading-tight">{title}</h3>
         <p className="text-[13px] text-gray-500 font-medium mt-0.5">{hint}</p>
       </div>
     </div>
@@ -275,8 +275,8 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
   const missing = checklist.filter((c) => !c.ok).length;
 
   const inputCls =
-    'w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-[#202A36] placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:border-[#202A36] focus:ring-4 focus:ring-[#202A36]/5 transition-shadow';
-  const labelCls = 'block text-[13px] font-bold text-[#202A36] mb-1.5';
+    'w-full bg-white border border-gray-200 rounded-xl px-4 py-3 text-sm font-semibold text-[#111214] placeholder:text-gray-400 placeholder:font-medium focus:outline-none focus:border-[#111214] focus:ring-4 focus:ring-[#111214]/5 transition-shadow';
+  const labelCls = 'block text-[13px] font-bold text-[#111214] mb-1.5';
   const hintCls = 'text-xs text-gray-500 mt-1.5 leading-snug';
 
   const priceInput = (key: 'price' | 'oldPrice') => (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -303,7 +303,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
         {/* Encabezado fijo */}
         <div className="flex items-center justify-between gap-4 px-5 md:px-8 py-4 md:py-5 bg-white border-b border-gray-100 shrink-0">
           <div className="min-w-0">
-            <h2 className="text-xl md:text-2xl font-black text-[#202A36] tracking-tight truncate">
+            <h2 className="text-xl md:text-2xl font-black text-[#111214] tracking-tight truncate">
               {initialData ? 'Editar producto' : 'Nuevo producto'}
             </h2>
             <p className="text-xs text-gray-400 font-medium mt-0.5">
@@ -355,7 +355,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                               }
                               className={`pf-seg rounded-lg px-3 py-2.5 text-left ${active ? 'bg-white shadow-sm' : 'hover:bg-white/60'}`}
                             >
-                              <span className={`block text-sm font-black ${active ? 'text-[#202A36]' : 'text-gray-500'}`}>{opt.label}</span>
+                              <span className={`block text-sm font-black ${active ? 'text-[#111214]' : 'text-gray-500'}`}>{opt.label}</span>
                               <span className="block text-[11px] text-gray-400 font-medium">{opt.desc}</span>
                             </button>
                           );
@@ -401,7 +401,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                           <div className="pf-tile group relative w-full h-full rounded-2xl border border-gray-200 bg-[#F8F9FA] overflow-hidden">
                             <img src={img} alt="" className="w-full h-full object-contain p-2 cursor-zoom-in" onClick={() => setFullScreenImage(img)} />
                             {index === 0 && (
-                              <span className="absolute top-2 left-2 text-[9px] font-black uppercase tracking-widest bg-[#202A36] text-white px-2 py-1 rounded-md">
+                              <span className="absolute top-2 left-2 text-[9px] font-black uppercase tracking-widest bg-[#111214] text-white px-2 py-1 rounded-md">
                                 Principal
                               </span>
                             )}
@@ -442,7 +442,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                   </div>
 
                   <details className="mt-4 group">
-                    <summary className="text-xs font-bold text-gray-400 cursor-pointer hover:text-[#202A36] select-none">¿Tenés la foto en internet? Pegá el link</summary>
+                    <summary className="text-xs font-bold text-gray-400 cursor-pointer hover:text-[#111214] select-none">¿Tenés la foto en internet? Pegá el link</summary>
                     <div className="space-y-2 mt-3">
                       {formData.images.map((img: string, index: number) => (
                         <input
@@ -499,7 +499,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                           }}
                           className={`pf-seg rounded-lg px-3 py-2.5 text-left ${active ? 'bg-white shadow-sm' : 'hover:bg-white/60'}`}
                         >
-                          <span className={`block text-sm font-black ${active ? 'text-[#202A36]' : 'text-gray-500'}`}>{opt.label}</span>
+                          <span className={`block text-sm font-black ${active ? 'text-[#111214]' : 'text-gray-500'}`}>{opt.label}</span>
                           <span className="block text-[11px] text-gray-400 font-medium">{opt.desc}</span>
                         </button>
                       );
@@ -567,7 +567,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                         + Agregar sabor
                       </button>
                       <p className={hintCls}>
-                        Total: <span className="font-bold text-[#202A36]">{stockTotal} unidades</span>. La foto de cada sabor es opcional; si no la cargás se usa la principal.
+                        Total: <span className="font-bold text-[#111214]">{stockTotal} unidades</span>. La foto de cada sabor es opcional; si no la cargás se usa la principal.
                       </p>
                     </div>
                   )}
@@ -636,12 +636,12 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                       </div>
                     )}
                   </div>
-                  <span className="inline-block mt-3 text-[9px] font-black uppercase tracking-widest text-[#CAA959] bg-[#CAA959]/10 px-2 py-1 rounded-full">
+                  <span className="inline-block mt-3 text-[9px] font-black uppercase tracking-widest text-[#1C86C8] bg-[#1C86C8]/10 px-2 py-1 rounded-full">
                     {formData.displaySection === 'Combo' ? 'Combo' : formData.category || 'Sin categoría'}
                   </span>
-                  <p className="mt-2 font-black italic uppercase text-[#202A36] leading-tight line-clamp-2">{formData.name || 'Nombre del producto'}</p>
+                  <p className="mt-2 font-black italic uppercase text-[#111214] leading-tight line-clamp-2">{formData.name || 'Nombre del producto'}</p>
                   <div className="mt-2 flex items-baseline gap-2">
-                    <span className="text-lg font-black italic text-[#CAA959]">{priceNum ? `$${priceNum.toLocaleString('es-AR')}` : '$ —'}</span>
+                    <span className="text-lg font-black italic text-[#1C86C8]">{priceNum ? `$${priceNum.toLocaleString('es-AR')}` : '$ —'}</span>
                     {discount > 0 && <span className="text-xs font-bold text-gray-400 line-through">${oldPriceNum.toLocaleString('es-AR')}</span>}
                   </div>
                   <p className="mt-1 text-xs font-bold text-gray-500">
@@ -652,7 +652,7 @@ const ProductForm = ({ onClose, onSuccess, initialData }: ProductFormProps) => {
                 <div className="bg-white rounded-2xl border border-gray-100 p-5">
                   <div className="flex items-center justify-between gap-3">
                     <div>
-                      <p className="text-sm font-black text-[#202A36]">Visible en la tienda</p>
+                      <p className="text-sm font-black text-[#111214]">Visible en la tienda</p>
                       <p className="text-[11px] text-gray-400 font-medium">{formData.isActive ? 'Los clientes lo ven y lo pueden comprar.' : 'Oculto: nadie lo ve en la tienda.'}</p>
                     </div>
                     <button

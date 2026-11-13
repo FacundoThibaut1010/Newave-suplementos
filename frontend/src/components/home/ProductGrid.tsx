@@ -140,7 +140,7 @@ const ProductGrid = () => {
               <motion.div
                 animate={{ x: [0, 5, 0] }}
                 transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-                className="text-[#CAA959]"
+                className="text-[#1C86C8]"
               >
                 <ChevronRight size={36} strokeWidth={2.5} />
               </motion.div>

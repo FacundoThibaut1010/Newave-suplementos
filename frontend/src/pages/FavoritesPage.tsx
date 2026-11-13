@@ -21,7 +21,7 @@ const FavoritesPage = () => {
             <Heart size={32} className="text-[#ef4444]" fill="#ef4444" />
           </div>
           <div>
-            <h1 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter text-[#202A36]">
+            <h1 className="text-4xl md:text-5xl font-black uppercase italic tracking-tighter text-[#111214]">
               Mis Favoritos
             </h1>
             <p className="text-gray-500 font-medium mt-2">
@@ -45,7 +45,7 @@ const FavoritesPage = () => {
             <p className="text-gray-500 font-medium max-w-md mx-auto mb-8">
               Explora la tienda y marca con un corazón los productos que más te gusten.
             </p>
-            <Link to="/productos" className="px-8 py-4 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors inline-block shadow-xl">
+            <Link to="/productos" className="px-8 py-4 bg-[#111214] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#1C86C8] transition-colors inline-block shadow-xl">
               Explorar Productos
             </Link>
           </div>

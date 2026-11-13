@@ -235,7 +235,7 @@ const ProductsPage = () => {
                       setCurrentPage(page);
                       window.scrollTo(0, 0);
                     }}
-                    className={`w-10 h-10 rounded-full font-black text-sm transition-all ${currentPage === page ? 'bg-[#CAA959] text-white shadow-lg scale-110' : 'bg-white/10 text-gray-400 hover:bg-white/20'}`}
+                    className={`w-10 h-10 rounded-full font-black text-sm transition-all ${currentPage === page ? 'bg-[#1C86C8] text-white shadow-lg scale-110' : 'bg-white/10 text-gray-400 hover:bg-white/20'}`}
                   >
                     {page}
                   </button>

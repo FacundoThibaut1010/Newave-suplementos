@@ -92,7 +92,7 @@ const CintaPreview = ({ messages }: { messages: string[] }) => {
               type="button"
               onClick={() => setIndex(n)}
               aria-label={`Ver mensaje ${n + 1}`}
-              className={`h-1.5 rounded-full transition-all duration-200 ${n === i ? 'w-5 bg-[#202A36]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'}`}
+              className={`h-1.5 rounded-full transition-all duration-200 ${n === i ? 'w-5 bg-[#111214]' : 'w-1.5 bg-gray-300 hover:bg-gray-400'}`}
             />
           ))}
       </div>
@@ -207,12 +207,12 @@ const StoreSettings = () => {
     { key: 'vendidos', label: 'Más vendidos', short: 'Destacados', icon: Star, badge: selected.length },
   ];
 
-  const labelCls = 'block text-[13px] font-bold text-[#202A36] mb-1.5';
+  const labelCls = 'block text-[13px] font-bold text-[#111214] mb-1.5';
 
   return (
     <div className="space-y-6 max-w-5xl pb-28">
       <div>
-        <h1 className="text-3xl md:text-4xl font-black text-[#202A36] tracking-tighter mb-1">Identidad de la tienda</h1>
+        <h1 className="text-3xl md:text-4xl font-black text-[#111214] tracking-tighter mb-1">Identidad de la tienda</h1>
         <p className="text-gray-400 font-medium text-sm">Lo que ven tus clientes en la página: la portada, la cinta de arriba, las categorías y los más vendidos.</p>
       </div>
 
@@ -225,14 +225,14 @@ const StoreSettings = () => {
               key={t.key}
               type="button"
               onClick={() => setTab(t.key)}
-              className={`id-tab relative min-w-0 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-1 sm:px-4 py-2.5 sm:py-3 rounded-xl text-[11px] sm:text-sm font-bold ${active ? 'text-[#202A36]' : 'text-gray-500 hover:text-gray-700'}`}
+              className={`id-tab relative min-w-0 flex flex-col sm:flex-row items-center justify-center gap-1 sm:gap-2 px-1 sm:px-4 py-2.5 sm:py-3 rounded-xl text-[11px] sm:text-sm font-bold ${active ? 'text-[#111214]' : 'text-gray-500 hover:text-gray-700'}`}
             >
               {active && <motion.span layoutId="id-tab-bg" className="absolute inset-0 bg-white rounded-xl shadow-sm" transition={{ type: 'spring', bounce: 0, duration: 0.3 }} />}
               <t.icon size={17} className="relative" />
               <span className="relative whitespace-nowrap sm:hidden">{t.short}</span>
               <span className="relative whitespace-nowrap hidden sm:inline">{t.label}</span>
               {t.badge !== undefined && (
-                <span className={`relative hidden sm:inline text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-[#202A36] text-white' : 'bg-white text-gray-500'}`}>{t.badge}</span>
+                <span className={`relative hidden sm:inline text-[10px] font-black px-1.5 py-0.5 rounded-full ${active ? 'bg-[#111214] text-white' : 'bg-white text-gray-500'}`}>{t.badge}</span>
               )}
             </button>
           );
@@ -250,7 +250,7 @@ const StoreSettings = () => {
           {tab === 'portada' && (
             <section className="bg-white rounded-3xl border border-gray-100 p-5 md:p-7 space-y-6">
               <div>
-                <h2 className="text-lg font-black text-[#202A36]">Lo primero que ve el cliente</h2>
+                <h2 className="text-lg font-black text-[#111214]">Lo primero que ve el cliente</h2>
                 <p className="text-[13px] text-gray-500 mt-0.5">El título, el texto y el botón de la portada de la página de inicio. Si dejás un campo vacío se usa el texto de ejemplo.</p>
               </div>
 
@@ -320,7 +320,7 @@ const StoreSettings = () => {
           {tab === 'cinta' && (
             <section className="bg-white rounded-3xl border border-gray-100 p-5 md:p-7 space-y-6">
               <div>
-                <h2 className="text-lg font-black text-[#202A36]">La franja negra de arriba de todo</h2>
+                <h2 className="text-lg font-black text-[#111214]">La franja negra de arriba de todo</h2>
                 <p className="text-[13px] text-gray-500 mt-0.5">Mensajes cortos que van rotando cada 4 segundos. Lo que está en esta lista es exactamente lo que se muestra.</p>
               </div>
 
@@ -367,7 +367,7 @@ const StoreSettings = () => {
           {tab === 'categorias' && (
             <section className="bg-white rounded-3xl border border-gray-100 p-5 md:p-7 space-y-6">
               <div>
-                <h2 className="text-lg font-black text-[#202A36]">Las tarjetas de "Descubrí tu potencial"</h2>
+                <h2 className="text-lg font-black text-[#111214]">Las tarjetas de "Descubrí tu potencial"</h2>
                 <p className="text-[13px] text-gray-500 mt-0.5">
                   Una categoría solo se ve en la tienda (inicio, menú, footer y catálogo) si tiene al menos un producto activo.
                 </p>
@@ -388,7 +388,7 @@ const StoreSettings = () => {
                             <span className="text-xs font-bold">Subir foto</span>
                           </span>
                         )}
-                        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 bg-white/95 text-[11px] font-bold text-[#202A36] px-2.5 py-1.5 rounded-lg shadow">
+                        <span className="absolute bottom-2 right-2 inline-flex items-center gap-1.5 bg-white/95 text-[11px] font-bold text-[#111214] px-2.5 py-1.5 rounded-lg shadow">
                           {uploadingIdx === idx ? <Loader2 size={13} className="animate-spin" /> : <UploadCloud size={13} />}
                           {cat.image ? 'Cambiar foto' : 'Subir'}
                         </span>
@@ -413,7 +413,7 @@ const StoreSettings = () => {
                             : `${st.total} ${st.total === 1 ? 'producto' : 'productos'}, ${st.active} ${st.active === 1 ? 'activo' : 'activos'}.`}
                         </p>
                         <details className="text-xs">
-                          <summary className="font-bold text-gray-400 cursor-pointer select-none hover:text-[#202A36]">Opciones avanzadas</summary>
+                          <summary className="font-bold text-gray-400 cursor-pointer select-none hover:text-[#111214]">Opciones avanzadas</summary>
                           <div className="mt-2 space-y-2">
                             <label className="block text-[11px] font-bold text-gray-500">Identificador (va en la dirección de la página)</label>
                             <input type="text" value={cat.slug} onChange={(e) => setCategory(idx, { slug: e.target.value })} className="input-admin text-xs font-mono" />
@@ -453,7 +453,7 @@ const StoreSettings = () => {
           {tab === 'vendidos' && (
             <section className="bg-white rounded-3xl border border-gray-100 p-5 md:p-7 space-y-6">
               <div>
-                <h2 className="text-lg font-black text-[#202A36]">Los destacados de la página de inicio</h2>
+                <h2 className="text-lg font-black text-[#111214]">Los destacados de la página de inicio</h2>
                 <p className="text-[13px] text-gray-500 mt-0.5">Elegí qué productos mostrar en "Más vendidos". Si no elegís ninguno, la sección no aparece.</p>
               </div>
 
@@ -468,7 +468,7 @@ const StoreSettings = () => {
                         <span className="w-6 text-center text-xs font-black text-gray-300">{i + 1}</span>
                         <img src={p.images?.[0] || p.image} alt="" className="w-11 h-11 rounded-lg object-contain bg-white border border-gray-100 shrink-0" />
                         <div className="min-w-0 flex-1">
-                          <p className="text-sm font-bold text-[#202A36] truncate">{p.name}</p>
+                          <p className="text-sm font-bold text-[#111214] truncate">{p.name}</p>
                           <p className={`text-[11px] font-bold ${p.isActive === false ? 'text-amber-600' : 'text-gray-400'}`}>
                             {p.isActive === false ? 'Inactivo: no se muestra' : p.category || 'Producto'}
                           </p>
@@ -498,10 +498,10 @@ const StoreSettings = () => {
                     >
                       <img src={p.images?.[0] || p.image} alt="" className="w-10 h-10 rounded-lg object-contain bg-white border border-gray-100 shrink-0" />
                       <div className="min-w-0 flex-1">
-                        <p className={`text-sm font-bold truncate ${p.isActive === false ? 'text-gray-400' : 'text-[#202A36]'}`}>{p.name}</p>
+                        <p className={`text-sm font-bold truncate ${p.isActive === false ? 'text-gray-400' : 'text-[#111214]'}`}>{p.name}</p>
                         <p className="text-[11px] font-bold text-gray-400">{p.isActive === false ? 'Inactivo' : p.category || 'Producto'}</p>
                       </div>
-                      <span className="inline-flex items-center gap-1 text-xs font-black text-[#CAA959] shrink-0">
+                      <span className="inline-flex items-center gap-1 text-xs font-black text-[#1C86C8] shrink-0">
                         <Plus size={14} /> Agregar
                       </span>
                     </button>
@@ -523,7 +523,7 @@ const StoreSettings = () => {
             exit={{ opacity: 0, transform: 'translateY(20px)', transition: { duration: 0.15 } }}
             className="fixed bottom-4 left-4 right-4 md:left-[calc(18rem+2rem)] md:right-8 z-30"
           >
-            <div className="max-w-5xl bg-[#202A36] text-white rounded-2xl shadow-2xl p-3 pl-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
+            <div className="max-w-5xl bg-[#111214] text-white rounded-2xl shadow-2xl p-3 pl-5 flex flex-col sm:flex-row sm:items-center justify-between gap-3">
               <p className="text-sm font-bold">Tenés cambios sin publicar</p>
               <div className="flex gap-2">
                 <button
@@ -540,7 +540,7 @@ const StoreSettings = () => {
                   type="button"
                   onClick={handleSave}
                   disabled={saving}
-                  className="id-bar-primary flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#CAA959] text-white text-xs font-black uppercase tracking-widest disabled:opacity-60"
+                  className="id-bar-primary flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-[#1C86C8] text-white text-xs font-black uppercase tracking-widest disabled:opacity-60"
                 >
                   {saving ? <Loader2 size={14} className="animate-spin" /> : <Save size={14} />} Publicar cambios
                 </button>

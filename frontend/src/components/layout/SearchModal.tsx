@@ -84,7 +84,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                 placeholder="Buscar proteínas, creatinas..."
                 value={query}
                 onChange={(e) => setQuery(e.target.value)}
-                className="w-full text-xl md:text-3xl font-black uppercase tracking-tighter text-[#202A36] placeholder:text-gray-200 outline-none bg-transparent"
+                className="w-full text-xl md:text-3xl font-black uppercase tracking-tighter text-[#111214] placeholder:text-gray-200 outline-none bg-transparent"
               />
               <button onClick={onClose} className="p-3 bg-gray-50 hover:bg-gray-100 rounded-full transition-colors shrink-0">
                 <X size={20} className="text-gray-500" />
@@ -94,7 +94,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
             <div className="flex-1 overflow-y-auto p-6 md:p-8 bg-[#F4F4F4]">
               {isSearching ? (
                 <div className="flex justify-center py-10">
-                  <Loader2 size={32} className="animate-spin text-[#CAA959]" />
+                  <Loader2 size={32} className="animate-spin text-[#1C86C8]" />
                 </div>
               ) : query.trim().length > 1 && results.length === 0 ? (
                 <div className="text-center py-10 text-gray-500 font-medium">
@@ -117,15 +117,15 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                         />
                       </div>
                       <div className="flex-1 min-w-0">
-                        <h4 className="text-sm md:text-base font-black text-[#202A36] uppercase tracking-tight leading-tight">{product.name}</h4>
+                        <h4 className="text-sm md:text-base font-black text-[#111214] uppercase tracking-tight leading-tight">{product.name}</h4>
                         <div className="flex flex-col mt-1">
-                          <span className="font-bold text-[#CAA959] text-sm md:hidden">${Number(product.price).toLocaleString('es-AR')}</span>
+                          <span className="font-bold text-[#1C86C8] text-sm md:hidden">${Number(product.price).toLocaleString('es-AR')}</span>
                           <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{product.category}</p>
                         </div>
                       </div>
                       <div className="shrink-0 flex items-center gap-4">
                         <span className="font-bold text-gray-500 hidden md:block">${Number(product.price).toLocaleString('es-AR')}</span>
-                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[#CAA959] text-white md:bg-gray-50 md:text-black md:group-hover:bg-[#CAA959] md:group-hover:text-white transition-colors">
+                        <div className="w-8 h-8 md:w-10 md:h-10 rounded-full flex items-center justify-center bg-[#1C86C8] text-white md:bg-gray-50 md:text-black md:group-hover:bg-[#1C86C8] md:group-hover:text-white transition-colors">
                           <ArrowRight size={18} />
                         </div>
                       </div>

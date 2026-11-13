@@ -45,8 +45,8 @@ const CategoryScroll = () => {
     <section id="categorias" className="overflow-hidden bg-[#0A0A0B] scroll-mt-[160px]">
       <div className="relative z-10 pt-14 lg:pt-16 pb-6 text-center px-6">
         <h2 className="text-2xl md:text-4xl font-black text-white uppercase italic tracking-tighter">Descubrí tu potencial</h2>
-        <div className="w-14 lg:w-16 h-1 bg-[#CAA959] mx-auto mt-4 mb-4" />
-        <Link to="/productos" className="text-[10px] lg:text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-[#CAA959] transition-colors">
+        <div className="w-14 lg:w-16 h-1 bg-[#1C86C8] mx-auto mt-4 mb-4" />
+        <Link to="/productos" className="text-[10px] lg:text-xs font-black uppercase tracking-widest text-zinc-400 hover:text-white transition-colors">
           Ver todos
         </Link>
       </div>

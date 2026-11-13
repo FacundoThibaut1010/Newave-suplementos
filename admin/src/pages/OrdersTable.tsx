@@ -155,7 +155,7 @@ const OrdersTable = () => {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-3xl md:text-4xl font-black text-[#202A36] tracking-tighter mb-1">Ventas</h1>
+        <h1 className="text-3xl md:text-4xl font-black text-[#111214] tracking-tighter mb-1">Ventas</h1>
         <p className="text-gray-400 font-medium text-sm">Seguí cada pedido en 3 pasos: armalo, despachalo y marcalo como entregado.</p>
       </div>
 
@@ -177,10 +177,10 @@ const OrdersTable = () => {
                   <span className="flex items-baseline gap-2">
                     <span className="text-[10px] font-black text-gray-400">PASO {s.n}</span>
                   </span>
-                  <span className="block text-base font-black text-[#202A36] leading-tight">{s.title}</span>
+                  <span className="block text-base font-black text-[#111214] leading-tight">{s.title}</span>
                   <span className="block text-[11px] text-gray-400 font-medium leading-snug">{s.desc}</span>
                 </span>
-                <span className={`text-2xl font-black tabular-nums ${counts[s.key] > 0 && s.key === 'armar' ? 'text-amber-500' : 'text-[#202A36]'}`}>{counts[s.key]}</span>
+                <span className={`text-2xl font-black tabular-nums ${counts[s.key] > 0 && s.key === 'armar' ? 'text-amber-500' : 'text-[#111214]'}`}>{counts[s.key]}</span>
               </button>
               {i < STAGES.length - 1 && (
                 <ArrowRight size={16} className="hidden sm:block absolute -right-[13px] top-1/2 -translate-y-1/2 text-gray-300 z-10" />
@@ -219,7 +219,7 @@ const OrdersTable = () => {
           <div className={`w-16 h-16 rounded-2xl mx-auto mb-4 flex items-center justify-center ${current.tone}`}>
             <current.icon size={28} />
           </div>
-          <p className="font-black text-[#202A36] text-lg">
+          <p className="font-black text-[#111214] text-lg">
             {search ? 'No hay pedidos que coincidan' : stage === 'armar' ? 'No hay pedidos para armar' : stage === 'camino' ? 'No hay pedidos en camino' : 'Todavía no hay pedidos entregados'}
           </p>
           <p className="text-sm text-gray-400 mt-1">
@@ -255,7 +255,7 @@ const OrdersTable = () => {
                       ))}
                     </div>
                     <div className="min-w-0">
-                      <p className="font-black text-[#202A36] truncate capitalize">{o.guestInfo?.fullName || 'Cliente'}</p>
+                      <p className="font-black text-[#111214] truncate capitalize">{o.guestInfo?.fullName || 'Cliente'}</p>
                       <p className="text-xs text-gray-400 font-medium">
                         <span className="font-mono font-bold text-gray-500">#{o._id.slice(-6).toUpperCase()}</span> · {timeAgo(o.paidAt || o.createdAt)} · {units}{' '}
                         {units === 1 ? 'producto' : 'productos'}
@@ -264,7 +264,7 @@ const OrdersTable = () => {
                   </div>
 
                   <div className="flex flex-wrap items-center gap-2 lg:flex-1">
-                    <span className="text-lg font-black text-[#202A36] mr-1">{money(o.totalPrice)}</span>
+                    <span className="text-lg font-black text-[#111214] mr-1">{money(o.totalPrice)}</span>
                     <span className="inline-flex items-center gap-1.5 text-[11px] font-bold text-gray-600 bg-gray-100 px-2.5 py-1 rounded-lg">
                       {ship.pickup ? <Store size={13} /> : <Truck size={13} />}
                       {ship.name}
@@ -273,7 +273,7 @@ const OrdersTable = () => {
 
                   <div className="flex items-center gap-2 lg:justify-end shrink-0">
                     {stage === 'armar' && (
-                      <button type="button" disabled={busy} onClick={() => dispatch(o._id)} className="ord-primary flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#202A36] text-white text-xs font-black uppercase tracking-widest disabled:opacity-50">
+                      <button type="button" disabled={busy} onClick={() => dispatch(o._id)} className="ord-primary flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-5 py-3 rounded-xl bg-[#111214] text-white text-xs font-black uppercase tracking-widest disabled:opacity-50">
                         <Send size={15} /> <span className="sm:hidden">Despachar</span><span className="hidden sm:inline">Marcar como despachado</span>
                       </button>
                     )}
@@ -308,15 +308,15 @@ const OrdersTable = () => {
                         <div className="bg-white rounded-2xl border border-gray-100 p-4 space-y-3">
                           <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">Enviar a</p>
                           <div className="flex items-start gap-2">
-                            <MapPin size={16} className="text-[#CAA959] mt-0.5 shrink-0" />
+                            <MapPin size={16} className="text-[#1C86C8] mt-0.5 shrink-0" />
                             <div className="min-w-0 flex-1">
-                              <p className="text-sm font-bold text-[#202A36] leading-snug">{o.shippingAddress?.address}</p>
+                              <p className="text-sm font-bold text-[#111214] leading-snug">{o.shippingAddress?.address}</p>
                               <p className="text-xs text-gray-500">
                                 {o.shippingAddress?.city}, {o.shippingAddress?.state} · CP {o.shippingAddress?.postalCode}
                               </p>
                               {o.shippingAddress?.addressLine2 && <p className="text-xs text-gray-400 mt-0.5">{o.shippingAddress.addressLine2}</p>}
                             </div>
-                            <button type="button" onClick={() => copy(fullAddress)} aria-label="Copiar dirección" className="ord-ghost p-2 rounded-lg text-gray-400 hover:text-[#202A36] shrink-0">
+                            <button type="button" onClick={() => copy(fullAddress)} aria-label="Copiar dirección" className="ord-ghost p-2 rounded-lg text-gray-400 hover:text-[#111214] shrink-0">
                               <Copy size={15} />
                             </button>
                           </div>
@@ -348,10 +348,10 @@ const OrdersTable = () => {
                               <div key={i} className="flex items-center gap-3">
                                 <img src={it.image} alt="" className="w-11 h-11 rounded-lg object-contain bg-[#F8F9FA] border border-gray-100 shrink-0" />
                                 <div className="min-w-0 flex-1">
-                                  <p className="text-sm font-bold text-[#202A36] leading-tight line-clamp-2">{it.name}</p>
+                                  <p className="text-sm font-bold text-[#111214] leading-tight line-clamp-2">{it.name}</p>
                                   {it.variant && <p className="text-[11px] text-gray-500 font-medium">Sabor: {it.variant}</p>}
                                 </div>
-                                <span className="text-sm font-black text-[#202A36] bg-gray-100 rounded-lg px-2.5 py-1 shrink-0">x{it.qty}</span>
+                                <span className="text-sm font-black text-[#111214] bg-gray-100 rounded-lg px-2.5 py-1 shrink-0">x{it.qty}</span>
                               </div>
                             ))}
                           </div>
@@ -363,7 +363,7 @@ const OrdersTable = () => {
                           <div className="space-y-1.5 text-sm">
                             <div className="flex justify-between text-gray-500"><span>Productos</span><span className="font-bold text-gray-700">{money(subtotal)}</span></div>
                             <div className="flex justify-between text-gray-500"><span>Envío</span><span className="font-bold text-gray-700">{Number(o.shippingPrice) > 0 ? money(o.shippingPrice) : 'Gratis'}</span></div>
-                            <div className="flex justify-between pt-2 mt-1 border-t border-gray-100"><span className="font-black text-[#202A36]">Total cobrado</span><span className="font-black text-[#202A36]">{money(o.totalPrice)}</span></div>
+                            <div className="flex justify-between pt-2 mt-1 border-t border-gray-100"><span className="font-black text-[#111214]">Total cobrado</span><span className="font-black text-[#111214]">{money(o.totalPrice)}</span></div>
                           </div>
                           <p className="flex items-center gap-2 text-xs text-gray-500 font-medium mt-3">
                             <CreditCard size={14} className="text-gray-400" />

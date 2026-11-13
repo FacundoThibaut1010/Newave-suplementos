@@ -208,7 +208,7 @@ const InventoryTable = () => {
   };
 
   const stats: { key: StockFilter; label: string; value: number; icon: any; tone: string }[] = [
-    { key: 'all', label: 'Productos', value: counts.all, icon: Package, tone: 'text-[#202A36] bg-gray-100' },
+    { key: 'all', label: 'Productos', value: counts.all, icon: Package, tone: 'text-[#111214] bg-gray-100' },
     { key: 'active', label: 'Activos', value: counts.active, icon: CheckCircle2, tone: 'text-emerald-600 bg-emerald-50' },
     { key: 'low', label: 'Stock bajo', value: counts.low, icon: AlertTriangle, tone: 'text-amber-600 bg-amber-50' },
     { key: 'out', label: 'Agotados', value: counts.out, icon: XCircle, tone: 'text-red-500 bg-red-50' },
@@ -223,7 +223,7 @@ const InventoryTable = () => {
       {/* Encabezado */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-end gap-4">
         <div>
-          <h1 className="text-3xl md:text-4xl font-black text-[#202A36] tracking-tighter mb-1">Inventario</h1>
+          <h1 className="text-3xl md:text-4xl font-black text-[#111214] tracking-tighter mb-1">Inventario</h1>
           <p className="text-gray-400 font-medium tracking-tight text-sm">Tus productos ordenados por categoría, con el stock de cada sabor.</p>
         </div>
         <button onClick={() => { setEditingProduct(null); setShowModal(true); }} className="btn-admin-primary justify-center">
@@ -242,14 +242,14 @@ const InventoryTable = () => {
               type="button"
               onClick={() => setStockFilter(active && s.key !== 'all' ? 'all' : s.key)}
               className={`inv-stat text-left bg-white rounded-2xl border p-4 flex items-center gap-3 ${
-                active ? 'border-[#202A36] ring-2 ring-[#202A36]/10' : 'border-gray-100'
+                active ? 'border-[#111214] ring-2 ring-[#111214]/10' : 'border-gray-100'
               }`}
             >
               <span className={`w-10 h-10 rounded-xl flex items-center justify-center shrink-0 ${s.tone}`}>
                 <s.icon size={20} />
               </span>
               <span className="min-w-0">
-                <span className="block text-2xl font-black text-[#202A36] leading-none tabular-nums">{s.value}</span>
+                <span className="block text-2xl font-black text-[#111214] leading-none tabular-nums">{s.value}</span>
                 <span className="block text-[10px] font-black uppercase tracking-widest text-gray-400 mt-1">{s.label}</span>
               </span>
             </button>
@@ -284,7 +284,7 @@ const InventoryTable = () => {
                 type="button"
                 onClick={() => setCategory(name)}
                 className={`inv-chip shrink-0 flex items-center gap-2 px-4 py-2 rounded-full text-xs font-bold border ${
-                  active ? 'bg-[#202A36] text-white border-[#202A36]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
+                  active ? 'bg-[#111214] text-white border-[#111214]' : 'bg-white text-gray-600 border-gray-200 hover:border-gray-300'
                 }`}
               >
                 {name}
@@ -305,9 +305,9 @@ const InventoryTable = () => {
       ) : visibleCount === 0 ? (
         <div className="bg-white rounded-3xl border border-gray-100 p-12 text-center">
           <Package size={36} className="mx-auto text-gray-300 mb-3" />
-          <p className="font-bold text-[#202A36]">No hay productos que coincidan.</p>
+          <p className="font-bold text-[#111214]">No hay productos que coincidan.</p>
           {hasFilters && (
-            <button type="button" onClick={clearFilters} className="mt-3 text-sm font-bold text-[#CAA959] hover:underline">
+            <button type="button" onClick={clearFilters} className="mt-3 text-sm font-bold text-[#1C86C8] hover:underline">
               Limpiar filtros
             </button>
           )}
@@ -317,7 +317,7 @@ const InventoryTable = () => {
           {groups.map(([groupName, items]) => (
             <section key={groupName}>
               <div className="flex items-center gap-3 mb-3 px-1">
-                <h2 className="text-sm font-black uppercase tracking-widest text-[#202A36]">{groupName}</h2>
+                <h2 className="text-sm font-black uppercase tracking-widest text-[#111214]">{groupName}</h2>
                 <span className="text-[10px] font-black text-gray-400 bg-gray-100 px-2 py-0.5 rounded-full">{items.length}</span>
                 <span className="flex-1 h-px bg-gray-200" />
               </div>
@@ -340,7 +340,7 @@ const InventoryTable = () => {
                           className="w-14 h-14 rounded-2xl object-contain bg-[#F8F9FA] border border-gray-100 p-1 shrink-0"
                         />
                         <span className="min-w-0">
-                          <span className="block font-bold text-sm text-[#202A36] leading-snug line-clamp-2">{p.name}</span>
+                          <span className="block font-bold text-sm text-[#111214] leading-snug line-clamp-2">{p.name}</span>
                           <span className="block text-xs font-black text-gray-500 mt-1">{formatPrice(p.price)}</span>
                         </span>
                       </button>
@@ -377,7 +377,7 @@ const InventoryTable = () => {
                           {p.isActive ? 'Activo' : 'Inactivo'}
                         </button>
                         <div className="flex gap-1">
-                          <button onClick={() => openEdit(p)} aria-label={`Editar ${p.name}`} className="inv-icon-btn p-2.5 text-gray-400 hover:text-[#202A36] rounded-xl">
+                          <button onClick={() => openEdit(p)} aria-label={`Editar ${p.name}`} className="inv-icon-btn p-2.5 text-gray-400 hover:text-[#111214] rounded-xl">
                             <Edit3 size={18} />
                           </button>
                           <button onClick={() => confirmDelete(p._id)} aria-label={`Eliminar ${p.name}`} className="inv-icon-btn p-2.5 text-gray-400 hover:text-red-500 rounded-xl">

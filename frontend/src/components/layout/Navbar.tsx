@@ -139,9 +139,9 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                   className="flex items-center gap-3 group px-4 py-2 rounded-full transition-all duration-300 focus:outline-none"
                 >
                   <div className="relative">
-                    <Menu size={22} strokeWidth={2.5} className={`${isMenuOpen ? 'text-[#CAA959] rotate-90' : ''} group-hover:text-[#CAA959] transition-all duration-500`} />
+                    <Menu size={22} strokeWidth={2.5} className={`${isMenuOpen ? 'text-white rotate-90' : ''} group-hover:text-white transition-all duration-500`} />
                   </div>
-                  <span className={`hidden md:block text-[13px] font-black uppercase tracking-[0.25em] ${isMenuOpen ? 'text-[#CAA959]' : ''} group-hover:text-[#CAA959] transition-colors`}>
+                  <span className={`hidden md:block text-[13px] font-black uppercase tracking-[0.25em] ${isMenuOpen ? 'text-white' : ''} group-hover:text-white transition-colors`}>
                     Menú
                   </span>
                 </button>
@@ -160,14 +160,14 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                         rounded-[2.5rem] border border-white/10 overflow-hidden 
                         flex flex-col z-50 p-6
                         before:absolute before:inset-0
-                        before:bg-[radial-gradient(circle_at_top_right,rgba(202,169,89,0.15),transparent_60%)]
+                        before:bg-[radial-gradient(circle_at_top_right,rgba(28,134,200,0.15),transparent_60%)]
                       "
                     >
                       {/* Header */}
                       <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/5 relative z-10">
-                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#CAA959]">Newave Navigation</span>
+                        <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Newave Navigation</span>
                         <button onClick={() => setIsMenuOpen(false)} className="p-2 rounded-full transition-colors focus:outline-none">
-                          <X size={18} className="text-white/40 hover:text-[#CAA959] transition-colors" />
+                          <X size={18} className="text-white/40 hover:text-white transition-colors" />
                         </button>
                       </div>
 
@@ -183,10 +183,10 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                           className="flex items-center justify-between p-3 rounded-2xl group transition-all"
                         >
                           <div className="flex items-center gap-4">
-                            <Home size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
-                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Inicio</span>
+                            <Home size={20} className="text-white opacity-70 group-hover:opacity-100 transition-all" />
+                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Inicio</span>
                           </div>
-                          <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                          <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-white" />
                         </Link>
 
                         <a
@@ -195,10 +195,10 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                           className="flex items-center justify-between p-3 rounded-2xl group transition-all"
                         >
                           <div className="flex items-center gap-4">
-                            <Package size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
-                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Categorías</span>
+                            <Package size={20} className="text-white opacity-70 group-hover:opacity-100 transition-all" />
+                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Categorías</span>
                           </div>
-                          <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                          <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-white" />
                         </a>
 
                         <div className="relative">
@@ -207,11 +207,11 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                             className="w-full flex items-center justify-between p-3 rounded-2xl group transition-all focus:outline-none"
                           >
                             <div className="flex items-center gap-4">
-                              <ShoppingBag size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
-                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Productos</span>
+                              <ShoppingBag size={20} className="text-white opacity-70 group-hover:opacity-100 transition-all" />
+                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Productos</span>
                             </div>
                             <motion.div animate={{ rotate: isProductsOpen ? 180 : 0 }}>
-                              <ChevronDown size={14} className="text-zinc-500 group-hover:text-[#CAA959] transition-colors" />
+                              <ChevronDown size={14} className="text-zinc-500 group-hover:text-white transition-colors" />
                             </motion.div>
                           </button>
                           <AnimatePresence>
@@ -224,9 +224,9 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                               >
                                 <div className="flex flex-col py-2">
                                   {activeCategories.map((cat: any, i: number) => (
-                                    <Link key={i} onClick={() => setIsMenuOpen(false)} to={`/productos/${cat.slug}`} className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-[#CAA959] transition-colors text-zinc-400">{cat.name}</Link>
+                                    <Link key={i} onClick={() => setIsMenuOpen(false)} to={`/productos/${cat.slug}`} className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-white transition-colors text-zinc-400">{cat.name}</Link>
                                   ))}
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos" className="px-6 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-[#CAA959] hover:text-white transition-colors">Ver todos</Link>
+                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos" className="px-6 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-white hover:text-white transition-colors">Ver todos</Link>
                                 </div>
                               </motion.div>
                             )}
@@ -240,10 +240,10 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                             className="flex items-center justify-between p-3 rounded-2xl group transition-all"
                           >
                             <div className="flex items-center gap-4">
-                              <Gift size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
-                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Combos</span>
+                              <Gift size={20} className="text-white opacity-70 group-hover:opacity-100 transition-all" />
+                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Combos</span>
                             </div>
-                            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-white" />
                           </a>
                         )}
 
@@ -254,10 +254,10 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                             className="flex items-center justify-between p-3 rounded-2xl group transition-all"
                           >
                             <div className="flex items-center gap-4">
-                              <Star size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
-                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Más Vendidos</span>
+                              <Star size={20} className="text-white opacity-70 group-hover:opacity-100 transition-all" />
+                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Más Vendidos</span>
                             </div>
-                            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                            <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-white" />
                           </a>
                         )}
 
@@ -267,10 +267,10 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                           className="flex items-center justify-between p-3 rounded-2xl group transition-all"
                         >
                           <div className="flex items-center gap-4">
-                            <MessageSquare size={20} className="text-[#CAA959] opacity-70 group-hover:opacity-100 transition-all" />
-                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-[#CAA959] transition-colors">Contacto</span>
+                            <MessageSquare size={20} className="text-white opacity-70 group-hover:opacity-100 transition-all" />
+                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Contacto</span>
                           </div>
-                          <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                          <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-white" />
                         </a>
                       </nav>
 
@@ -288,7 +288,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
             {/* Center: Logo */}
             <div className="flex-1 flex justify-center">
               <Link to="/" className="flex items-center gap-2 group">
-                <span className="text-2xl lg:text-3xl font-black tracking-[0.2em] italic group-hover:text-[#CAA959] transition-all duration-500">NEWAVE.</span>
+                <span className="text-2xl lg:text-3xl font-black tracking-[0.2em] italic group-hover:text-white transition-all duration-500">NEWAVE.</span>
               </Link>
             </div>
 
@@ -298,7 +298,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                 onClick={() => setIsSearchModalOpen(true)}
                 className="flex items-center gap-2 group p-2 md:p-3 rounded-full transition-all focus:outline-none"
               >
-                <Search size={20} strokeWidth={2.5} className="group-hover:text-[#CAA959] transition-all duration-300" />
+                <Search size={20} strokeWidth={2.5} className="group-hover:text-white transition-all duration-300" />
               </button>
 
               <div className="relative" ref={userMenuRef}>
@@ -313,7 +313,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                   className="p-2 sm:p-3 rounded-full transition-all group focus:outline-none flex items-center gap-2"
                 >
                   <div className="relative">
-                    <User size={20} strokeWidth={2.5} className={`${user ? 'text-[#CAA959]' : ''} group-hover:text-[#CAA959] transition-all duration-300`} />
+                    <User size={20} strokeWidth={2.5} className={`${user ? 'text-white' : ''} group-hover:text-white transition-all duration-300`} />
                     {user && (!user.phone || !user.dni || !user.address?.street) && (
                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(234,179,8,0.8)]" title="Faltan datos en tu perfil" />
                     )}
@@ -333,14 +333,14 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                         <p className="text-sm font-bold text-white">{user.name}</p>
                         <p className="text-[10px] text-gray-400 truncate">{user.email}</p>
                       </div>
-                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/datos" className="flex items-center justify-between px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">
+                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/datos" className="flex items-center justify-between px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">
                         <span>Mis Datos</span>
                         {(!user.phone || !user.dni || !user.address?.street) && (
                           <AlertCircle size={14} className="text-yellow-500" />
                         )}
                       </Link>
-                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/compras" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Mis Compras</Link>
-                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/favoritos" className="block px-4 py-2 text-sm text-gray-300 hover:text-[#CAA959] hover:bg-white/5 transition-colors">Favoritos</Link>
+                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/compras" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Mis Compras</Link>
+                      <Link onClick={() => setIsUserMenuOpen(false)} to="/perfil/favoritos" className="block px-4 py-2 text-sm text-gray-300 hover:text-white hover:bg-white/5 transition-colors">Favoritos</Link>
                       <button
                         onClick={() => {
                           logout();
@@ -360,7 +360,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                 onClick={openCart}
                 className="group relative flex items-center justify-center p-2 sm:p-3 rounded-full transition-all focus:outline-none"
               >
-                <ShoppingBag size={22} strokeWidth={2.5} className="group-hover:text-[#CAA959] transition-all duration-300" />
+                <ShoppingBag size={22} strokeWidth={2.5} className="group-hover:text-white transition-all duration-300" />
                 <AnimatePresence>
                   {totalItems > 0 && (
                     <motion.span
@@ -368,7 +368,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
-                      className="absolute top-1 right-1 bg-[#CAA959] text-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-[0_0_15px_rgba(202,169,89,0.5)]"
+                      className="absolute top-1 right-1 bg-white text-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-[0_0_15px_rgba(28,134,200,0.5)]"
                     >
                       {totalItems}
                     </motion.span>

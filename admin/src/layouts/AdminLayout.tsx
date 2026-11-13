@@ -62,9 +62,9 @@ const AdminLayout = () => {
     <div className="flex min-h-screen bg-[#F8F9FA]">
       
       {/* Mobile Top Bar */}
-      <div className="md:hidden fixed top-0 left-0 w-full bg-[#202A36] text-white z-20 flex justify-between items-center p-4 shadow-md">
+      <div className="md:hidden fixed top-0 left-0 w-full bg-[#111214] text-white z-20 flex justify-between items-center p-4 shadow-md">
         <div className="flex items-center gap-3">
-          <div className="w-8 h-8 bg-[#CAA959] rounded-full flex items-center justify-center text-white">
+          <div className="w-8 h-8 bg-[#1C86C8] rounded-full flex items-center justify-center text-white">
             <span className="text-sm font-black italic">NW</span>
           </div>
           <h2 className="text-sm font-black leading-none italic">NEWAVE ADMIN</h2>
@@ -83,14 +83,14 @@ const AdminLayout = () => {
       )}
 
       {/* Sidebar */}
-      <aside className={`w-72 bg-[#202A36] text-white flex flex-col p-8 fixed h-full z-40 shadow-2xl transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
+      <aside className={`w-72 bg-[#111214] text-white flex flex-col p-8 fixed h-full z-40 shadow-2xl transition-transform duration-300 ${isSidebarOpen ? 'translate-x-0' : '-translate-x-full'} md:translate-x-0`}>
         <div className="flex items-center gap-3 mb-12">
-          <div className="w-10 h-10 bg-[#CAA959] rounded-full flex items-center justify-center text-white shadow-xl">
+          <div className="w-10 h-10 bg-[#1C86C8] rounded-full flex items-center justify-center text-white shadow-xl">
             <span className="text-xl font-black italic">NW</span>
           </div>
           <div>
             <h2 className="text-lg font-black leading-none italic">NEWAVE</h2>
-            <p className="text-[9px] text-[#CAA959] font-black uppercase tracking-[0.2em] mt-1">Admin Performance</p>
+            <p className="text-[9px] text-[#1C86C8] font-black uppercase tracking-[0.2em] mt-1">Admin Performance</p>
           </div>
         </div>
 
@@ -107,7 +107,7 @@ const AdminLayout = () => {
                 }}
                 className={`flex items-center gap-4 px-5 py-4 rounded-full transition-all group ${
                   isActive 
-                    ? 'bg-[#CAA959] text-white shadow-lg shadow-[#CAA959]/20' 
+                    ? 'bg-[#1C86C8] text-white shadow-lg shadow-[#1C86C8]/20' 
                     : 'text-gray-400 hover:text-white hover:bg-white/5'
                 }`}
               >
@@ -119,7 +119,7 @@ const AdminLayout = () => {
         </nav>
 
         <div className="pt-8 border-t border-white/5 space-y-2">
-          <a href="https://newave-suplementos.vercel.app/" target="_blank" rel="noreferrer" className="flex items-center gap-4 px-5 py-4 text-gray-400 hover:text-[#CAA959] transition-colors">
+          <a href="https://newave-suplementos.vercel.app/" target="_blank" rel="noreferrer" className="flex items-center gap-4 px-5 py-4 text-gray-400 hover:text-[#1C86C8] transition-colors">
             <ExternalLink size={20} />
             <span className="text-xs font-black uppercase tracking-widest">Ver Tienda</span>
           </a>
@@ -145,7 +145,7 @@ const AdminLayout = () => {
           transition={{ duration: 0.4, ease: [0.22, 1, 0.36, 1] }}
         >
           {/* Cada sección del panel se descarga recién cuando se abre */}
-          <Suspense fallback={<div className="flex justify-center py-24"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#CAA959]" /></div>}>
+          <Suspense fallback={<div className="flex justify-center py-24"><div className="animate-spin rounded-full h-10 w-10 border-b-2 border-[#1C86C8]" /></div>}>
             <Outlet />
           </Suspense>
         </motion.div>

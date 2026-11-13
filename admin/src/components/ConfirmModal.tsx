@@ -35,11 +35,11 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
           className="bg-white rounded-[2rem] shadow-2xl w-full max-w-md overflow-hidden"
         >
           <div className="p-8">
-            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDestructive ? 'bg-red-50 text-red-500' : 'bg-[#CAA959]/10 text-[#CAA959]'}`}>
+            <div className={`w-16 h-16 rounded-full flex items-center justify-center mb-6 ${isDestructive ? 'bg-red-50 text-red-500' : 'bg-[#1C86C8]/10 text-[#1C86C8]'}`}>
               <AlertTriangle size={32} />
             </div>
             
-            <h2 className="text-2xl font-black text-[#202A36] uppercase tracking-tighter mb-3">
+            <h2 className="text-2xl font-black text-[#111214] uppercase tracking-tighter mb-3">
               {title}
             </h2>
             <p className="text-gray-500 font-medium leading-relaxed">
@@ -60,7 +60,7 @@ const ConfirmModal: React.FC<ConfirmModalProps> = ({
                 onClose();
               }}
               className={`flex-1 py-4 px-6 rounded-xl font-bold uppercase tracking-widest text-xs text-white transition-colors shadow-lg hover:-translate-y-0.5 ${
-                isDestructive ? 'bg-red-600 hover:bg-red-700' : 'bg-[#202A36] hover:bg-[#CAA959]'
+                isDestructive ? 'bg-red-600 hover:bg-red-700' : 'bg-[#111214] hover:bg-[#1C86C8]'
               }`}
             >
               {confirmText}

@@ -44,7 +44,7 @@ const ScrollArrows = ({ targetRef, dark = false, className = '' }: Props) => {
   };
 
   const base = `scroll-arrow hidden md:flex absolute top-1/2 z-20 w-11 h-11 rounded-full items-center justify-center shadow-lg ${
-    dark ? 'bg-white text-black' : 'bg-white text-[#202A36] border border-black/5'
+    dark ? 'bg-white text-black' : 'bg-white text-[#111214] border border-black/5'
   }`;
 
   return (

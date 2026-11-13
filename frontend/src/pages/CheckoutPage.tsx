@@ -236,13 +236,13 @@ const CheckoutPage = () => {
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-8">
               <User size={40} className="text-gray-300" />
             </div>
-            <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4 text-[#202A36]">Inicia Sesión para Comprar</h2>
+            <h2 className="text-3xl font-black uppercase italic tracking-tighter mb-4 text-[#111214]">Inicia Sesión para Comprar</h2>
             <p className="text-gray-500 font-medium mb-8">
               Para garantizar la seguridad de tu compra y poder hacerle seguimiento a tu paquete, necesitas una cuenta en Newave.
             </p>
             <button
               onClick={() => setIsAuthModalOpen(true)}
-              className="py-4 px-12 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors inline-block shadow-xl hover:-translate-y-1"
+              className="py-4 px-12 bg-[#111214] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#1C86C8] transition-colors inline-block shadow-xl hover:-translate-y-1"
             >
               Iniciar Sesión / Registrarse
             </button>
@@ -457,17 +457,17 @@ const CheckoutPage = () => {
                               })}
                               className={`w-full p-6 rounded-[2rem] text-left transition-all flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-2 ${selectedShipping?.deliveredType === 'S'
                                 ? 'bg-black text-white border-black shadow-xl ring-2 ring-black/20 scale-[1.01]'
-                                : 'bg-[#121214] text-white border-neutral-800 hover:bg-black hover:border-black'
+                                : 'bg-[#121214] text-white border-neutral-800 hover:bg-[#1C86C8] hover:border-black'
                                 }`}
                             >
                               <div className="flex items-start gap-4">
                                 <div className="w-10 h-10 rounded-2xl bg-white/10 flex items-center justify-center shrink-0 mt-0.5">
-                                  <MapPin size={20} className="text-[#CAA959]" />
+                                  <MapPin size={20} className="text-[#1C86C8]" />
                                 </div>
                                 <div>
                                   <div className="flex items-center gap-2">
                                     <span className="text-sm font-black uppercase italic tracking-wide text-white">Retiro en Sucursal</span>
-                                    <span className="bg-[#CAA959] text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
+                                    <span className="bg-[#1C86C8] text-black text-[9px] font-black uppercase px-2 py-0.5 rounded-full">
                                       Gratis
                                     </span>
                                   </div>
@@ -480,8 +480,8 @@ const CheckoutPage = () => {
                                 </div>
                               </div>
                               <div className="flex items-center justify-between sm:justify-end gap-3 shrink-0">
-                                <span className="text-xl font-black italic tracking-tighter text-[#CAA959]">GRATIS</span>
-                                <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${selectedShipping?.deliveredType === 'S' ? 'bg-[#CAA959] text-black border-[#CAA959]' : 'border-gray-500'
+                                <span className="text-xl font-black italic tracking-tighter text-[#1C86C8]">GRATIS</span>
+                                <div className={`w-6 h-6 rounded-full border flex items-center justify-center ${selectedShipping?.deliveredType === 'S' ? 'bg-[#1C86C8] text-black border-[#1C86C8]' : 'border-gray-500'
                                   }`}>
                                   {selectedShipping?.deliveredType === 'S' && <CheckCircle2 size={16} />}
                                 </div>

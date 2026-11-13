@@ -183,17 +183,17 @@ const BestSellers = () => {
         {/* Encabezado */}
         <div className="flex items-end justify-between gap-4 mb-8 md:mb-10">
           <div className="overflow-hidden">
-            <h3 className="bs-reveal text-3xl md:text-4xl font-black text-[#202A36] uppercase italic tracking-tighter">Más Vendidos</h3>
-            <p className="bs-reveal text-[10px] font-black text-[#CAA959] uppercase tracking-[0.2em] mt-2">Los favoritos de nuestros clientes</p>
+            <h3 className="bs-reveal text-3xl md:text-4xl font-black text-[#111214] uppercase italic tracking-tighter">Más Vendidos</h3>
+            <p className="bs-reveal text-[10px] font-black text-[#1C86C8] uppercase tracking-[0.2em] mt-2">Los favoritos de nuestros clientes</p>
           </div>
           {/* Contador y progreso (solo celular, donde la sección se recorre con el scroll) */}
           <div className="bs-counter md:hidden flex flex-col items-end gap-2 shrink-0 overflow-hidden pr-1.5 -mr-1.5">
-            <span className="bs-reveal font-black italic text-[#202A36] tabular-nums text-lg leading-none">
+            <span className="bs-reveal font-black italic text-[#111214] tabular-nums text-lg leading-none">
               {pad(current + 1)}
               <span className="text-zinc-400"> / {pad(items.length)}</span>
             </span>
             <div className="bs-reveal w-20 h-[3px] bg-black/10 rounded-full overflow-hidden">
-              <div ref={progressRef} className="h-full bg-[#CAA959] origin-left" style={{ transform: 'scaleX(0)' }} />
+              <div ref={progressRef} className="h-full bg-[#1C86C8] origin-left" style={{ transform: 'scaleX(0)' }} />
             </div>
           </div>
           {/* Compu: flechas del estante (solo si hay más productos de los que entran) */}
@@ -234,7 +234,7 @@ const BestSellers = () => {
         {/* Compu: barra que muestra qué parte del estante se ve */}
         {nav.paged && (
           <div className="hidden md:block mt-8 mx-auto w-40 h-[3px] rounded-full bg-black/10 overflow-hidden" aria-hidden>
-            <div ref={thumbRef} className="bs-thumb h-full rounded-full bg-[#202A36]" />
+            <div ref={thumbRef} className="bs-thumb h-full rounded-full bg-[#111214]" />
           </div>
         )}
         </div>

@@ -66,7 +66,7 @@ export const FloatingMenu = () => {
             initial={{ scale: 0, opacity: 0 }}
             animate={{ scale: 1, opacity: 1 }}
             onClick={openCart}
-            className="w-12 h-12 rounded-full bg-[#CAA959] text-black flex items-center justify-center shadow-lg relative"
+            className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative"
           >
             <ShoppingBag size={20} strokeWidth={2.5} />
             <span className="absolute -top-1 -right-1 bg-white text-black text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black">
@@ -103,7 +103,7 @@ export const FloatingMenu = () => {
                 before:bg-[radial-gradient(circle_at_20%_20%,rgba(255,255,255,0.15),transparent_50%)]
                 
                 after:absolute after:inset-0
-                after:bg-[radial-gradient(circle_at_80%_80%,rgba(202,169,89,0.1),transparent_50%)] /* Luz Oro sutil */
+                after:bg-[radial-gradient(circle_at_80%_80%,rgba(28,134,200,0.1),transparent_50%)] /* Luz Oro sutil */
               "
               initial={{ scale: 0.8, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
@@ -112,7 +112,7 @@ export const FloatingMenu = () => {
               whileTap={{ scale: 0.95 }}
             >
               <motion.div layout className="relative z-10">
-                <Menu className="text-[#CAA959] group-hover:scale-110 transition-transform duration-300" size={26} />
+                <Menu className="text-white group-hover:scale-110 transition-transform duration-300" size={26} />
               </motion.div>
             </motion.div>
           ) : (
@@ -142,7 +142,7 @@ export const FloatingMenu = () => {
                   
                   /* Luz ambiental Oro */
                   before:absolute before:inset-0
-                  before:bg-[radial-gradient(circle_at_top_right,rgba(202,169,89,0.1),transparent_60%)]
+                  before:bg-[radial-gradient(circle_at_top_right,rgba(28,134,200,0.1),transparent_60%)]
                 "
                 initial={{ scale: 0.9, opacity: 0, x: 20, y: -20 }}
                 animate={{ scale: 1, opacity: 1, x: 0, y: 0 }}
@@ -150,7 +150,7 @@ export const FloatingMenu = () => {
               >
                 {/* Header Newave */}
                 <div className="flex justify-between items-center mb-6 pb-4 border-b border-white/5 relative z-10">
-                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-[#CAA959]">Newave Navigation</span>
+                  <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Newave Navigation</span>
                   <button onClick={() => setIsOpen(false)} className="p-2 hover:bg-white/5 rounded-full transition-colors">
                     <X size={18} className="text-white/40" />
                   </button>
@@ -170,10 +170,10 @@ export const FloatingMenu = () => {
                         className="w-full flex items-center justify-between p-4 rounded-2xl bg-white/0 hover:bg-white/5 transition-all duration-200 group border border-transparent hover:border-white/5"
                       >
                         <div className="flex items-center gap-4">
-                          <span className="text-[#CAA959] opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all">{item.icon}</span>
+                          <span className="text-white opacity-70 group-hover:opacity-100 group-hover:scale-110 transition-all">{item.icon}</span>
                           <span className="font-black text-sm uppercase tracking-widest">{item.label}</span>
                         </div>
-                        <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-[#CAA959]" />
+                        <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-white" />
                       </Link>
                     </motion.div>
                   ))}

@@ -38,21 +38,21 @@ const MyOrdersPage = () => {
           <ArrowLeft size={14} /> Volver a la tienda
         </Link>
 
-        <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-4 text-[#202A36] text-center md:text-left">Mis Compras</h1>
+        <h1 className="text-5xl font-black uppercase italic tracking-tighter mb-4 text-[#111214] text-center md:text-left">Mis Compras</h1>
         <p className="text-gray-500 font-medium mb-12 text-center md:text-left">Aquí puedes hacerle seguimiento a todos tus pedidos en Newave.</p>
 
         {isLoading ? (
           <div className="flex justify-center p-20">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#CAA959]"></div>
+            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-[#1C86C8]"></div>
           </div>
         ) : orders.length === 0 ? (
           <div className="bg-white rounded-[3rem] p-16 shadow-sm border border-gray-100 text-center flex flex-col items-center">
             <div className="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-6">
               <PackageOpen size={40} className="text-gray-300" />
             </div>
-            <h3 className="text-2xl font-black uppercase tracking-tight text-[#202A36] mb-2">Aún no tienes compras</h3>
+            <h3 className="text-2xl font-black uppercase tracking-tight text-[#111214] mb-2">Aún no tienes compras</h3>
             <p className="text-gray-500 font-medium mb-8">Realiza tu primera compra en nuestra tienda.</p>
-            <Link to="/productos" className="py-4 px-8 bg-[#202A36] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#CAA959] transition-colors">
+            <Link to="/productos" className="py-4 px-8 bg-[#111214] text-white rounded-xl font-black uppercase tracking-widest text-xs hover:bg-[#1C86C8] transition-colors">
               Explorar Productos
             </Link>
           </div>
@@ -90,9 +90,9 @@ const MyOrdersPage = () => {
                       <div key={i} className="flex items-center gap-4">
                         <img loading="lazy" decoding="async" src={item.image} alt={item.name} className="inline-block h-24 w-24 md:h-28 md:w-28 rounded-[1.5rem] border-2 border-white object-cover bg-gray-50 shadow-sm flex-shrink-0" />
                         <div>
-                          <p className="text-sm font-black text-[#202A36]">{item.name}</p>
+                          <p className="text-sm font-black text-[#111214]">{item.name}</p>
                           {item.variant && <p className="text-xs font-bold text-gray-500">Sabor: {item.variant}</p>}
-                          <p className="text-[10px] font-black uppercase tracking-widest text-[#CAA959] mt-0.5">Cantidad: {item.qty}</p>
+                          <p className="text-[10px] font-black uppercase tracking-widest text-[#1C86C8] mt-0.5">Cantidad: {item.qty}</p>
                         </div>
                       </div>
                     ))}
@@ -101,7 +101,7 @@ const MyOrdersPage = () => {
 
                 <div className="flex flex-col gap-2 md:items-end w-full md:w-auto pt-6 md:pt-0 border-t md:border-t-0 md:border-l border-gray-100 md:pl-8">
                   <span className="text-[10px] font-black uppercase tracking-widest text-gray-400">Total</span>
-                  <span className="text-3xl font-black italic tracking-tighter text-[#202A36]">${order.totalPrice.toLocaleString('es-AR')}</span>
+                  <span className="text-3xl font-black italic tracking-tighter text-[#111214]">${order.totalPrice.toLocaleString('es-AR')}</span>
                 </div>
               </motion.div>
             ))}

@@ -195,11 +195,11 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   };
 
   const inputCls =
-    'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-[#CAA959] focus:bg-white transition-colors';
+    'w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-sm font-medium text-black focus:outline-none focus:border-[#1C86C8] focus:bg-white transition-colors';
   const labelCls = 'block text-[10px] font-black uppercase tracking-widest text-gray-400 mb-1.5';
   const primaryBtn =
-    'auth-btn w-full mt-2 py-3.5 rounded-xl bg-[#202A36] text-white font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 disabled:opacity-50';
-  const linkBtn = 'py-1 text-[10px] font-bold text-gray-400 hover:text-[#202A36] uppercase tracking-widest transition-colors';
+    'auth-btn w-full mt-2 py-3.5 rounded-xl bg-[#111214] text-white font-black uppercase tracking-widest text-[11px] flex items-center justify-center gap-2 disabled:opacity-50';
+  const linkBtn = 'py-1 text-[10px] font-bold text-gray-400 hover:text-[#111214] uppercase tracking-widest transition-colors';
 
   // Entrada con resorte suave (mínimo rebote); la salida es más rápida y sin rebote
   const card = reduce
@@ -242,7 +242,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
       >
         <div className={active ? 'auth-stagger' : ''}>
           <div className="mb-6">
-            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-[#202A36] mb-1">{titles[name].title}</h2>
+            <h2 className="text-2xl font-black uppercase italic tracking-tighter text-[#111214] mb-1">{titles[name].title}</h2>
             <p className="text-gray-500 font-medium text-sm break-words">{titles[name].subtitle}</p>
           </div>
           {children}
@@ -283,7 +283,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     type="button"
                     onClick={tab.onClick}
                     className={`relative z-10 py-2 text-[11px] font-black uppercase tracking-widest rounded-lg transition-colors duration-200 ${
-                      tab.active ? 'text-[#202A36]' : 'text-gray-400 hover:text-gray-600'
+                      tab.active ? 'text-[#111214]' : 'text-gray-400 hover:text-gray-600'
                     }`}
                   >
                     {tab.active && (
@@ -308,7 +308,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     <div>
                       <div className="flex justify-between items-center mb-1.5">
                         <label className="block text-[10px] font-black uppercase tracking-widest text-gray-400">Contraseña</label>
-                        <button type="button" onClick={() => setFrontView('forgot_email')} className="text-xs font-bold text-[#CAA959] hover:underline py-1">
+                        <button type="button" onClick={() => setFrontView('forgot_email')} className="text-xs font-bold text-[#1C86C8] hover:underline py-1">
                           ¿La olvidaste?
                         </button>
                       </div>
@@ -319,7 +319,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                     </button>
                     <p className="text-center text-sm font-medium text-gray-500">
                       ¿No tenés cuenta?{' '}
-                      <button type="button" onClick={() => goTab(true)} className="text-[#CAA959] text-sm font-black hover:underline py-1">
+                      <button type="button" onClick={() => goTab(true)} className="text-[#1C86C8] text-sm font-black hover:underline py-1">
                         Creá una
                       </button>
                     </p>
@@ -351,7 +351,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                         maxLength={4}
                         value={resetCode}
                         onChange={(e) => setResetCode(e.target.value.replace(/\D/g, ''))}
-                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center tracking-[0.5em] font-black text-xl text-black focus:outline-none focus:border-[#CAA959] transition-colors"
+                        className="w-full bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 text-center tracking-[0.5em] font-black text-xl text-black focus:outline-none focus:border-[#1C86C8] transition-colors"
                         placeholder="0000"
                       />
                     </div>
@@ -396,7 +396,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
                       maxLength={4}
                       value={verificationCode}
                       onChange={(e) => setVerificationCode(e.target.value.replace(/\D/g, ''))}
-                      className="w-full text-center text-3xl tracking-[0.4em] bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-black text-black focus:outline-none focus:border-[#CAA959] transition-colors"
+                      className="w-full text-center text-3xl tracking-[0.4em] bg-gray-50 border border-gray-200 rounded-xl px-4 py-3 font-black text-black focus:outline-none focus:border-[#1C86C8] transition-colors"
                       placeholder="0000"
                     />
                     <button type="submit" disabled={isLoading || verificationCode.length !== 4} className={primaryBtn}>

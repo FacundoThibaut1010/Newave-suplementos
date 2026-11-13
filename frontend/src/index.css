@@ -6,7 +6,7 @@
 
 :root {
   --primary-navy: #0A0A0B;
-  --accent-gold: #CAA959;
+  --accent-gold: #1C86C8;
   --text-primary: #FFFFFF;
   --text-secondary: #A1A1AA;
   --bg-dark: #0A0A0B;
@@ -51,11 +51,11 @@ body {
 
 @layer components {
   .btn-primary {
-    @apply px-10 py-4 bg-[#202A36] text-white rounded-full hover:bg-[#202A36]/90 transition-all duration-300 font-bold text-sm tracking-widest uppercase active:scale-95 disabled:opacity-30;
+    @apply px-10 py-4 bg-[#111214] text-white rounded-full hover:bg-[#111214]/90 transition-all duration-300 font-bold text-sm tracking-widest uppercase active:scale-95 disabled:opacity-30;
   }
 
   .btn-accent {
-    @apply px-10 py-4 bg-[#CAA959] text-white rounded-full hover:bg-[#CAA959]/90 transition-all duration-300 font-bold text-sm tracking-widest uppercase active:scale-95 disabled:opacity-30;
+    @apply px-10 py-4 bg-[#111214] text-white rounded-full hover:bg-[#1C86C8] transition-all duration-300 font-bold text-sm tracking-widest uppercase active:scale-95 disabled:opacity-30;
   }
 
   .card-premium {
@@ -63,7 +63,7 @@ body {
   }
 
   .input-minimal {
-    @apply w-full px-6 py-4 rounded-full bg-white border border-gray-200 focus:ring-2 focus:ring-[#202A36]/5 focus:border-[#202A36] transition-all text-sm outline-none;
+    @apply w-full px-6 py-4 rounded-full bg-white border border-gray-200 focus:ring-2 focus:ring-[#111214]/5 focus:border-[#111214] transition-all text-sm outline-none;
   }
 
   .label-minimal {
@@ -190,7 +190,7 @@ img {
 .studio-floor::before {
   /* borde suave de la mesa contra el fondo */
   content: ''; position: absolute; left: 6%; right: 6%; top: 0; height: 1px;
-  background: linear-gradient(90deg, transparent, rgba(202, 169, 89, 0.22) 30%, rgba(202, 169, 89, 0.22) 70%, transparent);
+  background: linear-gradient(90deg, transparent, rgba(28, 134, 200, 0.22) 30%, rgba(28, 134, 200, 0.22) 70%, transparent);
 }
 
 .studio-product {
@@ -313,9 +313,9 @@ img {
 .studio-light-cta {
   transition: background-color 200ms ease, transform 160ms var(--ease-out);
 }
-.studio-light-cta:active { transform: scale(0.97); }
+.studio-light-cta:active { transform: scale(0.97); background-color: #1C86C8; }
 @media (hover: hover) and (pointer: fine) {
-  .studio-light-cta:hover { background-color: #3f3f46; }
+  .studio-light-cta:hover { background-color: #1C86C8; }
   .studio-light-cta:hover .studio-cta-arrow { transform: translateX(5px); }
 }
 
@@ -360,7 +360,7 @@ img {
   .category-card:hover { transform: translateY(-6px); }
   .category-card:hover .category-card-img { transform: scale(1.05); }
   .category-card:hover .category-card-dim { background-color: rgba(0, 0, 0, 0.35); }
-  .category-card:hover .category-card-title { color: #CAA959; }
+  .category-card:hover .category-card-title { color: #fff; }
 }
 
 /* ---------- Más vendidos ---------- */
@@ -418,14 +418,14 @@ img {
 .bs-nav {
   width: 44px; height: 44px; border-radius: 9999px;
   display: inline-flex; align-items: center; justify-content: center;
-  background: #fff; color: #202A36; border: 1px solid rgba(0, 0, 0, 0.08);
+  background: #fff; color: #111214; border: 1px solid rgba(0, 0, 0, 0.08);
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: background-color 200ms ease, color 200ms ease, border-color 200ms ease, opacity 200ms ease, transform 160ms var(--ease-out);
 }
 .bs-nav:not(:disabled):active { transform: scale(0.94); }
 .bs-nav:disabled { opacity: 0.35; cursor: default; }
 @media (hover: hover) and (pointer: fine) {
-  .bs-nav:not(:disabled):hover { background: #202A36; color: #fff; border-color: #202A36; }
+  .bs-nav:not(:disabled):hover { background: #1C86C8; color: #fff; border-color: #1C86C8; }
 }
 .bs-thumb { transition: transform 120ms linear; }
 @media (prefers-reduced-motion: reduce) { .bs-shelf { scroll-behavior: auto; } }
@@ -444,7 +444,7 @@ img {
 }
 .scroll-arrow:active { transform: translateY(-50%) scale(0.94); }
 @media (hover: hover) and (pointer: fine) {
-  .scroll-arrow.is-visible:hover { background-color: #CAA959; color: #fff; }
+  .scroll-arrow.is-visible:hover { background-color: #1C86C8; color: #fff; }
 }
 
 /* ---------- Tarjeta de iniciar sesión ---------- */
@@ -453,7 +453,7 @@ img {
 .auth-close { transition: background-color 150ms ease, transform 160ms var(--ease-out); }
 .auth-close:active { transform: scale(0.92); }
 @media (hover: hover) and (pointer: fine) {
-  .auth-btn:not(:disabled):hover { background-color: #CAA959; }
+  .auth-btn:not(:disabled):hover { background-color: #1C86C8; }
   .auth-close:hover { background-color: #f3f4f6; }
 }
 
@@ -511,8 +511,8 @@ img {
 .mmenu-glow {
   position: absolute; inset: 0; pointer-events: none;
   background:
-    radial-gradient(60% 40% at 100% 0%, rgba(202, 169, 89, 0.16), transparent 70%),
-    radial-gradient(50% 35% at 0% 100%, rgba(202, 169, 89, 0.08), transparent 70%);
+    radial-gradient(60% 40% at 100% 0%, rgba(255, 255, 255, 0.07), transparent 70%),
+    radial-gradient(50% 35% at 0% 100%, rgba(255, 255, 255, 0.04), transparent 70%);
   opacity: 0; transition: opacity 600ms ease 200ms;
 }
 .mmenu.is-open .mmenu-glow { opacity: 1; }
@@ -548,8 +548,8 @@ img {
   transform: none;
   transition: transform 650ms var(--ease-out) calc(220ms + var(--i) * 60ms), color 200ms ease;
 }
-.mmenu-num { font-size: 0.75rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; color: #CAA959; margin-top: 4px; }
-.mmenu-link:active .mmenu-text { color: #CAA959; transform: translate3d(6px, 0, 0); transition-delay: 0ms; }
+.mmenu-num { font-size: 0.75rem; font-weight: 800; font-style: normal; letter-spacing: 0.1em; color: rgba(255, 255, 255, 0.4); margin-top: 4px; }
+.mmenu-link:active .mmenu-text { color: #fff; transform: translate3d(6px, 0, 0); transition-delay: 0ms; }
 
 /* Líneas divisorias que se dibujan de izquierda a derecha */
 .mmenu-line {
@@ -559,7 +559,7 @@ img {
 }
 .mmenu.is-open .mmenu-line { transform: scaleX(1); transition: transform 800ms var(--ease-out) calc(300ms + var(--i) * 60ms); }
 
-.mmenu-plus { color: #CAA959; transition: transform 300ms var(--ease-out); flex-shrink: 0; }
+.mmenu-plus { color: #fff; transition: transform 300ms var(--ease-out); flex-shrink: 0; }
 .mmenu-plus.is-open { transform: rotate(45deg); }
 
 /* Submenú de categorías (acordeón) */
@@ -571,7 +571,7 @@ img {
   transition: color 150ms ease;
 }
 .mmenu-sublink:last-child { padding-bottom: 18px; }
-.mmenu-sublink.is-all { color: #CAA959; }
+.mmenu-sublink.is-all { color: #fff; }
 .mmenu-sublink:active { color: #fff; }
 
 .mmenu-footer {

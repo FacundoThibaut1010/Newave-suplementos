@@ -34,8 +34,8 @@ const SuccessPage = () => {
         animate={{ scale: 1, opacity: 1 }} 
         className="bg-white p-12 rounded-[3rem] shadow-2xl text-center max-w-md border border-gray-100"
       >
-        <CheckCircle2 size={80} className="mx-auto mb-6 text-[#CAA959]" strokeWidth={1.5} />
-        <h2 className="text-4xl font-black italic uppercase tracking-tighter mb-4 text-[#202A36]">¡Pago Exitoso!</h2>
+        <CheckCircle2 size={80} className="mx-auto mb-6 text-[#1C86C8]" strokeWidth={1.5} />
+        <h2 className="text-4xl font-black italic uppercase tracking-tighter mb-4 text-[#111214]">¡Pago Exitoso!</h2>
         <p className="text-gray-500 font-medium mb-8">
           Tu pago ha sido procesado correctamente. En breve recibirás un correo con el comprobante y los detalles de envío.
         </p>

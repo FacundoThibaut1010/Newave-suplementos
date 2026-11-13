@@ -88,7 +88,7 @@ const ProductDetailPage = () => {
   if (loading) {
     return (
       <div className="min-h-screen bg-[#F4F4F4] flex items-center justify-center">
-        <Loader2 size={40} className="animate-spin text-[#CAA959]" />
+        <Loader2 size={40} className="animate-spin text-[#1C86C8]" />
       </div>
     );
   }
@@ -195,14 +195,14 @@ const ProductDetailPage = () => {
                 {(displayImages.length > 1) && (
                   <div className="absolute bottom-6 left-0 right-0 flex justify-center gap-2 z-20 pointer-events-none">
                     {displayImages.map((_: any, idx: number) => (
-                      <div key={idx} className="w-2 h-2 rounded-full bg-[#CAA959]/50 shadow-md" />
+                      <div key={idx} className="w-2 h-2 rounded-full bg-[#1C86C8]/50 shadow-md" />
                     ))}
                   </div>
                 )}
                 <div className="absolute top-6 right-6 z-30">
                   <button
                     onClick={handleToggleFavorite}
-                    className="p-4 bg-white rounded-full text-[#202A36] hover:bg-[#CAA959] hover:text-white transition-all shadow-xl"
+                    className="p-4 bg-white rounded-full text-[#111214] hover:bg-[#1C86C8] hover:text-white transition-all shadow-xl"
                   >
                     <Heart size={24} fill={isFavorite ? '#ef4444' : 'none'} color={isFavorite ? '#ef4444' : 'currentColor'} />
                   </button>
@@ -219,16 +219,16 @@ const ProductDetailPage = () => {
               <div>
                 <div className="flex flex-wrap gap-2 mb-4">
                   {(product.category || 'General').split(/[,+\-]| y /i).filter(Boolean).map((cat: string, idx: number) => (
-                    <span key={idx} className="text-[10px] font-black text-[#CAA959] uppercase tracking-[0.3em] bg-[#CAA959]/10 px-3 py-1 rounded-full border border-[#CAA959]/20">
+                    <span key={idx} className="text-[10px] font-black text-[#1C86C8] uppercase tracking-[0.3em] bg-[#1C86C8]/10 px-3 py-1 rounded-full border border-[#1C86C8]/20">
                       {cat.trim()}
                     </span>
                   ))}
                 </div>
-                <h1 className="text-3xl sm:text-4xl md:text-[2.4rem] lg:text-[2.75rem] font-black italic uppercase leading-[1.05] text-[#202A36] mb-4 break-words">
+                <h1 className="text-3xl sm:text-4xl md:text-[2.4rem] lg:text-[2.75rem] font-black italic uppercase leading-[1.05] text-[#111214] mb-4 break-words">
                   {product.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 md:gap-4">
-                  <span className="text-2xl sm:text-3xl md:text-[2rem] font-black italic text-[#202A36] break-words">
+                  <span className="text-2xl sm:text-3xl md:text-[2rem] font-black italic text-[#1C86C8] break-words">
                     ${Number(product.price).toLocaleString('es-AR')}
                   </span>
                   {!!product.oldPrice && product.oldPrice > product.price && (
@@ -250,7 +250,7 @@ const ProductDetailPage = () => {
 
               {product.variants && product.variants.length > 0 && (
                 <div className="mt-6">
-                  <h3 className="text-sm font-bold text-gray-500 mb-3">Sabor: <span className="text-[#202A36] font-black">{selectedVariant?.flavor || ''}</span></h3>
+                  <h3 className="text-sm font-bold text-gray-500 mb-3">Sabor: <span className="text-[#111214] font-black">{selectedVariant?.flavor || ''}</span></h3>
                   <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-2">
                     {product.variants.map((v: any, idx: number) => {
                       const variantName = v.flavor;
@@ -263,7 +263,7 @@ const ProductDetailPage = () => {
                             setQuantity(1);
                             if (scrollRef.current) scrollRef.current.scrollLeft = 0;
                           }}
-                          className={`flex flex-col items-center justify-center gap-1.5 p-2 sm:p-2.5 rounded-xl text-xs font-bold border-2 transition-all w-full ${isSelected ? 'border-[#202A36] text-[#202A36] bg-gray-50' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
+                          className={`flex flex-col items-center justify-center gap-1.5 p-2 sm:p-2.5 rounded-xl text-xs font-bold border-2 transition-all w-full ${isSelected ? 'border-[#111214] text-[#111214] bg-gray-50' : 'border-gray-200 text-gray-500 hover:border-gray-300'}`}
                         >
                           {v.image && (
                             <img loading="lazy" decoding="async" src={v.image} className="w-14 h-14 sm:w-12 sm:h-12 rounded-lg object-cover bg-white border border-gray-100 shrink-0 shadow-sm" />
@@ -278,8 +278,8 @@ const ProductDetailPage = () => {
 
               {product.weight && (
                 <div className="mt-6" >
-                  <h3 className="text-sm font-bold text-gray-500 mb-2">Formato: <span className="text-[#202A36]">{product.weight}</span></h3>
-                  <div className="w-full bg-white border border-gray-200 rounded-xl px-5 py-3 text-base font-black text-[#202A36] shadow-sm">
+                  <h3 className="text-sm font-bold text-gray-500 mb-2">Formato: <span className="text-[#111214]">{product.weight}</span></h3>
+                  <div className="w-full bg-white border border-gray-200 rounded-xl px-5 py-3 text-base font-black text-[#111214] shadow-sm">
                     {product.weight}
                   </div>
                 </div>
@@ -288,7 +288,7 @@ const ProductDetailPage = () => {
               {product.servings && (
                 <div className="mt-4 inline-flex items-center gap-3 bg-gray-50 border border-gray-200 rounded-xl px-5 py-3">
                   <img src="/gramajes.png" className="w-9 h-9" />
-                  <span className="text-sm font-bold text-[#202A36]">{product.servings} {product.servings.toLowerCase().includes('servicio') ? '' : 'Servicios'}</span>
+                  <span className="text-sm font-bold text-[#111214]">{product.servings} {product.servings.toLowerCase().includes('servicio') ? '' : 'Servicios'}</span>
                 </div>
               )}
 
@@ -316,7 +316,7 @@ const ProductDetailPage = () => {
                 <button
                   onClick={handleAddToCart}
                   disabled={currentStock === 0}
-                  className="flex-1 bg-[#202A36] text-white py-4 px-4 sm:px-8 rounded-[1rem] md:rounded-2xl font-black uppercase tracking-widest text-xs sm:text-sm hover:bg-[#CAA959] transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 sm:gap-3"
+                  className="flex-1 bg-[#111214] text-white py-4 px-4 sm:px-8 rounded-[1rem] md:rounded-2xl font-black uppercase tracking-widest text-xs sm:text-sm hover:bg-[#1C86C8] transition-all disabled:bg-gray-200 disabled:text-gray-400 disabled:cursor-not-allowed shadow-xl hover:-translate-y-1 flex items-center justify-center gap-2 sm:gap-3"
                 >
                   <ShoppingCart size={20} />
                   Añadir al Carrito
@@ -336,9 +336,9 @@ const ProductDetailPage = () => {
             className="flex items-center justify-between cursor-pointer select-none group"
             onClick={() => setIsDescriptionOpen(!isDescriptionOpen)}
           >
-            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-[#202A36] group-hover:text-[#CAA959] transition-colors">Descripción del Producto</h3>
+            <h3 className="text-2xl font-black uppercase italic tracking-tighter text-[#111214] transition-colors">Descripción del Producto</h3>
             <div className={`transform transition-transform duration-300 ${isDescriptionOpen ? 'rotate-180' : ''}`}>
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-[#202A36] group-hover:text-[#CAA959] transition-colors"><polyline points="6 9 12 15 18 9"></polyline></svg>
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="3" strokeLinecap="round" strokeLinejoin="round" className="text-[#111214] transition-colors"><polyline points="6 9 12 15 18 9"></polyline></svg>
             </div>
           </div>
           
@@ -358,7 +358,7 @@ const ProductDetailPage = () => {
             animate={{ opacity: 1, y: 0 }}
             className="mt-12"
           >
-            <h3 className="text-2xl md:text-2xl font-black uppercase italic tracking-tighter text-[#202A36] mb-6 text-center md:text-left">También te puede interesar</h3>
+            <h3 className="text-2xl md:text-2xl font-black uppercase italic tracking-tighter text-[#111214] mb-6 text-center md:text-left">También te puede interesar</h3>
             <div className="relative">
             <div 
               ref={relatedScrollRef}
