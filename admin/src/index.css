@@ -91,3 +91,24 @@ html {
   -webkit-overflow-scrolling: touch;
 }
 .inv-chips > * { scroll-snap-align: start; scroll-margin-left: 16px; }
+
+/* ---------- Ventas ---------- */
+.ord-stage, .ord-primary, .ord-ghost { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease; }
+.ord-stage:active, .ord-primary:not(:disabled):active, .ord-ghost:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .ord-stage:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05); }
+  .ord-primary:not(:disabled):hover { filter: brightness(1.12); }
+  .ord-ghost:hover { background-color: #f3f4f6; }
+}
+
+/* ---------- Identidad ---------- */
+.id-tab, .id-icon-btn, .id-add, .id-ghost, .id-row, .id-bar-ghost, .id-bar-primary, .id-photo { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease, border-color 150ms ease, color 150ms ease, filter 150ms ease; }
+.id-tab:active, .id-icon-btn:active, .id-add:active, .id-ghost:active, .id-row:active, .id-bar-ghost:active, .id-bar-primary:not(:disabled):active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .id-icon-btn:hover, .id-row:hover { background-color: #f3f4f6; }
+  .id-ghost:hover { background-color: #fef2f2; }
+  .id-add:hover { border-color: #CAA959; color: #CAA959; background-color: rgba(202, 169, 89, 0.04); }
+  .id-bar-ghost:hover { background-color: rgba(255, 255, 255, 0.1); }
+  .id-bar-primary:not(:disabled):hover { filter: brightness(1.1); }
+  .id-photo:hover img { filter: brightness(0.92); }
+}
