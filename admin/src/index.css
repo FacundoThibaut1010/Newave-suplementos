@@ -49,3 +49,36 @@ html {
     @apply bg-[#CAA959] text-white px-10 py-4 rounded-full font-bold text-sm tracking-widest uppercase hover:bg-[#CAA959]/90 active:scale-95 transition-all flex items-center gap-2;
   }
 }
+
+/* ---------- Inventario ---------- */
+.inv-stat, .inv-chip, .inv-icon-btn { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease; }
+.inv-stat:active, .inv-chip:active, .inv-icon-btn:active { transform: scale(0.97); }
+.inv-row { transition: background-color 200ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .inv-row:hover { background-color: #FAFAFA; }
+  .inv-stat:hover { box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05); }
+  .inv-icon-btn:hover { background-color: #fff; box-shadow: 0 1px 3px rgba(0, 0, 0, 0.08); }
+}
+/* Producto al que se llegó desde una alerta de stock */
+@keyframes inv-highlight { 0%, 60% { background-color: rgba(202, 169, 89, 0.14); } 100% { background-color: transparent; } }
+.inv-row.is-highlight { animation: inv-highlight 2.4s ease-out; }
+.scrollbar-hide { scrollbar-width: none; }
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+
+/* ---------- Resumen: alertas de stock clickeables ---------- */
+.dash-alert { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease, border-color 150ms ease; }
+.dash-alert:active { transform: scale(0.98); }
+.dash-alert-arrow { transition: transform 200ms cubic-bezier(0.23, 1, 0.32, 1), color 150ms ease; }
+@media (hover: hover) and (pointer: fine) {
+  .dash-alert:hover { background-color: rgba(254, 226, 226, 0.5); border-color: rgba(252, 165, 165, 0.5); }
+  .dash-alert:hover .dash-alert-arrow { transform: translateX(3px); color: #202A36; }
+}
+
+/* ---------- Formulario de producto ---------- */
+.pf-seg, .pf-icon-btn, .pf-mini-btn, .pf-drop, .pf-add, .pf-ghost { transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1), background-color 150ms ease, border-color 150ms ease, color 150ms ease, box-shadow 150ms ease; }
+.pf-seg:active, .pf-icon-btn:active, .pf-mini-btn:active, .pf-drop:active, .pf-add:active, .pf-ghost:active { transform: scale(0.97); }
+@media (hover: hover) and (pointer: fine) {
+  .pf-icon-btn:hover, .pf-ghost:hover { background-color: #f3f4f6; }
+  .pf-drop:hover, .pf-add:hover { border-color: #CAA959; color: #CAA959; background-color: rgba(202, 169, 89, 0.04); }
+  .pf-mini-btn:hover { color: #202A36; }
+}

@@ -1,4 +1,4 @@
-import React, { useState, Suspense } from 'react';
+import React, { useState, useEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -13,10 +13,25 @@ import {
 import { Link, useLocation, Outlet } from 'react-router-dom';
 import { Toaster } from 'sonner';
 import { ADMIN_TOKEN_KEY } from '../api/apiClient';
+import { useAdminStore } from '../store/useAdminStore';
 
 const AdminLayout = () => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Apenas se entra al panel: traer productos y configuración, y descargar el código de las demás secciones,
+  // así al tocar Inventario o Identidad ya está todo listo (antes cada sección esperaba al tocarla).
+  useEffect(() => {
+    const { fetchProducts, fetchConfig } = useAdminStore.getState();
+    fetchProducts();
+    fetchConfig();
+    [
+      () => import('../pages/InventoryTable'),
+      () => import('../pages/OrdersTable'),
+      () => import('../pages/StoreSettings'),
+      () => import('../components/ProductForm'),
+    ].forEach((load) => load().catch(() => {}));
+  }, []);
 
   const menuItems = [
     { icon: LayoutDashboard, label: 'Resumen', path: '/admin' },
