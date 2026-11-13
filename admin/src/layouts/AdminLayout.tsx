@@ -1,4 +1,4 @@
-import React, { useState, useEffect, Suspense } from 'react';
+import { useState, useEffect, useLayoutEffect, Suspense } from 'react';
 import { motion } from 'framer-motion';
 import { 
   LayoutDashboard, 
@@ -11,13 +11,31 @@ import {
   X
 } from 'lucide-react';
 import { Link, useLocation, Outlet } from 'react-router-dom';
-import { Toaster } from 'sonner';
 import { ADMIN_TOKEN_KEY } from '../api/apiClient';
 import { useAdminStore } from '../store/useAdminStore';
 
 const AdminLayout = () => {
   const location = useLocation();
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
+
+  // Al cambiar de sección: cerrar el menú del celular y arrancar arriba de todo
+  useLayoutEffect(() => {
+    setIsSidebarOpen(false);
+    window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+  }, [location.pathname]);
+
+  // El navegador no debe restaurar la posición vieja al volver atrás
+  useEffect(() => {
+    if ('scrollRestoration' in history) history.scrollRestoration = 'manual';
+  }, []);
+
+  // Con el menú abierto en el celular, la página de atrás no se mueve
+  useEffect(() => {
+    if (!isSidebarOpen) return;
+    const prev = document.body.style.overflow;
+    document.body.style.overflow = 'hidden';
+    return () => { document.body.style.overflow = prev; };
+  }, [isSidebarOpen]);
 
   // Apenas se entra al panel: traer productos y configuración, y descargar el código de las demás secciones,
   // así al tocar Inventario o Identidad ya está todo listo (antes cada sección esperaba al tocarla).
@@ -83,6 +101,10 @@ const AdminLayout = () => {
               <Link
                 key={item.path}
                 to={item.path}
+                onClick={() => {
+                  setIsSidebarOpen(false);
+                  window.scrollTo({ top: 0, left: 0, behavior: 'instant' as ScrollBehavior });
+                }}
                 className={`flex items-center gap-4 px-5 py-4 rounded-full transition-all group ${
                   isActive 
                     ? 'bg-[#CAA959] text-white shadow-lg shadow-[#CAA959]/20' 
