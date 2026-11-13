@@ -1,10 +1,10 @@
-import { useLayoutEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useLayoutEffect, useRef, useState } from 'react';
+import { ChevronLeft, ChevronRight } from 'lucide-react';
 import gsap from 'gsap';
 import { ScrollTrigger } from 'gsap/ScrollTrigger';
 import ProductCard from './ProductCard';
 import { useStoreConfigStore } from '../../store/useStoreConfigStore';
 import { useProductStore } from '../../store/useProductStore';
-import ScrollArrows from '../ui/ScrollArrows';
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -13,7 +13,8 @@ gsap.registerPlugin(ScrollTrigger);
  * - Celular: la sección se fija en pantalla y el scroll vertical desplaza los productos de costado
  *   (ScrollTrigger con pin + scrub). El producto del centro queda en foco (escala/opacidad) y se ajusta
  *   suavemente a cada tarjeta. Al terminar, la página sigue normal: no hay una caja con scroll propio.
- * - Compu: fila centrada; si hay más productos de los que entran, se recorre con flechas.
+ * - Compu: estante con tarjetas de ancho exacto (5 por página en compu, 4 en tablet) para que nunca quede
+ *   un producto cortado; flechas arriba a la derecha que avanzan de a una página y barra de progreso.
  * - "Reducir movimiento": fila deslizable simple, sin pin ni efectos.
  */
 
@@ -35,6 +36,48 @@ const BestSellers = () => {
   const wrapRef = useRef<HTMLDivElement>(null);
   const progressRef = useRef<HTMLDivElement>(null);
   const [current, setCurrent] = useState(0);
+
+  // Compu: estado de las flechas y de la barra (qué parte del estante se está viendo)
+  const thumbRef = useRef<HTMLDivElement>(null);
+  const [nav, setNav] = useState({ prev: false, next: false, paged: false });
+  const syncShelf = useCallback(() => {
+    const el = wrapRef.current;
+    if (!el || window.innerWidth < 768) return;
+    const max = el.scrollWidth - el.clientWidth;
+    const paged = max > 4;
+    const prev = el.scrollLeft > 4;
+    const next = el.scrollLeft < max - 4;
+    setNav((n) => (n.prev === prev && n.next === next && n.paged === paged ? n : { prev, next, paged }));
+    if (thumbRef.current) {
+      const ratio = el.clientWidth / el.scrollWidth;
+      const pos = max > 0 ? el.scrollLeft / max : 0;
+      thumbRef.current.style.width = `${ratio * 100}%`;
+      thumbRef.current.style.transform = `translateX(${pos * (1 / ratio - 1) * 100}%)`;
+    }
+  }, []);
+  useEffect(() => {
+    const el = wrapRef.current;
+    if (!el) return;
+    syncShelf();
+    el.addEventListener('scroll', syncShelf, { passive: true });
+    const ro = new ResizeObserver(syncShelf);
+    ro.observe(el);
+    if (el.firstElementChild) ro.observe(el.firstElementChild);
+    return () => {
+      el.removeEventListener('scroll', syncShelf);
+      ro.disconnect();
+    };
+  }, [syncShelf, items.length]);
+  // La barra aparece recién cuando hay más productos de los que entran: medirla apenas se muestra
+  useEffect(() => {
+    if (nav.paged) syncShelf();
+  }, [nav.paged, syncShelf]);
+  const page = (dir: -1 | 1) => {
+    const el = wrapRef.current;
+    if (!el) return;
+    const gap = parseFloat(getComputedStyle(el.firstElementChild as Element).columnGap) || 0;
+    el.scrollBy({ left: dir * (el.clientWidth + gap), behavior: 'smooth' });
+  };
 
   useLayoutEffect(() => {
     const section = sectionRef.current;
@@ -138,13 +181,13 @@ const BestSellers = () => {
     >
       <div className="bs-inner max-w-[1200px] mx-auto px-6 py-14 lg:py-16 flex flex-col">
         {/* Encabezado */}
-        <div className="flex items-end md:items-center md:justify-center justify-between gap-4 mb-8 md:mb-10">
-          <div className="overflow-hidden md:text-center">
-            <h3 className="bs-reveal text-3xl md:text-3xl font-black text-[#202A36] uppercase italic tracking-tighter">Más Vendidos</h3>
+        <div className="flex items-end justify-between gap-4 mb-8 md:mb-10">
+          <div className="overflow-hidden">
+            <h3 className="bs-reveal text-3xl md:text-4xl font-black text-[#202A36] uppercase italic tracking-tighter">Más Vendidos</h3>
             <p className="bs-reveal text-[10px] font-black text-[#CAA959] uppercase tracking-[0.2em] mt-2">Los favoritos de nuestros clientes</p>
           </div>
           {/* Contador y progreso (solo celular, donde la sección se recorre con el scroll) */}
-          <div className="bs-counter md:hidden flex flex-col items-end gap-2 shrink-0 overflow-hidden">
+          <div className="bs-counter md:hidden flex flex-col items-end gap-2 shrink-0 overflow-hidden pr-1.5 -mr-1.5">
             <span className="bs-reveal font-black italic text-[#202A36] tabular-nums text-lg leading-none">
               {pad(current + 1)}
               <span className="text-zinc-400"> / {pad(items.length)}</span>
@@ -153,18 +196,29 @@ const BestSellers = () => {
               <div ref={progressRef} className="h-full bg-[#CAA959] origin-left" style={{ transform: 'scaleX(0)' }} />
             </div>
           </div>
+          {/* Compu: flechas del estante (solo si hay más productos de los que entran) */}
+          {nav.paged && (
+            <div className="hidden md:flex items-center gap-2 shrink-0">
+              <button type="button" onClick={() => page(-1)} disabled={!nav.prev} aria-label="Ver anteriores" className="bs-nav">
+                <ChevronLeft size={20} strokeWidth={2.25} />
+              </button>
+              <button type="button" onClick={() => page(1)} disabled={!nav.next} aria-label="Ver siguientes" className="bs-nav">
+                <ChevronRight size={20} strokeWidth={2.25} />
+              </button>
+            </div>
+          )}
         </div>
 
         {/* Celular: pista horizontal movida por el scroll · Compu: grilla */}
         <div className="relative">
-        <div ref={wrapRef} className="bs-track-wrap md:overflow-x-auto scrollbar-hide md:-mx-6 md:px-16">
+        <div ref={wrapRef} className="bs-track-wrap bs-shelf scrollbar-hide">
         <div
           ref={trackRef}
-          // w-max + mx-auto: centrada si entra todo; si no, se desplaza con las flechas
-          className="bs-track flex gap-4 md:gap-6 w-max md:mx-auto"
+          // Celular: fila w-max movida por GSAP · Compu: columnas de ancho exacto (ver .bs-track en index.css)
+          className="bs-track flex gap-4 w-max"
         >
           {items.map((product: any, idx: number) => (
-            <div key={`${product._id}-${idx}`} className="bs-card w-[68vw] max-w-[300px] md:w-[220px] md:max-w-none shrink-0 will-change-transform">
+            <div key={`${product._id}-${idx}`} className="bs-card w-[68vw] max-w-[300px] md:w-auto md:max-w-none shrink-0 will-change-transform md:will-change-auto">
               <ProductCard
                 id={product._id}
                 {...product}
@@ -177,7 +231,12 @@ const BestSellers = () => {
           ))}
         </div>
         </div>
-        <ScrollArrows targetRef={wrapRef} />
+        {/* Compu: barra que muestra qué parte del estante se ve */}
+        {nav.paged && (
+          <div className="hidden md:block mt-8 mx-auto w-40 h-[3px] rounded-full bg-black/10 overflow-hidden" aria-hidden>
+            <div ref={thumbRef} className="bs-thumb h-full rounded-full bg-[#202A36]" />
+          </div>
+        )}
         </div>
       </div>
     </section>
