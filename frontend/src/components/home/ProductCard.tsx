@@ -183,7 +183,7 @@ const ProductCard = ({ id, name, price, oldPrice, category, image, images, darkT
         </Link>
         {!hidePrice && (
           <div className="flex items-center justify-center md:justify-start gap-1.5 md:gap-2 mt-auto pt-1 md:pt-2">
-            <span className="font-black text-xs sm:text-sm md:text-xl text-[#1C86C8] italic">${Number(price).toLocaleString('es-AR')}</span>
+            <span className={`font-black text-xs sm:text-sm md:text-xl italic ${darkTheme ? 'text-white' : 'text-[#111214]'}`}>${Number(price).toLocaleString('es-AR')}</span>
             {!!oldPrice && oldPrice > price && (
               <span className="text-[10px] md:text-xs text-gray-400 line-through font-bold">${Number(oldPrice).toLocaleString('es-AR')}</span>
             )}

@@ -313,7 +313,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                   className="p-2 sm:p-3 rounded-full transition-all group focus:outline-none flex items-center gap-2"
                 >
                   <div className="relative">
-                    <User size={20} strokeWidth={2.5} className={`${user ? 'text-white' : ''} group-hover:text-white transition-all duration-300`} />
+                    <User size={20} strokeWidth={2.5} className={`${user ? 'text-[#1C86C8]' : 'group-hover:text-white'} transition-all duration-300`} />
                     {user && (!user.phone || !user.dni || !user.address?.street) && (
                       <span className="absolute -top-1 -right-1 w-2 h-2 bg-yellow-500 rounded-full animate-pulse shadow-[0_0_8px_rgba(234,179,8,0.8)]" title="Faltan datos en tu perfil" />
                     )}
@@ -368,7 +368,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                       initial={{ scale: 0, opacity: 0 }}
                       animate={{ scale: 1, opacity: 1 }}
                       exit={{ scale: 0, opacity: 0 }}
-                      className="absolute top-1 right-1 bg-white text-black text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-[0_0_15px_rgba(28,134,200,0.5)]"
+                      className="absolute top-1 right-1 bg-[#1C86C8] text-white text-[9px] w-4 h-4 rounded-full flex items-center justify-center font-black shadow-[0_0_15px_rgba(28,134,200,0.5)]"
                     >
                       {totalItems}
                     </motion.span>

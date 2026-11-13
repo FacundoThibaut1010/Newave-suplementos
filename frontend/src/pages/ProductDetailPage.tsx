@@ -228,7 +228,7 @@ const ProductDetailPage = () => {
                   {product.name}
                 </h1>
                 <div className="flex flex-wrap items-center gap-3 md:gap-4">
-                  <span className="text-2xl sm:text-3xl md:text-[2rem] font-black italic text-[#1C86C8] break-words">
+                  <span className="text-2xl sm:text-3xl md:text-[2rem] font-black italic text-[#111214] break-words">
                     ${Number(product.price).toLocaleString('es-AR')}
                   </span>
                   {!!product.oldPrice && product.oldPrice > product.price && (

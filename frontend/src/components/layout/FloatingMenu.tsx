@@ -69,7 +69,7 @@ export const FloatingMenu = () => {
             className="w-12 h-12 rounded-full bg-white text-black flex items-center justify-center shadow-lg relative"
           >
             <ShoppingBag size={20} strokeWidth={2.5} />
-            <span className="absolute -top-1 -right-1 bg-white text-black text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black">
+            <span className="absolute -top-1 -right-1 bg-[#1C86C8] text-white text-[9px] w-5 h-5 rounded-full flex items-center justify-center font-black">
               {totalItems}
             </span>
           </motion.button>

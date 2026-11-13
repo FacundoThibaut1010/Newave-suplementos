@@ -119,7 +119,7 @@ const SearchModal = ({ isOpen, onClose }: SearchModalProps) => {
                       <div className="flex-1 min-w-0">
                         <h4 className="text-sm md:text-base font-black text-[#111214] uppercase tracking-tight leading-tight">{product.name}</h4>
                         <div className="flex flex-col mt-1">
-                          <span className="font-bold text-[#1C86C8] text-sm md:hidden">${Number(product.price).toLocaleString('es-AR')}</span>
+                          <span className="font-bold text-[#111214] text-sm md:hidden">${Number(product.price).toLocaleString('es-AR')}</span>
                           <p className="text-[10px] font-black uppercase tracking-widest text-gray-400">{product.category}</p>
                         </div>
                       </div>
