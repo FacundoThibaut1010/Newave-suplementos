@@ -1,5 +1,6 @@
 import { useEffect } from 'react';
 import { useLocation } from 'react-router-dom';
+import { smoothScrollTo } from '../lib/smoothScroll';
 import Hero from '../components/home/Hero';
 import ProductGrid from '../components/home/ProductGrid';
 import CategoryScroll from '../components/home/CategoryScroll';
@@ -12,15 +13,11 @@ const HomePage = () => {
     if (location.hash) {
       const id = location.hash.replace('#', '');
       const timer = setTimeout(() => {
-        const element = document.getElementById(id);
-        if (element) {
-          const y = element.getBoundingClientRect().top + window.scrollY - 100;
-          window.scrollTo({ top: y, behavior: 'smooth' });
-        }
+        smoothScrollTo(id);
       }, 300); // Wait a bit for layout to settle
       return () => clearTimeout(timer);
     } else {
-      window.scrollTo(0, 0);
+      smoothScrollTo(0); // al llegar desde otra página ya está arriba (ScrollToTop): no hay recorrido
     }
   }, [location]);
 

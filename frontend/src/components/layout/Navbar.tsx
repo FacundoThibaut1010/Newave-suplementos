@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
+import { smoothScrollTo } from '../../lib/smoothScroll';
 import { ShoppingBag, Search, User, Menu, ChevronDown, Home, Package, MessageSquare, X, ChevronRight, Gift, AlertCircle, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '../../store/useCartStore';
@@ -81,17 +82,14 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
     setIsMenuOpen(false);
     e.preventDefault();
     
-    const element = document.getElementById(id);
-    if (element) {
-      const y = element.getBoundingClientRect().top + window.scrollY - 100;
-      window.scrollTo({ top: y, behavior: 'smooth' });
-    } else if (window.location.pathname !== '/') {
+    if (smoothScrollTo(id)) return;
+    if (window.location.pathname !== '/') {
       navigate(`/#${id}`);
     }
   };
 
   const mobileItems: MobileMenuItem[] = [
-    { label: 'Inicio', to: '/', onClick: () => { if (window.location.pathname === '/') window.scrollTo({ top: 0, behavior: 'smooth' }); } },
+    { label: 'Inicio', to: '/', onClick: () => { if (window.location.pathname === '/') smoothScrollTo(0); } },
     { label: 'Categorías', href: '/#categorias', onClick: (e) => handleScrollTo(e, 'categorias') },
     ...(showBestSellers ? [{ label: 'Más vendidos', href: '/#mas-vendidos', onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleScrollTo(e, 'mas-vendidos') }] : []),
     ...(showCombos ? [{ label: 'Combos', href: '/#combos', onClick: (e: React.MouseEvent<HTMLAnchorElement>) => handleScrollTo(e, 'combos') }] : []),
@@ -178,7 +176,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                           onClick={() => {
                             setIsMenuOpen(false);
                             if (window.location.pathname === '/') {
-                              window.scrollTo({ top: 0, behavior: 'smooth' });
+                              smoothScrollTo(0);
                             }
                           }}
                           to="/"
