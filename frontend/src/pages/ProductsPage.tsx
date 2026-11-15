@@ -134,7 +134,7 @@ const ProductsPage = () => {
 
   if (loading && !hasFetched) {
     return (
-      <div className="pt-40 md:pt-32 pb-24 bg-[#0A0A0B] min-h-screen">
+      <div className="pt-44 md:pt-48 pb-24 bg-[#0A0A0B] min-h-screen">
         <div className="max-w-7xl mx-auto px-6 mb-16">
           <div className="flex flex-col md:flex-row justify-between items-center md:items-center text-center md:text-left gap-6 border-b border-white/10 pb-8">
             <div className="flex flex-col items-center md:items-start w-full md:w-auto">
@@ -169,7 +169,7 @@ const ProductsPage = () => {
   }
 
   return (
-    <div className="pt-40 md:pt-32 pb-24 bg-[#0A0A0B] min-h-screen">
+    <div className="pt-44 md:pt-48 pb-24 bg-[#0A0A0B] min-h-screen">
       <div className="max-w-7xl mx-auto px-6 mb-16">
         <div className="flex flex-col md:flex-row justify-between items-center md:items-center text-center md:text-left gap-6 border-b border-white/10 pb-8">
           <div className="flex flex-col items-center md:items-start w-full md:w-auto">

@@ -155,7 +155,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                       exit={{ opacity: 0, y: 15, scale: 0.95 }}
                       transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                       className="
-                        absolute top-full left-0 mt-6 w-[90vw] max-w-[20rem]
+                        absolute top-full left-0 mt-6 w-[90vw] max-w-[20rem] max-h-[calc(100svh-130px)]
                         bg-black/90 backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.8)] 
                         rounded-[2.5rem] border border-white/10 overflow-hidden 
                         flex flex-col z-50 p-6
@@ -171,7 +171,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                         </button>
                       </div>
 
-                      <nav className="flex flex-col gap-1 relative z-10 flex-1">
+                      <nav className="menu-scroll flex flex-col gap-1 relative z-10 flex-1 min-h-0 overflow-y-auto overscroll-contain -mx-2 px-2">
                         <Link
                           onClick={() => {
                             setIsMenuOpen(false);
@@ -220,6 +220,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                                 initial={{ height: 0, opacity: 0 }}
                                 animate={{ height: 'auto', opacity: 1 }}
                                 exit={{ height: 0, opacity: 0 }}
+                                transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
                                 className="overflow-hidden rounded-xl mx-2 mt-1"
                               >
                                 <div className="flex flex-col py-2">

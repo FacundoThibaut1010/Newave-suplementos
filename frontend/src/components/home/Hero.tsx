@@ -123,7 +123,7 @@ const Hero = () => {
   const title = hero.title || "Energía. Fuerza. Resultados.";
 
   return (
-    <section id="hero" className="studio-light-section relative overflow-hidden pt-6 md:pt-[120px] pb-10 lg:pb-0 min-h-[100svh] md:min-h-0 lg:min-h-[82vh] flex items-center">
+    <section id="hero" className="studio-light-section relative overflow-hidden pt-6 pb-10 md:py-12 min-h-[100svh] flex items-center">
       <div className="relative z-10 w-full max-w-[1600px] mx-auto px-6 md:px-16 lg:px-24 grid grid-cols-1 lg:grid-cols-[minmax(0,0.9fr)_minmax(0,1.25fr)] gap-4 lg:gap-6 items-center">
         <motion.div
           initial={{ opacity: 0, transform: "translateY(16px)" }}
@@ -131,10 +131,10 @@ const Hero = () => {
           transition={{ duration: 0.7, ease: [0.23, 1, 0.32, 1] }}
           className="studio-light-text text-center lg:text-left order-2 lg:order-1"
         >
-          <span className="block text-[11px] lg:text-xs font-medium uppercase tracking-[0.28em] text-neutral-500 mb-5">
+          <span className="block text-[11px] lg:text-sm font-medium uppercase tracking-[0.28em] text-neutral-500 mb-5 lg:mb-7">
             Strength &amp; Performance
           </span>
-          <h1 className="studio-light-title text-5xl leading-[0.98] sm:text-6xl lg:text-6xl xl:text-[5rem] 2xl:text-[5.5rem] text-neutral-900 mb-6">
+          <h1 className="studio-light-title text-5xl leading-[0.98] sm:text-6xl lg:text-7xl xl:text-[6.5rem] 2xl:text-[8rem] text-neutral-900 mb-6">
             {title.split(" ").map((word: string, i: number) => (
               <span key={i}>
                 {word}{" "}
@@ -142,18 +142,18 @@ const Hero = () => {
               </span>
             ))}
           </h1>
-          <p className="text-base md:text-lg text-neutral-600 leading-relaxed max-w-md mx-auto lg:mx-0 mb-9">
+          <p className="text-base md:text-lg lg:text-xl text-neutral-600 leading-relaxed max-w-md lg:max-w-lg mx-auto lg:mx-0 mb-9 lg:mb-11">
             {hero.subtitle || "Descubrí la suplementación premium diseñada para quienes buscan superar cada límite."}
           </p>
           <div className="flex flex-col sm:flex-row items-center justify-center lg:justify-start gap-3">
-            <Link to="/productos" className="studio-light-cta w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-neutral-900 text-white px-9 py-4 rounded-full text-sm font-medium tracking-wide">
+            <Link to="/productos" className="studio-light-cta w-full sm:w-auto inline-flex items-center justify-center gap-3 bg-neutral-900 text-white px-9 py-4 lg:px-11 lg:py-5 rounded-full text-sm lg:text-base font-medium tracking-wide">
               {hero.buttonText || 'Ver catálogo'}
               <ArrowRight size={16} className="studio-cta-arrow" />
             </Link>
           </div>
         </motion.div>
 
-        <div className="w-full max-w-[490px] sm:max-w-[580px] mx-auto lg:max-w-none order-1 lg:order-2">
+        <div className="w-full max-w-[490px] sm:max-w-[580px] mx-auto lg:max-w-[min(100%,calc((100svh-6rem)*1.25))] order-1 lg:order-2">
           <StudioStage />
         </div>
       </div>
