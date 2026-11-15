@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { smoothScrollTo } from '../../lib/smoothScroll';
-import { ShoppingBag, Search, User, Menu, ChevronDown, Home, Package, MessageSquare, X, ChevronRight, Gift, AlertCircle, Star } from 'lucide-react';
+import { ShoppingBag, Search, User, Menu, Home, Package, MessageSquare, X, ChevronRight, Gift, AlertCircle, Star } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useCartStore } from '../../store/useCartStore';
 import { useUIStore } from '../../store/useUIStore';
@@ -72,6 +72,11 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
     return () => mq.removeEventListener('change', sync);
   }, []);
 
+  // Cada vez que el menú se cierra (por donde sea), Productos vuelve a quedar cerrado para la próxima
+  useEffect(() => {
+    if (!isMenuOpen) setIsProductsOpen(false);
+  }, [isMenuOpen]);
+
   const toggleMenu = () => {
     const r = menuButtonRef.current?.getBoundingClientRect();
     if (r) setMenuOrigin({ x: r.left + r.width / 2, y: r.top + r.height / 2 });
@@ -81,7 +86,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
   const handleScrollTo = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     setIsMenuOpen(false);
     e.preventDefault();
-    
+
     if (smoothScrollTo(id)) return;
     if (window.location.pathname !== '/') {
       navigate(`/#${id}`);
@@ -155,14 +160,15 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                       exit={{ opacity: 0, y: 15, scale: 0.95 }}
                       transition={{ duration: 0.3, ease: [0.23, 1, 0.32, 1] }}
                       className="
-                        absolute top-full left-0 mt-6 w-[90vw] max-w-[20rem] max-h-[calc(100svh-130px)]
-                        bg-black/90 backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.8)] 
-                        rounded-[2.5rem] border border-white/10 overflow-hidden 
-                        flex flex-col z-50 p-6
+                        absolute top-full left-0 mt-6 w-max max-w-[calc(100vw-4rem)]
+                        bg-black/90 backdrop-blur-3xl shadow-[0_32px_64px_rgba(0,0,0,0.8)]
+                        rounded-[2.5rem] border border-white/10 overflow-hidden
+                        flex flex-row items-stretch z-50 p-6
                         before:absolute before:inset-0
                         before:bg-[radial-gradient(circle_at_top_right,rgba(28,134,200,0.15),transparent_60%)]
                       "
                     >
+                      <div className="flex flex-col w-[17rem] shrink-0">
                       {/* Header */}
                       <div className="flex justify-between items-center mb-4 pb-3 border-b border-white/5 relative z-10">
                         <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white">Newave Navigation</span>
@@ -171,7 +177,7 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                         </button>
                       </div>
 
-                      <nav className="menu-scroll flex flex-col gap-1 relative z-10 flex-1 min-h-0 overflow-y-auto overscroll-contain -mx-2 px-2">
+                      <nav className="flex flex-col gap-1 relative z-10 flex-1">
                         <Link
                           onClick={() => {
                             setIsMenuOpen(false);
@@ -201,38 +207,17 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                           <ChevronRight size={18} className="opacity-0 group-hover:opacity-100 -translate-x-2 group-hover:translate-x-0 transition-all text-white" />
                         </a>
 
-                        <div className="relative">
-                          <button
-                            onClick={() => setIsProductsOpen(!isProductsOpen)}
-                            className="w-full flex items-center justify-between p-3 rounded-2xl group transition-all focus:outline-none"
-                          >
-                            <div className="flex items-center gap-4">
-                              <ShoppingBag size={20} className="text-white opacity-70 group-hover:opacity-100 transition-all" />
-                              <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Productos</span>
-                            </div>
-                            <motion.div animate={{ rotate: isProductsOpen ? 180 : 0 }}>
-                              <ChevronDown size={14} className="text-zinc-500 group-hover:text-white transition-colors" />
-                            </motion.div>
-                          </button>
-                          <AnimatePresence>
-                            {isProductsOpen && (
-                              <motion.div
-                                initial={{ height: 0, opacity: 0 }}
-                                animate={{ height: 'auto', opacity: 1 }}
-                                exit={{ height: 0, opacity: 0 }}
-                                transition={{ duration: 0.25, ease: [0.23, 1, 0.32, 1] }}
-                                className="overflow-hidden rounded-xl mx-2 mt-1"
-                              >
-                                <div className="flex flex-col py-2">
-                                  {activeCategories.map((cat: any, i: number) => (
-                                    <Link key={i} onClick={() => setIsMenuOpen(false)} to={`/productos/${cat.slug}`} className="px-6 py-2 text-[11px] font-bold uppercase tracking-[0.2em] hover:text-white transition-colors text-zinc-400">{cat.name}</Link>
-                                  ))}
-                                  <Link onClick={() => setIsMenuOpen(false)} to="/productos" className="px-6 py-2 text-[11px] font-black uppercase tracking-[0.2em] text-white hover:text-white transition-colors">Ver todos</Link>
-                                </div>
-                              </motion.div>
-                            )}
-                          </AnimatePresence>
-                        </div>
+                        <button
+                          onClick={() => setIsProductsOpen(!isProductsOpen)}
+                          aria-expanded={isProductsOpen}
+                          className={`w-full flex items-center justify-between p-3 rounded-2xl group transition-colors focus:outline-none ${isProductsOpen ? 'bg-white/[0.06]' : ''}`}
+                        >
+                          <div className="flex items-center gap-4">
+                            <ShoppingBag size={20} className={`text-white transition-all ${isProductsOpen ? 'opacity-100' : 'opacity-70 group-hover:opacity-100'}`} />
+                            <span className="text-lg font-black uppercase tracking-widest group-hover:text-white transition-colors">Productos</span>
+                          </div>
+                          <ChevronRight size={18} className={`transition-all duration-200 ${isProductsOpen ? 'text-white translate-x-0.5' : 'text-zinc-500 group-hover:text-white'}`} />
+                        </button>
 
                         {showCombos && (
                           <a
@@ -280,6 +265,37 @@ const Navbar = ({ hidden = false }: { hidden?: boolean }) => {
                         <span className="text-[9px] font-black tracking-[0.2em] uppercase italic">NEWAVE.</span>
 
                       </div>
+                      </div>
+
+                      {/* Categorías al costado: con muchas, se agregan columnas (el menú nunca crece hacia abajo ni scrollea) */}
+                      <AnimatePresence initial={false}>
+                        {isProductsOpen && (
+                          <motion.div
+                            key="cats"
+                            initial={{ width: 0, opacity: 0 }}
+                            animate={{ width: 'auto', opacity: 1 }}
+                            exit={{ width: 0, opacity: 0 }}
+                            transition={{ duration: 0.28, ease: [0.23, 1, 0.32, 1] }}
+                            className="relative z-10 overflow-hidden"
+                          >
+                            <div className="h-full ml-6 pl-6 border-l border-white/10 flex flex-col">
+                              <span className="text-[10px] font-black uppercase tracking-[0.4em] text-white/50 pt-[0.85rem] pb-3 mb-4 border-b border-white/5 whitespace-nowrap">Categorías</span>
+                              <div
+                                className="grid grid-flow-col gap-x-8 gap-y-0.5 auto-cols-[minmax(9.5rem,max-content)]"
+                                style={{ gridTemplateRows: `repeat(${Math.max(1, Math.min(activeCategories.length, Math.max(8, Math.ceil(activeCategories.length / 4))))}, auto)` }}
+                              >
+                                {activeCategories.map((cat: any, i: number) => (
+                                  <Link key={i} onClick={() => setIsMenuOpen(false)} to={`/productos/${cat.slug}`} className="py-2 text-[12px] font-bold uppercase tracking-[0.2em] text-zinc-400 hover:text-white transition-colors whitespace-nowrap">{cat.name}</Link>
+                                ))}
+                              </div>
+                              <Link onClick={() => setIsMenuOpen(false)} to="/productos" className="mt-auto pt-4 inline-flex items-center gap-2 text-[12px] font-black uppercase tracking-[0.2em] text-white group/all whitespace-nowrap">
+                                Ver todos
+                                <ChevronRight size={14} className="transition-transform group-hover/all:translate-x-0.5" />
+                              </Link>
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
                     </motion.div>
                   )}
                 </AnimatePresence>
